@@ -1307,7 +1307,7 @@ window.addManualPuck = async function() {
             render();
             renderPuckSettings();
 
-            const { error } = await client.from('pucks').insert([newPuck]);
+            const { error } = client.from('pucks').insert([newPuck]);
             if (error) {
                 alert("Error adding puck: " + error.message);
                 state.pucks = state.pucks.filter(p => p.mac !== mac);
