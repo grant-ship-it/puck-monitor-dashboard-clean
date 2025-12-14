@@ -1281,13 +1281,17 @@ window.addManualPuck = async function() {
                 name: name, 
                 status: 'offline', 
                 last_seen: new Date().toISOString(),
-                customer_id: user.id  // <--- CRITICAL ADDITION
+                customer_id: user.id
             };
 
             // Optimistic UI update
             state.pucks.push(newPuck);
             render();
-            renderPuckSettings();
+            
+            // Render the specific settings list again
+            if (typeof renderPuckSettings === 'function') {
+                renderPuckSettings();
+            }
 
             const { error } = await client.from('pucks').insert([newPuck]);
             
@@ -1309,7 +1313,7 @@ window.addManualPuck = async function() {
                 state.pucks = state.pucks.filter(p => p.mac !== mac);
                 render();
             }
-        }
+
 
         window.renameGroup = async function(oldName) {
             const newName = prompt(`Rename group "${oldName}" to:`, oldName);
@@ -1651,36 +1655,6 @@ window.addManualPuck = async function() {
             lucide.createIcons();
         }
 
-        // --- STARTUP ---
-        init(); // <-- NO 'await here!'
-    </script>
-<script>
-    // (Supabase Initialization script goes above this section)
-        const container = document.getElementById('puck-data');
-        container.innerHTML = ''; // Clear the "Loading" message
-
-        pucks.forEach(puck => {
-            const isOnline = puck.status === 'online';
-            const cardClass = isOnline ? 'online' : 'offline';
-            const statusText = isOnline ? 'ONLINE' : 'OFFLINE';
-
-            // Format the last_seen time nicely
-            const lastSeenDate = new Date(puck.last_seen);
-            const timeString = lastSeenDate.toLocaleString();
-
-            const cardHTML = `
-                <div class="puck-card ${cardClass}">
-                    <h3>Puck: ${puck.mac_address}</h3>
-                    <p><strong>Status:</strong> <span class="status">${statusText}</span></p>
-                    <p>Last Seen: ${timeString}</p>
-                    <p>Interval: ${puck.check_interval_minutes} minutes</p>
-                </div>
-            `;
-            container.innerHTML += cardHTML;
-        });
-
-    // Run the function when the page loads
-    fetchPuckData();
    // -- STARTUP ---
         init();
 
