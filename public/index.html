@@ -489,7 +489,7 @@
                 lucide.createIcons();
             }
 
-            await fetchData();
+            fetchData();
             setupRealtime();
 
             // Setup Real-time Staleness Check Loop
@@ -1625,17 +1625,6 @@
     </script>
 <script>
     // (Supabase Initialization script goes above this section)
-
-        if (error) {
-            console.error('Error fetching puck data:', error.message);
-            document.getElementById('puck-data').innerHTML = `
-                <div class="puck-card offline">
-                    <h3>Database Error</h3>
-                    <p>${error.message}</p>
-                </div>
-            `;
-        }
-
         const container = document.getElementById('puck-data');
         container.innerHTML = ''; // Clear the "Loading" message
 
@@ -1661,6 +1650,9 @@
 
     // Run the function when the page loads
     fetchPuckData();
-    </script>   
+   // -- STARTUP ---
+        init();
+
+   </script>   
 </body>
 </html>
