@@ -4,8 +4,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-    const SUPABASE_URL = https://tbajywjbemnwhsdgjuqg.supabase.co; 
-    const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiYWp5d2piZW1ud2hzZGdqdXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDkzMjYsImV4cCI6MjA4MDE4NTMyNn0.5mhZQ4OTjV6f0p2v0LxADpQnaTyJIp5BIuw2kP0mdUU;
+    const SUPABASE_URL = 'https://tbajywjbemnwhsdgjuqg.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiYWp5d2piZW1ud2hzZGdqdXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDkzMjYsImV4cCI6MjA4MDE4NTMyNn0.5mhZQ4OTjV6f0p2v0LxADpQnaTyJIp5BIuw2kP0mdUU';
 
     // This creates the client object that we will use to query the database
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -94,13 +94,32 @@
                     <button onclick="window.runIspDiagnostics()" class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-sky-500 transition-colors" title="Test ISP Connection">
                         <i data-lucide="wrench" class="w-4 h-4"></i>
                     </button>
-                </div>
+                <button id="logout-button" onclick="window.handleLogout()" class="p-2 text-slate-500 dark:text-slate-400 hover:text-rose-900 dark:hover:text-rose-400 transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 hidden" title="Log Out">
+            <i data-lucide="log-out" class="w-6 h-6"></i>
+        </button>
+        <button onclick="window.toggleSettings()" class="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+            <i data-lucide="settings" class="w-6 h-6"></i>
+        </button>
+                                </div>
             </div>
         </div>
         <button onclick="window.toggleSettings()" class="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
             <i data-lucide="settings" class="w-6 h-6"></i>
         </button>
     </header>
+<div id="auth-ui" class="max-w-md mx-auto p-8 mt-16 glass-panel rounded-xl shadow-lg">
+        <h2 class="text-2xl font-bold text-center mb-6 text-slate-900 dark:text-white">SECTOR LINK Login</h2>
+        <form id="login-form" class="space-y-4">
+            <input type="email" id="login-email" placeholder="Email" required
+                   class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded px-4 py-2 text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors">
+            <input type="password" id="login-password" placeholder="Password" required
+                   class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded px-4 py-2 text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors">
+            <button type="submit" class="w-full bg-sky-600 hover:bg-sky-500 text-white py-2 rounded text-base font-bold transition-colors">Log In</button>
+        </form>
+        <button id="signup-button" class="w-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-900 dark:text-white py-2 rounded text-base font-medium transition-colors mt-4">Sign Up</button>
+        <div id="auth-message" class="text-center text-sm mt-4 text-rose-500 dark:text-rose-400 hidden"></div>
+    </div>
+    <main id="data-container" <main id="data-container" class="max-w-7xl mx-auto p-4 space-y-6 hidden">
 
     <!-- MAIN CONTENT -->
     <main class="max-w-7xl mx-auto p-4 space-y-6">
@@ -305,10 +324,8 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // --- CONFIG & STATE ---
-        const SUPABASE_URL = 'https://tbajywjbemnwhsdgjuqg.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiYWp5d2piZW1ud2hzZGdqdXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDkzMjYsImV4cCI6MjA4MDE4NTMyNn0.5mhZQ4OTjV6f0p2v0LxADpQnaTyJIp5BIuw2kP0mdUU';
-        const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// ... previous code ends here ...
+        // const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let state = {
             devices: [],
@@ -316,16 +333,96 @@
             flashingIds: new Set(),
             sort: { key: 'status', dir: 'desc' },
             settings: {
-                showHostPuck: localStorage.getItem('ns_showHost') === 'true',
-                darkMode: localStorage.getItem('ns_darkMode') === null ? true : localStorage.getItem('ns_darkMode') === 'true',
-                trackIpChanges: localStorage.getItem('ns_trackIp') !== 'false',
-                showManufacturer: localStorage.getItem('ns_showManu') === 'true',
-                aidedDetection: localStorage.getItem('ns_aided') === 'true',
-                useAbsoluteTime: localStorage.getItem('ns_absTime') === 'true',
-                showMacAddress: localStorage.getItem('ns_showMac') === 'true',
+                // ... existing settings ...
             },
-            editingId: null
+            editingId: null,
+            isAuthenticated: false // NEW STATE VARIABLE
         };
+
+        // --- AUTHENTICATION FUNCTIONS (NEW BLOCK) ---
+
+        // NEW: Handles state changes after login/logout
+        async function checkSession() {
+            const { data: { session } } = await client.auth.getSession();
+            const dataContainer = document.getElementById('data-container');
+            const authUi = document.getElementById('auth-ui');
+            const logoutBtn = document.getElementById('logout-button');
+            const authMessage = document.getElementById('auth-message');
+
+            if (session) {
+                // Logged In
+                state.isAuthenticated = true;
+                authUi.style.display = 'none';
+                dataContainer.style.display = 'block';
+                logoutBtn.style.display = 'block';
+                authMessage.style.display = 'none';
+                await fetchData(); // Fetch data only when authenticated
+                setupRealtime(); // Start listening for real-time updates
+            } else {
+                // Logged Out
+                state.isAuthenticated = false;
+                authUi.style.display = 'block';
+                dataContainer.style.display = 'none';
+                logoutBtn.style.display = 'none';
+            }
+            render(); // Rerender to apply state changes (like stats)
+        }
+
+        // Handle Login Form Submission
+        document.addEventListener('DOMContentLoaded', () => {
+             // We need to wait for DOM elements to exist before attaching listeners
+             document.getElementById('login-form')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                const authMessage = document.getElementById('auth-message');
+
+                const { error } = await client.auth.signInWithPassword({ email, password });
+
+                if (error) {
+                    authMessage.innerText = 'Login Failed: ' + error.message;
+                    authMessage.style.display = 'block';
+                } else {
+                    // Check session will handle UI update and data fetch
+                    checkSession();
+                }
+            });
+
+            // Handle Sign Up Button Click
+            document.getElementById('signup-button')?.addEventListener('click', async () => {
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                const authMessage = document.getElementById('auth-message');
+
+                if (!email || !password) {
+                    authMessage.innerText = 'Please enter both email and password for signup.';
+                    authMessage.style.display = 'block';
+                    return;
+                }
+
+                const { error } = await client.auth.signUp({ email, password });
+
+                if (error) {
+                    authMessage.innerText = 'Sign Up Failed: ' + error.message;
+                    authMessage.style.display = 'block';
+                } else {
+                    authMessage.innerText = 'Sign up successful! Please check your email to confirm.';
+                    authMessage.style.display = 'block';
+                    document.getElementById('login-form').reset();
+                }
+            });
+        });
+        
+        // Logout handler
+        window.handleLogout = async function() {
+             const { error } = await client.auth.signOut();
+             if (error) {
+                 alert("Error logging out: " + error.message);
+             }
+             checkSession(); // Update UI after logout
+        }
+
+        // --- END AUTHENTICATION FUNCTIONS ---
 
         // --- HELPER: Safe String for HTML Attributes ---
         function escapeStr(str) {
@@ -334,9 +431,37 @@
         }
 
         // --- APP INIT ---
-        async function init() {
-            updateTheme();
+       // CRITICAL CHANGE: Existing data fetching logic is now wrapped in fetchData()
+        async function fetchData() {
+            // Check authentication status before fetching RLS-protected data
+            if (!state.isAuthenticated) {
+                console.log("Not authenticated. Skipping protected data fetch.");
+                return;
+            }
+
+            // Show loading state temporarily
+            document.getElementById('groups-container').innerHTML = `
+                <div class="text-center py-12">
+                    <i data-lucide="loader-2" class="w-8 h-8 text-sky-500 animate-spin mx-auto"></i>
+                    <p class="mt-2 text-sm text-slate-500 font-mono">Loading Fleet...</p>
+                </div>
+            `;
             lucide.createIcons();
+
+            const [devRes, puckRes] = await Promise.all([
+                client.from('devices').select('*'),
+                client.from('pucks').select('*')
+            ]);
+            
+            // ... rest of your existing fetchData logic (which you keep) ...
+            
+            // ... your existing logic for handling devRes.data ...
+
+            // ... your existing logic for handling puckRes.data ...
+
+            
+            render(); // Existing call to render
+        }
             
             // Init Support ID
             let sid = localStorage.getItem('ns_supportId');
@@ -367,8 +492,7 @@
             setInterval(() => {
                 render();
             }, 30000);
-        }
-
+    
         function updateTheme() {
             if (state.settings.darkMode) {
                 document.documentElement.classList.add('dark');
@@ -1541,7 +1665,6 @@
 
     // Run the function when the page loads
     fetchPuckData();
-
-</script>
+        </script>   
 </body>
 </html>
