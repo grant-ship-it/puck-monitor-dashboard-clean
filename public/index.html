@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    const SUPABASE_URL = https://tbajywjbemnwhsdgjuqg.supabase.co; 
+    const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiYWp5d2piZW1ud2hzZGdqdXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDkzMjYsImV4cCI6MjA4MDE4NTMyNn0.5mhZQ4OTjV6f0p2v0LxADpQnaTyJIp5BIuw2kP0mdUU;
+
+    // This creates the client object that we will use to query the database
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>SECTOR LINK Command</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+            colors: { industrial: { 900: '#0f172a', 800: '#1e293b', 950: '#020617' } },
+            animation: {
+              'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'flash-red': 'flashRed 2s infinite',
+              'heartbeat': 'heartbeat 3s ease-in-out infinite', // Slowed to 3s
+            },
+            keyframes: {
+              flashRed: {
+                '0%, 100%': { backgroundColor: 'transparent' },
+                '50%': { backgroundColor: 'rgba(244, 63, 94, 0.2)' }, // rose-500/20
+              },
+              heartbeat: {
+                '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+                '50%': { opacity: '0.6', transform: 'scale(0.9)' }, 
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles with Tailwind override capability */
+        body { -webkit-tap-highlight-color: transparent; }
+        
+        /* Glass Panel - Adaptive */
+        .glass-panel { 
+            background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(203, 213, 225, 0.6); 
+        }
+        .dark .glass-panel { 
+            background: rgba(30, 41, 59, 0.7); 
+            border: 1px solid rgba(51, 65, 85, 0.5); 
+        }
+
+        /* Mobile optimizations */
+        input, select, button { touch-action: manipulation; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
+    "@supabase/supabase-js": "https://aistudiocdn.com/@supabase/supabase-js@^2.86.0"
+  }
+}
+</script>
+</head>
+<body class="min-h-screen pb-20 bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-200 transition-colors duration-300">
+
+    <!-- TOP BAR: ISP & BRAND -->
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="bg-sky-500/10 p-2 rounded-lg border border-sky-500/20">
+                <!-- Using radar icon for SECTOR LINK -->
+                <i data-lucide="radar" class="w-5 h-5 text-sky-600 dark:text-sky-500"></i>
+            </div>
+            <div>
+                <h1 class="text-sm font-bold text-slate-900 dark:text-white tracking-wide">SECTOR LINK</h1>
+                <div id="isp-container" class="flex items-center gap-2 mt-0.5">
+                    <!-- ISP Status injected via JS -->
+                    <div id="isp-status" class="flex items-center gap-3 text-xs font-mono">
+                        <span class="w-3 h-3 rounded-full bg-slate-500"></span>
+                        <span class="text-slate-500">CONNECTING...</span>
+                    </div>
+                    <button onclick="window.runIspDiagnostics()" class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-sky-500 transition-colors" title="Test ISP Connection">
+                        <i data-lucide="wrench" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <button onclick="window.toggleSettings()" class="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+            <i data-lucide="settings" class="w-6 h-6"></i>
+        </button>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-7xl mx-auto p-4 space-y-6">
+
+        <!-- STATS GRID -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="glass-panel p-3 rounded-lg flex flex-col items-center justify-center text-center">
+                <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Total Devices</span>
+                <span id="stat-total" class="text-2xl font-bold text-slate-800 dark:text-white mt-1">--</span>
+            </div>
+            <div class="glass-panel p-3 rounded-lg flex flex-col items-center justify-center text-center border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-900/10">
+                <span class="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400/80 font-bold">Online</span>
+                <span id="stat-online" class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">--</span>
+            </div>
+            <div class="glass-panel p-3 rounded-lg flex flex-col items-center justify-center text-center">
+                <span class="text-[10px] uppercase tracking-wider text-sky-600 dark:text-sky-500/80 font-bold">Monitored</span>
+                <span id="stat-tracked" class="text-2xl font-bold text-sky-600 dark:text-sky-400 mt-1">--</span>
+            </div>
+            <div class="glass-panel p-3 rounded-lg flex flex-col items-center justify-center text-center">
+                <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Alerts</span>
+                <span id="stat-alerts" class="text-2xl font-bold text-amber-500 mt-1">0</span>
+            </div>
+        </div>
+
+        <!-- GROUPS CONTAINER -->
+        <div id="groups-container" class="space-y-8">
+            <!-- Groups injected via JS -->
+            <div class="text-center py-12">
+                <i data-lucide="loader-2" class="w-8 h-8 text-sky-500 animate-spin mx-auto"></i>
+                <p class="mt-2 text-sm text-slate-500 font-mono">Loading Fleet...</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- DIAGNOSTIC MODAL OVERLAY -->
+    <div id="diag-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex-col items-center justify-center p-4 animate-fade-in">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 w-full max-w-sm rounded-xl shadow-2xl overflow-hidden transform transition-all scale-100">
+            <div class="bg-slate-50 dark:bg-slate-800 p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="text-slate-900 dark:text-white font-bold flex items-center gap-2">
+                    <i data-lucide="wrench" class="w-5 h-5 text-sky-500"></i> Diagnostics
+                </h3>
+                <button onclick="window.closeDiag()" class="text-slate-400 hover:text-slate-900 dark:hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 text-center space-y-4" id="diag-content">
+                <!-- Content injected -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL OVERLAY -->
+    <div id="settings-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-sm hidden flex-col items-end sm:items-center justify-start sm:justify-center">
+        <div class="w-full sm:max-w-md bg-white dark:bg-slate-900 sm:rounded-xl border-b sm:border border-slate-200 dark:border-slate-800 shadow-2xl h-screen sm:h-[80vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white dark:bg-slate-900 p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center z-10">
+                <h2 class="text-lg font-bold text-slate-900 dark:text-white">Display Settings</h2>
+                <button onclick="window.toggleSettings()" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-6">
+                
+                <!-- Dark Mode Toggle -->
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div>
+                        <div class="text-slate-900 dark:text-white font-medium flex items-center gap-2">
+                            <i data-lucide="moon" class="w-4 h-4 text-slate-400"></i> Dark Mode
+                        </div>
+                        <div class="text-xs text-slate-500">Toggle application theme</div>
+                    </div>
+                    <button id="btn-toggle-dark" onclick="window.toggleSetting('darkMode')" class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
+                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm"></div>
+                    </button>
+                </div>
+
+                <!-- Absolute Time Toggle -->
+                 <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-900 dark:text-white font-medium">Absolute Timestamps</div>
+                        <div class="text-xs text-slate-500">Show exact Date/Time vs Relative</div>
+                    </div>
+                    <button id="btn-toggle-time" onclick="window.toggleSetting('useAbsoluteTime')" class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
+                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm"></div>
+                    </button>
+                </div>
+
+                <!-- Host Puck Toggle (Disabled/Hidden or kept for legacy view?) -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-900 dark:text-white font-medium">Show Host Pucks</div>
+                        <div class="text-xs text-slate-500">Display controller units in settings</div>
+                    </div>
+                    <button id="btn-toggle-host" onclick="window.toggleSetting('showHostPuck')" class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
+                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm"></div>
+                    </button>
+                </div>
+
+                <!-- Show MAC Address Toggle -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-900 dark:text-white font-medium">Show MAC Address</div>
+                        <div class="text-xs text-slate-500">Display hardware IDs in tables</div>
+                    </div>
+                    <button id="btn-toggle-mac" onclick="window.toggleSetting('showMacAddress')" class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
+                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm"></div>
+                    </button>
+                </div>
+
+                <!-- IP Tracking Toggle -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-900 dark:text-white font-medium">Track IP Changes</div>
+                        <div class="text-xs text-slate-500">Highlight IP mismatches</div>
+                    </div>
+                    <button id="btn-toggle-ip" onclick="window.toggleSetting('trackIpChanges')" class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
+                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm"></div>
+                    </button>
+                </div>
+
+                <!-- Show Manufacturer Toggle -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-900 dark:text-white font-medium">Show Manufacturer</div>
+                        <div class="text-xs text-slate-500">Display hardware vendor</div>
+                    </div>
+                    <button id="btn-toggle-manufacturer" onclick="window.toggleSetting('showManufacturer')" class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
+                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm"></div>
+                    </button>
+                </div>
+
+                <!-- Aided Detection Toggle -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-900 dark:text-white font-medium">Aided Detection</div>
+                        <div class="text-xs text-slate-500">Flash red on drop-out</div>
+                    </div>
+                    <button id="btn-toggle-aided" onclick="window.toggleSetting('aidedDetection')" class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
+                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm"></div>
+                    </button>
+                </div>
+
+                <!-- Host Puck Config Section -->
+                <div class="border-t border-slate-100 dark:border-slate-800 pt-4">
+                     <div class="flex items-center justify-between mb-3">
+                         <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="cpu" class="w-4 h-4 text-sky-500"></i> Host Puck Configuration
+                         </h3>
+                         <button onclick="window.addManualPuck()" class="text-[10px] bg-slate-200 dark:bg-slate-800 hover:bg-sky-500 hover:text-white text-slate-600 dark:text-slate-400 px-2 py-1 rounded transition-colors flex items-center gap-1">
+                             <i data-lucide="plus" class="w-3 h-3"></i> Add
+                         </button>
+                     </div>
+                     <div id="puck-settings-list" class="space-y-3">
+                        <!-- Injected via JS -->
+                         <div class="text-center py-4 text-slate-500 text-xs italic">Loading Puck Data...</div>
+                     </div>
+                </div>
+
+                 <!-- WiFi Config Section -->
+                 <div class="border-t border-slate-100 dark:border-slate-800 pt-4 mt-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                           <i data-lucide="wifi" class="w-4 h-4 text-sky-500"></i> Host WiFi Configuration
+                        </h3>
+                        <!-- WiFi Status Badge -->
+                        <div id="wifi-status-badge">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 space-y-3">
+                        <div class="space-y-1">
+                            <label class="text-[10px] uppercase font-bold text-slate-500">Network SSID</label>
+                            <input type="text" id="wifi-ssid" placeholder="Enter WiFi Name" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded px-2 py-1.5 text-sm text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors">
+                        </div>
+                        <div class="space-y-1">
+                             <label class="text-[10px] uppercase font-bold text-slate-500">Password</label>
+                             <input type="password" id="wifi-pass" placeholder="Enter WiFi Password" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded px-2 py-1.5 text-sm text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors">
+                        </div>
+                        <button onclick="window.saveWifiConfig()" class="w-full bg-sky-600 hover:bg-sky-500 text-white py-2 rounded text-xs font-bold uppercase tracking-wide transition-colors">Update Credentials</button>
+                    </div>
+               </div>
+
+                <!-- Group Management Hint -->
+                <div class="bg-slate-100 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700 mt-4">
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        <strong class="text-sky-600 dark:text-sky-400">Pro Tip:</strong> Click the group name header on the dashboard to rename an entire group at once.
+                    </p>
+                </div>
+
+                <!-- Account Reference -->
+                <div class="pt-8 mt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col items-center">
+                    <div class="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-2">Account Reference ID</div>
+                    <button id="settings-account-id" onclick="window.copySupportId()" class="font-mono text-xl font-bold text-slate-700 dark:text-slate-300 tracking-wider border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-lg hover:border-sky-500 dark:hover:border-sky-500 transition-colors w-full text-center group relative">
+                        <!-- Injected -->
+                        <span class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="copy" class="w-4 h-4 text-slate-400"></i></span>
+                    </button>
+                    <p class="text-[10px] text-slate-400 mt-3 text-center px-4">
+                        Please provide this ID when contacting Sector Link support for faster resolution.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- CONFIG & STATE ---
+        const SUPABASE_URL = 'https://tbajywjbemnwhsdgjuqg.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiYWp5d2piZW1ud2hzZGdqdXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDkzMjYsImV4cCI6MjA4MDE4NTMyNn0.5mhZQ4OTjV6f0p2v0LxADpQnaTyJIp5BIuw2kP0mdUU';
+        const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let state = {
+            devices: [],
+            pucks: [],
+            flashingIds: new Set(),
+            sort: { key: 'status', dir: 'desc' },
+            settings: {
+                showHostPuck: localStorage.getItem('ns_showHost') === 'true',
+                darkMode: localStorage.getItem('ns_darkMode') === null ? true : localStorage.getItem('ns_darkMode') === 'true',
+                trackIpChanges: localStorage.getItem('ns_trackIp') !== 'false',
+                showManufacturer: localStorage.getItem('ns_showManu') === 'true',
+                aidedDetection: localStorage.getItem('ns_aided') === 'true',
+                useAbsoluteTime: localStorage.getItem('ns_absTime') === 'true',
+                showMacAddress: localStorage.getItem('ns_showMac') === 'true',
+            },
+            editingId: null
+        };
+
+        // --- HELPER: Safe String for HTML Attributes ---
+        function escapeStr(str) {
+            if (!str) return '';
+            return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        // --- APP INIT ---
+        async function init() {
+            updateTheme();
+            lucide.createIcons();
+            
+            // Init Support ID
+            let sid = localStorage.getItem('ns_supportId');
+            if (!sid) {
+                const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+                let result = '';
+                for (let i = 0; i < 4; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+                result += '-';
+                for (let i = 0; i < 4; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+                sid = 'SEC-' + result;
+                localStorage.setItem('ns_supportId', sid);
+            }
+            const idEl = document.getElementById('settings-account-id');
+            if(idEl) {
+                // Keep the button structure but set the text
+                idEl.innerHTML = `
+                    ${sid}
+                    <span class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="copy" class="w-4 h-4 text-slate-400"></i></span>
+                `;
+                lucide.createIcons();
+            }
+
+            await fetchData();
+            setupRealtime();
+
+            // Setup Real-time Staleness Check Loop
+            // Refreshes UI every 30s to update "Last Seen" and Staleness Badges
+            setInterval(() => {
+                render();
+            }, 30000);
+        }
+
+        function updateTheme() {
+            if (state.settings.darkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+
+        async function fetchData() {
+            const [devRes, puckRes] = await Promise.all([
+                client.from('devices').select('*'),
+                client.from('pucks').select('*')
+            ]);
+            
+            if (devRes.data) {
+                // LocalStorage Overrides for Persistence (Local-First Architecture)
+                // This prevents backend scanners from overwriting user-assigned names
+                const localNames = JSON.parse(localStorage.getItem('ns_dev_names') || '{}');
+                const localMonitors = JSON.parse(localStorage.getItem('ns_dev_monitor') || '{}');
+
+                state.devices = devRes.data.map(d => {
+                    const mappedMac = d.mac || d.mac_address; // Ensure we have a MAC
+                    return {
+                        ...d,
+                        mac: mappedMac, 
+                        name: localNames[mappedMac] || d.name, // Prefer local name
+                        is_monitored: localMonitors[mappedMac] !== undefined ? localMonitors[mappedMac] : d.is_monitored // Prefer local setting
+                    };
+                });
+            }
+
+            if (puckRes.data) {
+                // FIX: Map database 'mac_address' to 'mac' so the UI can read it
+                state.pucks = puckRes.data.map(p => ({
+                    ...p,
+                    mac: p.mac_address // <--- CRITICAL FIX
+                })).sort((a, b) => new Date(b.last_seen || 0) - new Date(a.last_seen || 0));
+            }
+            
+            render();
+        }
+
+        function setupRealtime() {
+            client.channel('public:all')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'devices' }, payload => {
+                    handleRealtimeUpdate(payload, 'devices');
+                })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'pucks' }, payload => {
+                    handleRealtimeUpdate(payload, 'pucks');
+                })
+                .subscribe();
+        }
+
+        function handleRealtimeUpdate(payload, table) {
+            if (payload.eventType === 'INSERT') {
+                state[table].push(payload.new);
+            } else if (payload.eventType === 'UPDATE') {
+                if (table === 'devices' && state.settings.aidedDetection) {
+                    if (payload.old.status === 'online' && payload.new.status === 'offline') {
+                        state.flashingIds.add(payload.new.mac);
+                        setTimeout(() => {
+                            state.flashingIds.delete(payload.new.mac);
+                            render();
+                        }, 5000);
+                    }
+                }
+                
+                // Apply Persistence Logic to Realtime Updates
+                let newData = payload.new;
+                if (table === 'devices') {
+                     const localNames = JSON.parse(localStorage.getItem('ns_dev_names') || '{}');
+                     const localMonitors = JSON.parse(localStorage.getItem('ns_dev_monitor') || '{}');
+                     const mac = newData.mac || newData.mac_address;
+                     
+                     newData = {
+                         ...newData,
+                         mac: mac,
+                         name: localNames[mac] || newData.name,
+                         is_monitored: localMonitors[mac] !== undefined ? localMonitors[mac] : newData.is_monitored
+                     };
+                }
+
+                state[table] = state[table].map(d => d.mac === newData.mac ? newData : d);
+            } else if (payload.eventType === 'DELETE') {
+                state[table] = state[table].filter(d => d.mac !== payload.old.mac);
+            }
+            
+            // Re-sort pucks on update to ensure active one stays top
+            if (table === 'pucks') {
+                 state.pucks.sort((a, b) => new Date(b.last_seen || 0) - new Date(a.last_seen || 0));
+            }
+
+            render();
+        }
+
+        function formatTime(isoString) {
+            if (!isoString) return 'Never';
+            if (state.settings.useAbsoluteTime) {
+                const date = new Date(isoString);
+                return date.toLocaleDateString() + ', ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }
+            const diff = Date.now() - new Date(isoString).getTime();
+            const secs = Math.floor(diff / 1000);
+            const mins = Math.floor(secs / 60);
+            const hours = Math.floor(mins / 60);
+            
+            if (secs < 60) return 'Just now';
+            if (mins < 60) return `${mins}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            return `${Math.floor(hours/24)}d ago`;
+        }
+
+        function getHostName(puckMac) {
+            if (!puckMac) return null;
+            const puck = state.pucks.find(p => p.mac === puckMac);
+            return puck ? puck.name : `Puck-${puckMac.slice(-2).toUpperCase()}`;
+        }
+
+        // --- HOST PUCK STATUS LOGIC (THREE-STATE) ---
+        function getPuckStatus(puck) {
+            if (!puck) return { 
+                code: 'UNKNOWN', label: 'UNKNOWN', 
+                colorClass: 'text-slate-500', bgClass: 'bg-slate-100 dark:bg-slate-800' 
+            };
+
+            const lastSeenTime = new Date(puck.last_seen || 0);
+            const currentTime = new Date();
+            const timeDiffMs = currentTime.getTime() - lastSeenTime.getTime();
+            const timeDiffMinutes = timeDiffMs / (1000 * 60);
+
+            const GREEN_THRESHOLD_MINUTES = 5;
+            
+            // 3-State Logic Implementation:
+            // 1. OFFLINE: Explicitly marked offline by backend dead-man switch
+            // 2. GREEN: Online AND heard from recently (<= 5m)
+            // 3. STALE (Orange): Online but silence > 5m
+            
+            if (puck.status === 'offline') {
+                return { 
+                    code: 'OFFLINE', 
+                    label: 'OFFLINE (DB Alert)', 
+                    colorClass: 'text-rose-600 dark:text-rose-400', 
+                    bgClass: 'bg-rose-100 dark:bg-rose-950/30' 
+                };
+            } else if (timeDiffMinutes <= GREEN_THRESHOLD_MINUTES) {
+                 return { 
+                    code: 'ONLINE', 
+                    label: 'ONLINE', 
+                    colorClass: 'text-emerald-600 dark:text-emerald-400', 
+                    bgClass: 'bg-emerald-100 dark:bg-emerald-950/30' 
+                };
+            } else {
+                 return { 
+                    code: 'STALE', 
+                    label: `STALE (Silent for ${Math.floor(timeDiffMinutes)}m)`, 
+                    colorClass: 'text-amber-600 dark:text-amber-400', 
+                    bgClass: 'bg-amber-100 dark:bg-amber-950/30' 
+                };
+            }
+        }
+
+        // --- RENDER LOGIC ---
+        function render() {
+            updateStats();
+            updateIspStatus();
+            renderGroups();
+            lucide.createIcons();
+            updateSettingsUI();
+            updateWifiSettingsUI();
+            
+            // Critical Update: Refresh Puck Settings if modal is open
+            // This ensures status buttons (Online/Offline) stay live
+            const settingsModal = document.getElementById('settings-modal');
+            if (settingsModal && !settingsModal.classList.contains('hidden')) {
+                renderPuckSettings();
+            }
+        }
+
+        function updateIspStatus() {
+            const ispEl = document.getElementById('isp-status');
+            const hostPuck = state.pucks.length > 0 ? state.pucks[0] : null;
+
+            if (!hostPuck) {
+                 ispEl.innerHTML = `
+                    <span class="w-3 h-3 rounded-full bg-slate-500"></span>
+                    <span class="text-slate-900 dark:text-white">NO HOST</span>
+                `;
+                return;
+            }
+
+            const status = getPuckStatus(hostPuck);
+            
+            if (status.code === 'ONLINE') {
+                // Online with Heartbeat
+                ispEl.innerHTML = `
+                    <div class="flex items-center gap-2">
+                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-heartbeat"></span>
+                         <span class="text-slate-900 dark:text-white font-bold tracking-tight">ISP</span>
+                    </div>
+                    <div class="w-px h-3 bg-slate-300 dark:bg-slate-700"></div>
+                     <div class="flex items-center gap-2">
+                         <i data-lucide="network" class="w-4 h-4 text-emerald-500 animate-heartbeat"></i>
+                         <span class="text-slate-900 dark:text-white font-bold tracking-tight">ETH</span>
+                    </div>
+                    <div class="w-px h-3 bg-slate-300 dark:bg-slate-700"></div>
+                    <div class="flex items-center gap-2">
+                         <i data-lucide="wifi" class="w-4 h-4 text-emerald-500 animate-heartbeat"></i>
+                         <span class="text-slate-900 dark:text-white font-bold tracking-tight">WIFI</span>
+                    </div>
+                `;
+            } else if (status.code === 'STALE') {
+                 // Stale Warning
+                 ispEl.innerHTML = `
+                    <div class="flex items-center gap-2" title="${status.label}">
+                         <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                         <span class="text-amber-600 dark:text-amber-500 font-bold tracking-tight">ISP: STALE</span>
+                    </div>
+                `;
+            } else {
+                // Offline
+                 ispEl.innerHTML = `
+                    <span class="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]"></span>
+                    <span class="text-rose-600 dark:text-rose-500 font-bold">ISP: OFFLINE</span>
+                `;
+            }
+        }
+
+        function updateWifiSettingsUI() {
+            const badge = document.getElementById('wifi-status-badge');
+            if(!badge) return;
+
+            const hostPuck = state.pucks.length > 0 ? state.pucks[0] : null;
+            
+            // Auto-fill Logic
+            const ssidInput = document.getElementById('wifi-ssid');
+            const wifiName = (hostPuck && hostPuck.status === 'online') ? (hostPuck.ssid || hostPuck.wifi_ssid || '') : '';
+            
+            // Only auto-fill if we have a wifi name AND the input is empty (so we don't overwrite user typing)
+            if (ssidInput && wifiName && ssidInput.value === '') {
+                ssidInput.value = wifiName;
+            }
+
+            const status = getPuckStatus(hostPuck);
+
+            if (status.code === 'ONLINE') {
+                const displayName = wifiName || 'Connected';
+                badge.innerHTML = `
+                    <div class="flex items-center gap-1.5 px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 transition-all">
+                        <i data-lucide="wifi" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 animate-heartbeat"></i>
+                        <span class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wide">${escapeStr(displayName)}</span>
+                    </div>
+                `;
+            } else if (status.code === 'STALE') {
+                 badge.innerHTML = `
+                    <div class="flex items-center gap-1.5 px-2 py-1 rounded bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 transition-all">
+                        <i data-lucide="wifi" class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400"></i>
+                        <span class="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wide">Data Stale</span>
+                    </div>
+                `;
+            } else {
+                badge.innerHTML = `
+                     <div class="flex items-center gap-1.5 px-2 py-1 rounded bg-rose-100 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 transition-all">
+                        <i data-lucide="wifi-off" class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400"></i>
+                        <span class="text-[10px] font-bold text-rose-700 dark:text-rose-300 uppercase tracking-wide">Disconnected</span>
+                    </div>
+                `;
+            }
+            lucide.createIcons();
+        }
+
+        function updateStats() {
+            const devices = getFilteredDevices();
+            const total = devices.length;
+            const online = devices.filter(d => d.status === 'online').length;
+            const tracked = devices.filter(d => d.is_monitored).length;
+            
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-online').innerText = online;
+            document.getElementById('stat-tracked').innerText = tracked;
+            
+            const alerts = devices.filter(d => state.settings.trackIpChanges && d.last_ip && d.ip !== d.last_ip).length;
+            const alertEl = document.getElementById('stat-alerts');
+            alertEl.innerText = alerts;
+            alertEl.parentElement.className = `glass-panel p-3 rounded-lg flex flex-col items-center justify-center text-center ${alerts > 0 ? 'border-amber-500/50 bg-amber-50 dark:bg-amber-900/20' : ''}`;
+        }
+
+        function getFilteredDevices() {
+             // CRITICAL ARCHITECTURE FIX: SEPARATION OF CONCERNS
+             // The Puck is the Observer (Gateway), not the Observed (Inventory).
+             
+             // 1. Get IPs of all known Host Pucks to filter them OUT of the inventory list
+            const puckIps = new Set(state.pucks.map(p => p.current_ip).filter(ip => ip));
+
+            // 2. Filter devices: Remove any row where the IP matches a Puck's IP
+            // This ensures the Puck itself does not appear in the general device list.
+            let devs = state.devices.filter(d => !puckIps.has(d.ip));
+            
+            // 3. Apply standard sorting
+            return sortDevices(devs);
+        }
+
+        function sortDevices(devs) {
+            const { key, dir } = state.sort;
+            return devs.sort((a, b) => {
+                let valA = a[key] || '';
+                let valB = b[key] || '';
+                if (key === 'status') {
+                    valA = a.status === 'online' ? 1 : 0;
+                    valB = b.status === 'online' ? 1 : 0;
+                }
+                if (valA < valB) return dir === 'asc' ? -1 : 1;
+                if (valA > valB) return dir === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        function renderGroups() {
+            const container = document.getElementById('groups-container');
+            container.innerHTML = '';
+            
+            const devices = getFilteredDevices();
+            const groups = {};
+            devices.forEach(d => {
+                const loc = d.location || 'Devices';
+                if (!groups[loc]) groups[loc] = [];
+                groups[loc].push(d);
+            });
+            
+            const groupNames = Object.keys(groups).sort((a, b) => {
+                // Host Controllers group is now effectively empty/hidden via filter, 
+                // but good to keep sort logic robust
+                if (a === 'Host Controllers') return -1;
+                if (b === 'Host Controllers') return 1;
+                if (a === 'Devices') return 1;
+                if (b === 'Devices') return -1;
+                return a.localeCompare(b);
+            });
+
+            if (groupNames.length === 0) {
+                container.innerHTML = `<div class="text-center text-slate-500 py-10">No devices found. Check settings or connection.</div>`;
+                return;
+            }
+
+            groupNames.forEach(loc => {
+                const groupDevs = groups[loc];
+                const borderClass = 'border-slate-200 dark:border-slate-800';
+                const headerBg = 'bg-slate-50 dark:bg-slate-900/50';
+
+                let groupIcon = 'map-pin';
+                if (loc === 'Host Controllers') groupIcon = 'server';
+
+                const iconHtml = loc === 'Devices' ? '' : `
+                    <div class="p-1.5 rounded bg-white dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700">
+                        <i data-lucide="${groupIcon}" class="w-4 h-4"></i>
+                    </div>
+                `;
+
+                // Add Rename Feature to Header
+                const safeLoc = escapeStr(loc);
+                const isHostGroup = loc === 'Host Controllers';
+                
+                const html = `
+                    <div class="glass-panel rounded-xl overflow-hidden border ${borderClass}">
+                        <div class="px-4 py-3 ${headerBg} border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                            <div class="flex items-center gap-3">
+                                ${iconHtml}
+                                <div class="flex items-center gap-2 group cursor-pointer" ${!isHostGroup ? `onclick="window.renameGroup('${safeLoc}')"` : ''} title="Click to Rename Group">
+                                    <h2 class="font-bold text-slate-900 dark:text-white text-sm tracking-wide uppercase">${loc}</h2>
+                                    ${!isHostGroup ? `<i data-lucide="edit-2" class="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hidden md:block overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-100 dark:bg-slate-950/50 text-xs uppercase text-slate-500 font-mono">
+                                    <tr>
+                                        <th class="p-4 cursor-pointer hover:text-slate-900 dark:hover:text-white" onclick="window.changeSort('status')">Status</th>
+                                        <th class="p-4 cursor-pointer hover:text-slate-900 dark:hover:text-white" onclick="window.changeSort('name')">Device Name</th>
+                                        ${state.settings.showMacAddress ? '<th class="p-4">MAC Addr</th>' : ''}
+                                        <th class="p-4 cursor-pointer hover:text-slate-900 dark:hover:text-white" onclick="window.changeSort('ip')">IP Addr</th>
+                                        <th class="p-4">Last Seen</th>
+                                        <th class="p-4">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                                    ${groupDevs.map(d => renderDesktopRow(d)).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="md:hidden divide-y divide-slate-200 dark:divide-slate-800">
+                            ${groupDevs.map(d => renderMobileCard(d)).join('')}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        function getConnectionIcon(type) {
+             if (!type) return 'wifi';
+             if (type === 'ethernet' || type === 'wired') return 'network';
+             return 'wifi';
+        }
+
+        function renderDesktopRow(d) {
+            const isOnline = d.status === 'online';
+            const ipChanged = state.settings.trackIpChanges && d.last_ip && d.ip !== d.last_ip;
+            const connIcon = getConnectionIcon(d.connection_type);
+            const isFlashing = state.flashingIds.has(d.mac);
+            const isVirtual = d.is_virtual || false;
+            const hostName = getHostName(d.puck_mac);
+            const safeMac = escapeStr(d.mac);
+            
+            // --- SMART ID SELECTION ---
+            let targetMac = null;
+            if (d.puck_mac && d.puck_mac.trim() !== '') targetMac = d.puck_mac;
+            else if (d.mac && d.mac.trim() !== '') targetMac = d.mac;
+
+            const hasMac = targetMac && targetMac.trim() !== '';
+            
+            const rowClass = ipChanged 
+                ? 'bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/30 border-l-4 border-l-amber-500' 
+                : `hover:bg-slate-50 dark:hover:bg-slate-800/30 border-l-4 border-l-transparent ${isFlashing ? 'animate-flash-red' : ''}`;
+
+            return `
+                <tr class="${rowClass} transition-colors">
+                    <td class="p-4">
+                        <span class="inline-flex items-center gap-2 px-2 py-1 rounded-full text-xs font-bold border ${isOnline ? 'bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' : 'bg-rose-100 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-500/20'}">
+                            <span class="w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
+                            ${d.status.toUpperCase()}
+                        </span>
+                    </td>
+                    <td class="p-4">
+                        ${state.editingId === d.mac && !isVirtual ? 
+                            `<input type="text" value="${d.name || ''}" class="bg-white dark:bg-slate-950 border border-sky-500 rounded px-2 py-1 text-slate-900 dark:text-white text-sm w-40" 
+                                onblur="window.saveName('${safeMac}', this.value)" onkeydown="if(event.key==='Enter') this.blur()">` :
+                            `<div class="font-medium text-slate-900 dark:text-white cursor-pointer hover:text-sky-500 dark:hover:text-sky-400 flex items-center gap-2 group" ${!isVirtual ? `onclick="window.startEdit('${safeMac}')"` : ''}>
+                                <i data-lucide="${connIcon}" class="w-3.5 h-3.5 text-slate-400"></i>
+                                ${d.name || 'Unknown Device'} ${!isVirtual ? `<i data-lucide="edit-2" class="w-3 h-3 opacity-0 group-hover:opacity-100 text-slate-400"></i>` : ''}
+                            </div>`
+                        }
+                        ${state.settings.showManufacturer ? `<div class="text-sm font-bold text-slate-400 ml-5">${d.manufacturer || 'Generic'}</div>` : ''}
+                        ${(hostName && state.settings.showHostPuck) ? `<div class="text-xs text-sky-600 dark:text-sky-400 ml-5 mt-0.5 flex items-center gap-1"><i data-lucide="cpu" class="w-3 h-3"></i> ${hostName}</div>` : ''}
+                    </td>
+                    ${state.settings.showMacAddress ? `
+                        <td class="p-4 font-mono">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[10px] text-slate-400">Self: ${d.mac || '--'}</span>
+                                <span class="text-[10px] text-sky-400">Host: ${d.puck_mac || '--'}</span>
+                            </div>
+                        </td>` : ''
+                    }
+                    <td class="p-4 font-mono text-sm align-top">
+                        <div class="flex flex-col gap-1">
+                            ${ipChanged ? `
+                                <div class="flex flex-col gap-1 mt-1 p-2 bg-amber-100 dark:bg-amber-900/40 rounded border border-amber-200 dark:border-amber-700 min-w-[200px]">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase flex items-center gap-1"><i data-lucide="alert-triangle" class="w-3 h-3"></i> IP Mismatch</span>
+                                    </div>
+                                    <div class="grid grid-cols-[2rem_1fr] gap-x-2 text-xs font-mono items-center">
+                                        <span class="text-amber-600/70 dark:text-amber-500/70 text-right text-[10px] font-bold">WAS</span>
+                                        <span class="text-slate-500 dark:text-slate-400 line-through decoration-amber-500/50">${d.last_ip}</span>
+                                        <span class="text-amber-600/70 dark:text-amber-500/70 text-right text-[10px] font-bold">NOW</span>
+                                        <span class="text-slate-900 dark:text-white font-bold">${d.ip}</span>
+                                    </div>
+                                     <button onclick="event.stopPropagation(); window.acknowledgeIpChange('${safeMac}')" class="mt-1 w-full text-[10px] bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded font-bold shadow-sm transition-colors uppercase tracking-wide">
+                                            Acknowledge Change
+                                    </button>
+                                </div>
+                            ` : `
+                                <div class="font-bold tracking-wide text-slate-700 dark:text-sky-200/90">${d.ip}</div>
+                            `}
+                        </div>
+                    </td>
+                    <td class="p-4 text-xs font-bold text-slate-900 dark:text-slate-200 font-mono">
+                         <div class="flex items-center gap-1.5">
+                            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                            ${formatTime(d.last_seen)}
+                        </div>
+                    </td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-2">
+                            <button onclick="event.stopPropagation(); window.toggleMonitor('${safeMac}')" class="p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 ${d.is_monitored ? 'text-sky-500 dark:text-sky-400' : 'text-slate-400 dark:text-slate-600'}" title="Toggle Alerts">
+                                <i data-lucide="${d.is_monitored ? 'bell' : 'bell-off'}" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="event.stopPropagation(); window.runDiagnostics('${safeMac}', '${d.ip}')" class="p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400" title="Pulse Check">
+                                <i data-lucide="wrench" class="w-5 h-5"></i>
+                            </button>
+                             <button onclick="event.stopPropagation(); window.promptLocation('${safeMac}')" class="p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-900 dark:hover:text-white" title="Move Group" ${isVirtual ? 'disabled class="opacity-30 p-2"' : ''}>
+                                <i data-lucide="folder-input" class="w-4 h-4"></i>
+                            </button>
+                            
+                            <!-- Remote Control Buttons (Host Pucks Only) -->
+                            ${isVirtual ? (hasMac ? `
+                                <div class="w-px h-4 bg-slate-300 dark:bg-slate-700 mx-1"></div>
+                                <button onclick="event.stopPropagation(); window.handleCommand(this, '${escapeStr(targetMac)}', 'SCAN_NETWORK')" class="p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400" title="Force Network Scan">
+                                    <i data-lucide="scan-barcode" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="event.stopPropagation(); window.handleCommand(this, '${escapeStr(targetMac)}', 'REBOOT')" class="p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-amber-500 dark:hover:text-amber-400" title="Reboot Controller">
+                                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                </button>
+                            ` : `<span class="text-[10px] text-slate-300 ml-1">No MAC</span>`) : ''}
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function renderMobileCard(d) {
+            const isOnline = d.status === 'online';
+            const ipChanged = state.settings.trackIpChanges && d.last_ip && d.ip !== d.last_ip;
+            const connIcon = getConnectionIcon(d.connection_type);
+            const isFlashing = state.flashingIds.has(d.mac);
+            const isVirtual = d.is_virtual || false;
+            const hostName = getHostName(d.puck_mac);
+            const safeMac = escapeStr(d.mac);
+            
+             // --- SMART ID SELECTION ---
+            let targetMac = null;
+            if (d.puck_mac && d.puck_mac.trim() !== '') targetMac = d.puck_mac;
+            else if (d.mac && d.mac.trim() !== '') targetMac = d.mac;
+
+            const hasMac = targetMac && targetMac.trim() !== '';
+
+            const cardClass = ipChanged 
+                ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800' 
+                : '';
+
+            return `
+                <div class="p-4 active:bg-slate-50 dark:active:bg-slate-800/40 transition-colors ${isFlashing ? 'animate-flash-red' : ''} ${cardClass}">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex items-start gap-3 w-full">
+                            <div class="mt-1 ${isOnline ? 'text-emerald-500' : 'text-rose-500'} shrink-0">
+                                <i data-lucide="${connIcon}" class="w-5 h-5"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                ${state.editingId === d.mac && !isVirtual ? 
+                                    `<input type="text" value="${d.name || ''}" class="bg-white dark:bg-slate-950 border border-sky-500 rounded px-2 py-1 text-slate-900 dark:text-white text-sm w-full mb-1" 
+                                        onblur="window.saveName('${safeMac}', this.value)" onkeydown="if(event.key==='Enter') this.blur()">` :
+                                    `<div class="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2 truncate" ${!isVirtual ? `onclick="window.startEdit('${safeMac}')"` : ''}>
+                                        ${d.name || 'Unknown Device'}
+                                    </div>`
+                                }
+                                
+                                ${ipChanged ? `
+                                    <div class="mt-2 bg-amber-100 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700 rounded p-2 text-xs">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <div class="font-bold text-amber-600 dark:text-amber-500 flex items-center gap-1"><i data-lucide="alert-triangle" class="w-3 h-3"></i> IP CHANGED</div>
+                                            <button onclick="event.stopPropagation(); window.acknowledgeIpChange('${safeMac}')" class="text-[10px] bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded font-bold">CONFIRM</button>
+                                        </div>
+                                        <div class="grid grid-cols-[2rem_1fr] gap-x-2 font-mono items-center">
+                                            <span class="text-amber-600/70 dark:text-amber-500/70 text-right text-[10px] font-bold">WAS</span>
+                                            <span class="text-slate-500 dark:text-slate-400 line-through">${d.last_ip}</span>
+                                            <span class="text-amber-600/70 dark:text-amber-500/70 text-right text-[10px] font-bold">NOW</span>
+                                            <span class="text-slate-900 dark:text-white font-bold">${d.ip}</span>
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <div class="text-sm font-mono font-bold tracking-wide text-slate-700 dark:text-sky-200/90 flex flex-wrap items-center gap-2 mt-1">
+                                        ${d.ip}
+                                    </div>
+                                `}
+                                
+                                ${state.settings.showMacAddress ? `
+                                    <div class="mt-1 flex flex-col gap-0.5">
+                                        <div class="text-[10px] font-mono text-slate-400">Self: ${d.mac || '--'}</div>
+                                        <div class="text-[10px] font-mono text-sky-400">Host: ${d.puck_mac || '--'}</div>
+                                    </div>` : ''}
+
+                                ${state.settings.showManufacturer ? `<div class="text-sm font-bold text-slate-400 mt-1">${d.manufacturer || 'Generic'}</div>` : ''}
+                                ${(hostName && state.settings.showHostPuck) ? `<div class="text-[10px] text-sky-600 dark:text-sky-400 mt-1 flex items-center gap-1"><i data-lucide="cpu" class="w-3 h-3"></i> Host: ${hostName}</div>` : ''}
+
+                                <div class="text-[10px] font-bold text-slate-900 dark:text-slate-200 mt-1 flex items-center gap-1">
+                                    <i data-lucide="clock" class="w-3.5 h-3.5"></i> ${formatTime(d.last_seen)}
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="event.stopPropagation(); window.runDiagnostics('${safeMac}', '${d.ip}')" class="ml-2 p-3 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-400 active:bg-sky-600 active:text-white transition-colors shrink-0">
+                            <i data-lucide="wrench" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-200 dark:border-slate-800/50">
+                        <div class="flex gap-2">
+                             ${!isVirtual ? 
+                                 `<button onclick="event.stopPropagation(); window.promptLocation('${safeMac}')" class="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                                    ${d.location || 'Assign Group'}
+                                 </button>` : 
+                                 `<span class="text-[10px] bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 px-2 py-1 rounded uppercase font-bold tracking-wider">Controller</span>`
+                             }
+                             
+                             ${isVirtual ? (hasMac ? `
+                                <button onclick="event.stopPropagation(); window.handleCommand(this, '${escapeStr(targetMac)}', 'SCAN_NETWORK')" class="p-1.5 rounded bg-slate-100 dark:bg-slate-800 text-indigo-500 dark:text-indigo-400" title="Scan">
+                                    <i data-lucide="scan-barcode" class="w-3.5 h-3.5"></i>
+                                </button>
+                                <button onclick="event.stopPropagation(); window.handleCommand(this, '${escapeStr(targetMac)}', 'REBOOT')" class="p-1.5 rounded bg-slate-100 dark:bg-slate-800 text-amber-500 dark:text-amber-400" title="Reboot">
+                                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                                </button>
+                             ` : '') : ''}
+                        </div>
+                        <button onclick="event.stopPropagation(); window.toggleMonitor('${safeMac}')" class="flex items-center gap-1.5 text-xs ${d.is_monitored ? 'text-sky-600 dark:text-sky-400' : 'text-slate-500 dark:text-slate-600'}">
+                             <i data-lucide="${d.is_monitored ? 'bell' : 'bell-off'}" class="w-3.5 h-3.5"></i>
+                             ${d.is_monitored ? 'Alerts On' : 'Alerts Off'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- ACTIONS ---
+        
+        window.acknowledgeIpChange = async function(mac) {
+             const device = state.devices.find(d => d.mac === mac);
+             if (!device) return;
+             
+             // Optimistic
+             state.devices = state.devices.map(d => d.mac === mac ? {...d, last_ip: d.ip} : d);
+             render();
+             
+             // Database
+             const { error } = await client.from('devices').update({ last_ip: device.ip }).eq('mac', mac);
+             if (error) {
+                 alert("Failed to update database: " + error.message);
+                 // Revert if needed, but for now just alert
+             }
+        }
+
+        window.saveName = async function(mac, newName) {
+            state.editingId = null;
+            
+            // 1. Local Persistence (First Line of Defense)
+            const localNames = JSON.parse(localStorage.getItem('ns_dev_names') || '{}');
+            localNames[mac] = newName;
+            localStorage.setItem('ns_dev_names', JSON.stringify(localNames));
+            
+            // 2. Optimistic Update
+            state.devices = state.devices.map(d => d.mac === mac ? {...d, name: newName} : d);
+            render();
+            
+            // 3. Remote Update
+            const { error } = await client.from('devices').update({ name: newName }).eq('mac', mac);
+            if(error) {
+                console.warn("Supabase update failed:", error);
+                // We do NOT revert because we have local persistence protecting the user choice
+            }
+        }
+
+        window.savePuckName = async function(mac, newName) {
+            state.pucks = state.pucks.map(p => p.mac === mac ? {...p, name: newName} : p);
+            render();
+            // FIX: Use 'mac_address' for the database query
+            await client.from('pucks').update({ name: newName }).eq('mac_address', mac);
+        }
+
+        window.deletePuck = async function(mac) {
+            // Robust check
+            if (!mac || mac === 'undefined' || mac === 'null') {
+                console.warn("Delete attempt with invalid MAC");
+                return;
+            }
+            
+            // Force confirmation using setTimeout to unblock UI event loop first if needed
+            setTimeout(async () => {
+                 const confirmed = confirm("Are you sure you want to remove this Host Puck? This cannot be undone.");
+                 if (!confirmed) return;
+                 
+                 state.pucks = state.pucks.filter(p => p.mac !== mac);
+                 render();
+                 renderPuckSettings();
+                 
+                 // FIX: Use 'mac_address' for the database query
+                 const { error } = await client.from('pucks').delete().eq('mac_address', mac);
+                 if (error) {
+                     alert("Error removing from database: " + error.message);
+                 }
+            }, 10);
+        }
+
+        // NEW: Generic Command Handler with UI Feedback
+        window.handleCommand = async function(btn, mac, type) {
+            // Confirmation Logic
+            let message = "Send this command?";
+            if (type === 'REBOOT') message = "Are you sure you want to REBOOT this Host Controller?\n\nThe device will go offline for approximately 60 seconds.";
+            if (type === 'SCAN_NETWORK') message = "Are you sure you want to force a NETWORK SCAN?\n\nThis will bypass the schedule and may cause temporary network load.";
+
+            if (!confirm(message)) return;
+
+            // UI Feedback: Loading
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin text-sky-500"></i>`;
+            lucide.createIcons();
+
+            try {
+                await window.sendCommand(mac, type);
+                
+                // UI Feedback: Success
+                btn.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-emerald-500"></i>`;
+                lucide.createIcons();
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                    lucide.createIcons();
+                }, 2000);
+            } catch (err) {
+                // UI Feedback: Error
+                console.error("Command Execution Error:", err);
+                alert("Failed to send command: " + (err.message || "Unknown error"));
+                btn.innerHTML = originalHtml; // Revert
+                btn.disabled = false;
+                lucide.createIcons();
+            }
+        }
+
+        // NEW: Core Command Logic
+        window.sendCommand = async function(mac, type) {
+            console.log(`[Command] Sending ${type} to ${mac}`);
+            
+            const payload = { 
+                puck_mac: mac,        // Explicit column as requested
+                command_type: type,
+                payload: { target_mac: mac }, // Keep payload for backward compatibility
+                status: 'pending'
+            };
+
+            const { data, error } = await client
+                .from('commands')
+                .insert(payload)
+                .select();
+
+            if (error) {
+                console.error("[Supabase Error]", error);
+                throw error;
+            }
+            
+            console.log("[Command] Success:", data);
+            return data;
+        }
+
+        window.saveWifiConfig = async function() {
+            const ssid = document.getElementById('wifi-ssid').value;
+            const pass = document.getElementById('wifi-pass').value;
+            if(!ssid || !pass) return alert("Please enter both SSID and Password");
+            
+            const confirmed = confirm(`Update fleet credentials to network: "${ssid}"?`);
+            if(confirmed) {
+                const { error } = await client.from('commands').insert({
+                     command_type: 'UPDATE_WIFI',
+                     payload: { ssid, pass },
+                     status: 'pending'
+                });
+                
+                if(!error) {
+                    alert("WiFi Credentials Sent to Fleet.");
+                    document.getElementById('wifi-ssid').value = '';
+                    document.getElementById('wifi-pass').value = '';
+                } else {
+                    alert("Error sending config: " + error.message);
+                }
+            }
+        }
+
+        window.addManualPuck = async function() {
+            const mac = prompt("Enter Puck MAC Address (e.g., AA:BB:CC:DD:EE:FF):");
+            if (!mac) return;
+            const name = prompt("Enter Puck Name:", "New Puck");
+            if (!name) return;
+
+            const newPuck = { mac, name, status: 'offline', last_seen: new Date().toISOString() };
+            state.pucks.push(newPuck);
+            render();
+            renderPuckSettings();
+
+            const { error } = await client.from('pucks').insert([newPuck]);
+            if (error) {
+                alert("Error adding puck: " + error.message);
+                state.pucks = state.pucks.filter(p => p.mac !== mac);
+                render();
+            }
+        }
+
+        window.renameGroup = async function(oldName) {
+            const newName = prompt(`Rename group "${oldName}" to:`, oldName);
+            if (!newName || newName === oldName) return;
+            
+            const cleanNew = newName.trim();
+            const cleanOld = oldName === 'Devices' ? null : oldName; // Handle default null
+
+            // Optimistic Update
+            state.devices = state.devices.map(d => {
+                if ((d.location || 'Devices') === oldName) {
+                    return { ...d, location: cleanNew };
+                }
+                return d;
+            });
+            render();
+
+            // Bulk Update DB
+            // If oldName was "Devices" (null in DB), update where location is null
+            let query = client.from('devices').update({ location: cleanNew });
+            
+            if (oldName === 'Devices') {
+                query = query.is('location', null);
+            } else {
+                query = query.eq('location', oldName);
+            }
+            
+            const { error } = await query;
+            if (error) {
+                console.error("Group rename failed:", error);
+                alert("Failed to rename group on server.");
+            }
+        }
+
+        window.promptLocation = async function(mac) {
+            // Find device in current state (real or just-fetched)
+            const device = state.devices.find(d => d.mac === mac);
+            
+            if (!device) {
+                console.warn('Device not found in state:', mac);
+                return;
+            }
+
+            const current = device.location || '';
+            const newLoc = prompt("Enter Group Name (e.g., Kitchen, Office):", current);
+            
+            if (newLoc !== null) {
+                const updatedLoc = newLoc.trim();
+                // Optimistic UI Update
+                state.devices = state.devices.map(d => d.mac === mac ? {...d, location: updatedLoc} : d);
+                render();
+                
+                // DB Update
+                const { error } = await client.from('devices').update({ location: updatedLoc }).eq('mac', mac);
+                if (error) console.error('Failed to update location:', error);
+            }
+        }
+
+        window.toggleMonitor = async function(mac) {
+            const device = state.devices.find(d => d.mac === mac);
+            if (!device) return;
+
+            // Confirmation only needed when turning OFF
+            if (device.is_monitored == true || device.is_monitored === 'true') {
+                const confirmed = window.confirm("Are you sure you want to disable alerts for this device?");
+                if (!confirmed) return;
+            }
+
+            const newStatus = !device.is_monitored;
+            
+            // 1. Local Persistence
+            const localMonitors = JSON.parse(localStorage.getItem('ns_dev_monitor') || '{}');
+            localMonitors[mac] = newStatus;
+            localStorage.setItem('ns_dev_monitor', JSON.stringify(localMonitors));
+
+            // 2. Optimistic Update
+            state.devices = state.devices.map(d => d.mac === mac ? {...d, is_monitored: newStatus} : d);
+            render();
+            
+            // 3. Remote Update (with error handling)
+            const { error } = await client.from('devices').update({ is_monitored: newStatus }).eq('mac', mac);
+            if(error) {
+                console.warn("Supabase monitor update failed:", error);
+                // We keep local state valid
+            }
+        }
+
+        window.startEdit = function(mac) {
+            state.editingId = mac;
+            render();
+            setTimeout(() => {
+                const inp = document.querySelector(`input[value="${state.devices.find(d => d.mac === mac).name}"]`);
+                if(inp) inp.focus();
+            }, 50);
+        }
+
+        window.changeSort = function(key) {
+            if (state.sort.key === key) {
+                state.sort.dir = state.sort.dir === 'asc' ? 'desc' : 'asc';
+            } else {
+                state.sort.key = key;
+                state.sort.dir = 'asc';
+            }
+            render();
+        }
+
+        window.copySupportId = function() {
+            const el = document.getElementById('settings-account-id');
+            if(el) {
+                // Get just the text content (ID)
+                const textToCopy = el.innerText.trim();
+                navigator.clipboard.writeText(textToCopy);
+                
+                const originalHtml = el.innerHTML;
+                el.innerText = "COPIED!";
+                el.classList.add('text-emerald-500', 'dark:text-emerald-400', 'border-emerald-500');
+                
+                setTimeout(() => {
+                    el.innerHTML = originalHtml;
+                    el.classList.remove('text-emerald-500', 'dark:text-emerald-400', 'border-emerald-500');
+                    lucide.createIcons(); // Re-init icon
+                }, 1500);
+            }
+        }
+
+        // --- DIAGNOSTICS UI ---
+        
+        window.runIspDiagnostics = function() {
+             const modal = document.getElementById('diag-modal');
+            const content = document.getElementById('diag-content');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+             content.innerHTML = `
+                <div class="py-8">
+                    <div class="relative w-16 h-16 mx-auto mb-4">
+                         <div class="absolute inset-0 border-4 border-slate-200 dark:border-slate-700 rounded-full"></div>
+                        <div class="absolute inset-0 border-4 border-emerald-500 rounded-full border-t-transparent animate-spin"></div>
+                        <i data-lucide="cloud" class="w-6 h-6 text-emerald-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
+                    </div>
+                    <h4 class="text-slate-900 dark:text-white font-bold text-lg">Testing Uplink...</h4>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm font-mono mt-1">Gateway: 192.168.1.1</p>
+                </div>
+            `;
+            lucide.createIcons();
+
+            setTimeout(() => {
+                const speed = Math.floor(Math.random() * 500) + 100;
+                content.innerHTML = `
+                    <div class="text-left mb-4">
+                        <div class="text-xs text-slate-500 uppercase font-bold mb-2">Result Summary</div>
+                        <div class="bg-slate-100 dark:bg-slate-950 p-4 rounded-lg border border-slate-200 dark:border-slate-800 space-y-3">
+                             <div class="flex justify-between items-center">
+                                <span class="text-slate-500">Speed (Down)</span>
+                                <span class="font-mono font-bold text-slate-900 dark:text-white">${speed} Mbps</span>
+                             </div>
+                             <div class="flex justify-between items-center">
+                                <span class="text-slate-500">Latency</span>
+                                <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400">14ms</span>
+                             </div>
+                             <div class="flex justify-between items-center">
+                                <span class="text-slate-500">Jitter</span>
+                                <span class="font-mono font-bold text-slate-900 dark:text-white">3ms</span>
+                             </div>
+                        </div>
+                    </div>
+                    <button onclick="window.closeDiag()" class="w-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white py-3 rounded-lg font-medium transition-colors">Close Report</button>
+                `;
+            }, 2000);
+        }
+
+        window.runDiagnostics = function(mac, ip) {
+            const modal = document.getElementById('diag-modal');
+            const content = document.getElementById('diag-content');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Step 1: Loading
+            content.innerHTML = `
+                <div class="py-8">
+                    <div class="relative w-16 h-16 mx-auto mb-4">
+                        <div class="absolute inset-0 border-4 border-slate-200 dark:border-slate-700 rounded-full"></div>
+                        <div class="absolute inset-0 border-4 border-sky-500 rounded-full border-t-transparent animate-spin"></div>
+                        <i data-lucide="zap" class="w-6 h-6 text-sky-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
+                    </div>
+                    <h4 class="text-slate-900 dark:text-white font-bold text-lg">Pinging Device...</h4>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm font-mono mt-1">Target: ${ip}</p>
+                </div>
+            `;
+            lucide.createIcons();
+
+            // Step 2: Simulated Result
+            setTimeout(() => {
+                const latency = Math.floor(Math.random() * 40) + 5;
+                const jitter = Math.floor(Math.random() * 5);
+                
+                content.innerHTML = `
+                    <div class="grid grid-cols-3 gap-2 mb-4">
+                        <div class="bg-slate-100 dark:bg-slate-950 p-3 rounded border border-slate-200 dark:border-slate-800">
+                            <div class="text-[10px] text-slate-500 uppercase font-bold">Latency</div>
+                            <div class="text-xl font-mono text-slate-900 dark:text-white">${latency}<span class="text-xs text-slate-500 ml-0.5">ms</span></div>
+                        </div>
+                        <div class="bg-slate-100 dark:bg-slate-950 p-3 rounded border border-slate-200 dark:border-slate-800">
+                            <div class="text-[10px] text-slate-500 uppercase font-bold">Jitter</div>
+                            <div class="text-xl font-mono text-emerald-600 dark:text-emerald-400">${jitter}<span class="text-xs text-slate-500 ml-0.5">ms</span></div>
+                        </div>
+                        <div class="bg-slate-100 dark:bg-slate-950 p-3 rounded border border-slate-200 dark:border-slate-800">
+                            <div class="text-[10px] text-slate-500 uppercase font-bold">Loss</div>
+                            <div class="text-xl font-mono text-emerald-600 dark:text-emerald-400">0<span class="text-xs text-slate-500 ml-0.5">%</span></div>
+                        </div>
+                    </div>
+                    <div class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-500/20 p-3 rounded text-left flex gap-3 items-center">
+                        <div class="bg-emerald-200 dark:bg-emerald-500/20 p-2 rounded-full text-emerald-600 dark:text-emerald-400"><i data-lucide="check" class="w-4 h-4"></i></div>
+                        <div>
+                            <div class="text-sm font-bold text-emerald-700 dark:text-emerald-400">Connection Stable</div>
+                            <div class="text-xs text-emerald-600/80 dark:text-emerald-200/60">Device is responding within nominal parameters.</div>
+                        </div>
+                    </div>
+                    <button onclick="window.closeDiag()" class="w-full mt-4 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white py-3 rounded-lg font-medium transition-colors">Close</button>
+                `;
+                lucide.createIcons();
+            }, 1500);
+        }
+
+        window.closeDiag = function() {
+            document.getElementById('diag-modal').classList.add('hidden');
+            document.getElementById('diag-modal').classList.remove('flex');
+        }
+
+        // --- SETTINGS UI ---
+
+        window.toggleSettings = function() {
+            const el = document.getElementById('settings-modal');
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+                el.classList.add('flex');
+                renderPuckSettings(); // Render puck list when opening settings
+            } else {
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            }
+        }
+
+        window.toggleSetting = function(key) {
+            state.settings[key] = !state.settings[key];
+            localStorage.setItem('ns_' + key, state.settings[key]);
+            
+            // Side Effects
+            if (key === 'darkMode') {
+                updateTheme();
+            }
+
+            render(); 
+            updateSettingsUI(); 
+        }
+        
+        function updateSettingsUI() {
+             updateToggleBtn('btn-toggle-host', state.settings.showHostPuck);
+             updateToggleBtn('btn-toggle-dark', state.settings.darkMode);
+             updateToggleBtn('btn-toggle-ip', state.settings.trackIpChanges);
+             updateToggleBtn('btn-toggle-manufacturer', state.settings.showManufacturer);
+             updateToggleBtn('btn-toggle-aided', state.settings.aidedDetection);
+             updateToggleBtn('btn-toggle-time', state.settings.useAbsoluteTime);
+             updateToggleBtn('btn-toggle-mac', state.settings.showMacAddress);
+        }
+
+        function updateToggleBtn(id, active) {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+            
+            if (active) {
+                btn.classList.remove('bg-slate-200', 'dark:bg-slate-700');
+                btn.classList.add('bg-sky-500');
+                const dot = btn.querySelector('div');
+                if (dot) dot.classList.add('translate-x-6');
+            } else {
+                btn.classList.add('bg-slate-200', 'dark:bg-slate-700');
+                btn.classList.remove('bg-sky-500');
+                const dot = btn.querySelector('div');
+                if (dot) dot.classList.remove('translate-x-6');
+            }
+        }
+
+        function renderPuckSettings() {
+            const container = document.getElementById('puck-settings-list');
+            if(!container) return;
+            
+            if (state.pucks.length === 0) {
+                container.innerHTML = '<div class="text-xs text-slate-500 italic">No Host Pucks detected.</div>';
+                return;
+            }
+
+            container.innerHTML = state.pucks.map(p => {
+                const status = getPuckStatus(p);
+                return `
+                <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex flex-col gap-2">
+                    <div class="flex items-center justify-between">
+                         <div class="flex flex-col">
+                            <span class="text-sm font-bold text-slate-900 dark:text-white font-mono">${p.current_ip || '0.0.0.0'}</span>
+                            ${state.settings.showMacAddress ? `<span class="text-[10px] font-mono text-slate-500 tracking-wide">${p.mac || 'UNKNOWN-MAC'}</span>` : ''}
+                         </div>
+                        <div class="flex items-center gap-1">
+                            <span class="px-1.5 py-0.5 rounded text-[10px] uppercase font-bold mr-1 ${status.bgClass} ${status.colorClass}">${status.label}</span>
+                            
+                            <button onclick="event.stopPropagation(); window.handleCommand(this, '${escapeStr(p.mac)}', 'SCAN_NETWORK')" type="button" class="text-slate-400 hover:text-indigo-500 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 p-1.5 rounded transition-colors" title="Force Network Scan">
+                                <i data-lucide="scan-barcode" class="w-4 h-4"></i>
+                            </button>
+                            
+                            <button onclick="event.stopPropagation(); window.handleCommand(this, '${escapeStr(p.mac)}', 'REBOOT')" type="button" class="text-slate-400 hover:text-amber-500 hover:bg-amber-100 dark:hover:bg-amber-900/30 p-1.5 rounded transition-colors" title="Reboot Device">
+                                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            </button>
+
+                            <div class="w-px h-4 bg-slate-200 dark:bg-slate-700 mx-0.5"></div>
+
+                            <button onclick="event.stopPropagation(); window.deletePuck('${escapeStr(p.mac)}')" type="button" class="text-slate-400 hover:text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/30 p-1.5 rounded transition-colors" title="Remove Puck">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="tag" class="w-3 h-3 text-slate-400"></i>
+                        <input type="text" 
+                            value="${p.name || ''}" 
+                            placeholder="Name this Puck..." 
+                            class="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded px-2 py-1 text-sm text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors"
+                            onblur="window.savePuckName('${escapeStr(p.mac)}', this.value)" 
+                            onkeydown="if(event.key==='Enter') this.blur()"
+                        >
+                    </div>
+                    <div class="flex items-center gap-1.5 pl-0.5">
+                        <i data-lucide="activity" class="w-3 h-3 text-slate-400"></i>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-mono">Last Heartbeat: <span class="text-slate-700 dark:text-slate-300 font-bold">${formatTime(p.last_seen)}</span></span>
+                    </div>
+                </div>
+            `}).join('');
+            
+            lucide.createIcons();
+        }
+
+        // --- STARTUP ---
+        init();
+
+    </script>
+<script>
+    // (Supabase Initialization script goes above this section)
+
+    async function fetchPuckData() {
+        const { data: pucks, error } = await supabase
+            .from('pucks') // Your table name
+            .select('*')  // Select all columns
+            .order('last_seen', { ascending: false }); // Sort by most recently seen
+
+        if (error) {
+            console.error('Error fetching puck data:', error.message);
+            document.getElementById('puck-data').innerHTML = `
+                <div class="puck-card offline">
+                    <h3>Database Error</h3>
+                    <p>${error.message}</p>
+                </div>
+            `;
+            return;
+        }
+
+        const container = document.getElementById('puck-data');
+        container.innerHTML = ''; // Clear the "Loading" message
+
+        pucks.forEach(puck => {
+            const isOnline = puck.status === 'online';
+            const cardClass = isOnline ? 'online' : 'offline';
+            const statusText = isOnline ? 'ONLINE' : 'OFFLINE';
+
+            // Format the last_seen time nicely
+            const lastSeenDate = new Date(puck.last_seen);
+            const timeString = lastSeenDate.toLocaleString();
+
+            const cardHTML = `
+                <div class="puck-card ${cardClass}">
+                    <h3>Puck: ${puck.mac_address}</h3>
+                    <p><strong>Status:</strong> <span class="status">${statusText}</span></p>
+                    <p>Last Seen: ${timeString}</p>
+                    <p>Interval: ${puck.check_interval_minutes} minutes</p>
+                </div>
+            `;
+            container.innerHTML += cardHTML;
+        });
+    }
+
+    // Run the function when the page loads
+    fetchPuckData();
+
+</script>
+</body>
+</html>
