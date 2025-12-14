@@ -361,7 +361,7 @@
                 dataContainer.style.display = 'block';
                 logoutBtn.style.display = 'block';
                 authMessage.style.display = 'none';
-                await fetchData(); // Fetch data only when authenticated
+                fetchData(); // Fetch data only when authenticated
                 setupRealtime(); // Start listening for real-time updates
             } else {
                 // Logged Out
@@ -1657,7 +1657,6 @@ window.addManualPuck = async function() {
 
    // -- STARTUP ---
         init();
-
    </script>   
 </body>
 </html>
