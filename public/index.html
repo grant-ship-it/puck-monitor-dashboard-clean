@@ -1267,8 +1267,8 @@
             const name = prompt("Enter Puck Name:", "New Puck");
             if (!name) return;
 
-            const newPuck = { mac, name, status: 'offline', last_seen: new Date().toISOString() };
-            state.pucks.push(newPuck);
+            // We map 'mac' (variable) to 'mac_address' (database column)
+            const newPuck = { mac_address: mac, name, status: 'offline', last_seen: new Date().toISOString() };            state.pucks.push(newPuck);
             render();
             renderPuckSettings();
 
