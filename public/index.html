@@ -436,14 +436,46 @@
         }
 
         // --- APP INIT ---
-       // CRITICAL CHANGE: Existing data fetching logic is now wrapped in fetchData()
-        async function fetchData() {
-            // Check authentication status before fetching RLS-protected data
+async function fetchData() {
+            console.log("🚀 STARTING FETCH...");
+            
+            // 1. Check Auth
             if (!state.isAuthenticated) {
-                console.log("Not authenticated. Skipping protected data fetch.");
+                console.log("❌ Not authenticated. Aborting.");
                 return;
             }
 
+            // 2. Fetch Data
+            const [devRes, puckRes] = await Promise.all([
+                client.from('devices').select('*'),
+                client.from('pucks').select('*')
+            ]);
+
+            // 3. DEBUG: Print exact results from Database
+            console.log("📦 RAW PUCKS FROM DB:", puckRes.data);
+            console.log("📦 RAW DEVICES FROM DB:", devRes.data);
+
+            // 4. Process Pucks (Fixing the mac_address naming issue)
+            if (puckRes.data) {
+                state.pucks = puckRes.data.map(p => ({
+                    ...p,
+                    mac: p.mac_address // <--- The Critical Map
+                }));
+                console.log("✅ PROCESSED PUCKS STATE:", state.pucks);
+            }
+
+            // 5. Process Devices
+            if (devRes.data) {
+                state.devices = devRes.data.map(d => ({
+                    ...d,
+                    mac: d.mac || d.mac_address
+                }));
+            }
+
+            // 6. Render
+            render();
+            console.log("🎨 RENDER COMPLETE");
+        }
             // Show loading state temporarily
             document.getElementById('groups-container').innerHTML = `
                 <div class="text-center py-12">
@@ -466,7 +498,6 @@
 
             
             render(); // Existing call to render
-        }
             
             // Init Support ID
             let sid = localStorage.getItem('ns_supportId');
