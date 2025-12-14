@@ -1622,12 +1622,6 @@
 <script>
     // (Supabase Initialization script goes above this section)
 
-    async function fetchPuckData() {
-        const { data: pucks, error } = await supabase
-            .from('pucks') // Your table name
-            .select('*')  // Select all columns
-            .order('last_seen', { ascending: false }); // Sort by most recently seen
-
         if (error) {
             console.error('Error fetching puck data:', error.message);
             document.getElementById('puck-data').innerHTML = `
