@@ -3,16 +3,18 @@
 <head>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script>
-    const SUPABASE_URL = 'https://tbajywjbemnwhsdgjuqg.supabase.co'; 
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiYWp5d2piZW1ud2hzZGdqdXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDkzMjYsImV4cCI6MjA4MDE4NTMyNn0.5mhZQ4OTjV6f0p2v0LxADpQnaTyJIp5BIuw2kP0mdUU';
-
-    // This creates the client object that we will use to query the database
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-</script>    
+    <script>
+        const SUPABASE_URL = 'https://tbajywjbemnwhsdgjuqg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiYWp5d2piZW1ud2hzZGdqdXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDkzMjYsImV4cCI6MjA4MDE4NTMyNn0.5mhZQ4OTjV6f0p2v0LxADpQnaTyJIp5BIuw2kP0mdUU';
+        
+        // Now it is safe to use 'supabase'
+        const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script> 
+    
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>SECTOR LINK Command</title>
+    </head>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -1619,8 +1621,7 @@
         }
 
         // --- STARTUP ---
-        init();
-
+        init(); // <-- NO 'await here!'
     </script>
 <script>
     // (Supabase Initialization script goes above this section)
@@ -1633,7 +1634,6 @@
                     <p>${error.message}</p>
                 </div>
             `;
-            return;
         }
 
         const container = document.getElementById('puck-data');
@@ -1661,6 +1661,6 @@
 
     // Run the function when the page loads
     fetchPuckData();
-        </script>   
+    </script>   
 </body>
 </html>
