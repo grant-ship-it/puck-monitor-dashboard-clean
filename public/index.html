@@ -1261,12 +1261,43 @@
             }
         }
 
-        window.addManualPuck = async function() {
+window.addManualPuck = async function() {
             const mac = prompt("Enter Puck MAC Address (e.g., AA:BB:CC:DD:EE:FF):");
             if (!mac) return;
             const name = prompt("Enter Puck Name:", "New Puck");
             if (!name) return;
 
+            // 1. GET CURRENT USER ID
+            const { data: { user } } = await client.auth.getUser();
+
+            if (!user) {
+                alert("You must be logged in to add a puck.");
+                return;
+            }
+
+            // 2. INCLUDE CUSTOMER_ID IN THE DATA
+            const newPuck = { 
+                mac_address: mac, 
+                name: name, 
+                status: 'offline', 
+                last_seen: new Date().toISOString(),
+                customer_id: user.id  // <--- CRITICAL ADDITION
+            };
+
+            // Optimistic UI update
+            state.pucks.push(newPuck);
+            render();
+            renderPuckSettings();
+
+            const { error } = await client.from('pucks').insert([newPuck]);
+            
+            if (error) {
+                alert("Error adding puck: " + error.message);
+                // Revert UI if failed
+                state.pucks = state.pucks.filter(p => p.mac_address !== mac);
+                render();
+            }
+        }
             // We map 'mac' (variable) to 'mac_address' (database column)
             const newPuck = { mac_address: mac, name, status: 'offline', last_seen: new Date().toISOString() };            state.pucks.push(newPuck);
             render();
