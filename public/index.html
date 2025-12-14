@@ -505,41 +505,6 @@
                 document.documentElement.classList.remove('dark');
             }
         }
-
-        async function fetchData() {
-            const [devRes, puckRes] = await Promise.all([
-                client.from('devices').select('*'),
-                client.from('pucks').select('*')
-            ]);
-            
-            if (devRes.data) {
-                // LocalStorage Overrides for Persistence (Local-First Architecture)
-                // This prevents backend scanners from overwriting user-assigned names
-                const localNames = JSON.parse(localStorage.getItem('ns_dev_names') || '{}');
-                const localMonitors = JSON.parse(localStorage.getItem('ns_dev_monitor') || '{}');
-
-                state.devices = devRes.data.map(d => {
-                    const mappedMac = d.mac || d.mac_address; // Ensure we have a MAC
-                    return {
-                        ...d,
-                        mac: mappedMac, 
-                        name: localNames[mappedMac] || d.name, // Prefer local name
-                        is_monitored: localMonitors[mappedMac] !== undefined ? localMonitors[mappedMac] : d.is_monitored // Prefer local setting
-                    };
-                });
-            }
-
-            if (puckRes.data) {
-                // FIX: Map database 'mac_address' to 'mac' so the UI can read it
-                state.pucks = puckRes.data.map(p => ({
-                    ...p,
-                    mac: p.mac_address // <--- CRITICAL FIX
-                })).sort((a, b) => new Date(b.last_seen || 0) - new Date(a.last_seen || 0));
-            }
-            
-            render();
-        }
-
         function setupRealtime() {
             client.channel('public:all')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'devices' }, payload => {
@@ -1302,19 +1267,6 @@ window.addManualPuck = async function() {
                 render();
             }
         }
-            // We map 'mac' (variable) to 'mac_address' (database column)
-            const newPuck = { mac_address: mac, name, status: 'offline', last_seen: new Date().toISOString() };            state.pucks.push(newPuck);
-            render();
-            renderPuckSettings();
-
-            const { error } = client.from('pucks').insert([newPuck]);
-            if (error) {
-                alert("Error adding puck: " + error.message);
-                state.pucks = state.pucks.filter(p => p.mac !== mac);
-                render();
-            }
-
-
         window.renameGroup = async function(oldName) {
             const newName = prompt(`Rename group "${oldName}" to:`, oldName);
             if (!newName || newName === oldName) return;
@@ -1654,9 +1606,24 @@ window.addManualPuck = async function() {
             
             lucide.createIcons();
         }
+// --- STARTUP ---
+        async function init() {
+            console.log("Initializing App...");
+            
+            // 1. Load LocalStorage Settings
+            if(localStorage.getItem('ns_darkMode') === 'true') {
+                state.settings.darkMode = true;
+                document.documentElement.classList.add('dark');
+            }
+            // (Load other settings if needed)
+            
+            // 2. Check Login Session (This will trigger fetchData if logged in)
+            await checkSession();
+            
+            console.log("App Ready.");
+        }
 
-   // -- STARTUP ---
         init();
-   </script>   
+    </script>
 </body>
 </html>
