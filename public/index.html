@@ -370,7 +370,21 @@ let state = {
                 el.classList.remove('flex');
             }
         };
+// Fix for the toggle buttons inside the settings menu
+        window.toggleSetting = function(key) {
+            // Update the state
+            state.settings[key] = !state.settings[key];
+            
+            // Persist Dark Mode specifically
+            if (key === 'darkMode') {
+                localStorage.setItem('ns_darkMode', state.settings[key]);
+                updateTheme();
+            }
 
+            // Re-render to show the button slide over
+            updateSettingsUI();
+            render();
+        };
         // --- AUTHENTICATION FUNCTIONS (NEW BLOCK) ---
 
         // NEW: Handles state changes after login/logout
@@ -478,29 +492,32 @@ async function fetchData() {
                 client.from('pucks').select('*')
             ]);
 
-            // 3. DEBUG: Print exact results from Database
             console.log("📦 RAW PUCKS FROM DB:", puckRes.data);
             console.log("📦 RAW DEVICES FROM DB:", devRes.data);
 
-            // 4. Process Pucks (Fixing the mac_address naming issue)
+            // 3. Process Pucks
             if (puckRes.data) {
                 state.pucks = puckRes.data.map(p => ({
                     ...p,
-                    mac: p.mac_address,// <--- The Critical Map
-                    ip: p.ip_address // 'Unknown'
-                    }));
+                    mac: p.mac_address,
+                    ip: p.ip_address || 'Unknown',
+                    puckMac: p.customer_id // or p.puck_mac if you have it
+                }));
                 console.log("✅ PROCESSED PUCKS STATE:", state.pucks);
             }
 
-            // 5. Process Devices
+            // 4. Process Devices (THIS WAS THE MISSING PART)
             if (devRes.data) {
                 state.devices = devRes.data.map(d => ({
                     ...d,
-                    mac: d.mac || d.mac_address
+                    mac: d.mac_address,      // DATABASE -> DASHBOARD
+                    ip: d.ip_address,        // DATABASE -> DASHBOARD
+                    puckMac: d.puck_mac      // DATABASE -> DASHBOARD
                 }));
+                console.log("✅ PROCESSED DEVICES STATE:", state.devices);
             }
 
-            // 6. Render
+            // 5. Render
             render();
             console.log("🎨 RENDER COMPLETE");
         }
@@ -817,16 +834,20 @@ async function fetchData() {
             return sortDevices(devs);
         }
 
-        function sortDevices(devs) {
+function sortDevices(devs) {
             const { key, dir } = state.sort;
+            
             return devs.sort((a, b) => {
-                const k = state.sort.key;
-                const valA = a[key] || '';
-                const valB = b[key] || '';
+                // CHANGE 'const' TO 'let' SO WE CAN UPDATE THEM BELOW
+                let valA = a[key] || ''; 
+                let valB = b[key] || '';
+
+                // Handle status sorting specifically
                 if (key === 'status') {
                     valA = a.status === 'online' ? 1 : 0;
                     valB = b.status === 'online' ? 1 : 0;
                 }
+
                 if (valA < valB) return dir === 'asc' ? -1 : 1;
                 if (valA > valB) return dir === 'asc' ? 1 : -1;
                 return 0;
