@@ -333,6 +333,22 @@
         // const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let state = {
+                   window.toggleSettings = function() {
+            const el = document.getElementById('settings-modal');
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+                el.classList.add('flex');
+                renderPuckSettings(); // Render puck list when opening settings
+            } else {
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            }
+        }
+
+        window.toggleSetting = function(key) {
+            state.settings[key] = !state.settings[key];
+            localStorage.setItem('ns_' + key, state.settings[key]);
+         
             devices: [],
             pucks: [],
             flashingIds: new Set(),
@@ -484,19 +500,13 @@ async function fetchData() {
                 </div>
             `;
             lucide.createIcons();
-
-            const [devRes, puckRes] = Promise.all([
-                client.from('devices').select('*'),
-                client.from('pucks').select('*')
-            ]);
-            
+          
             // ... rest of your existing fetchData logic (which you keep) ...
             
             // ... your existing logic for handling devRes.data ...
 
             // ... your existing logic for handling puckRes.data ...
 
-            
             render(); // Existing call to render
             
             // Init Support ID
@@ -1530,21 +1540,6 @@ window.addManualPuck = async function() {
 
         // --- SETTINGS UI ---
 
-        window.toggleSettings = function() {
-            const el = document.getElementById('settings-modal');
-            if (el.classList.contains('hidden')) {
-                el.classList.remove('hidden');
-                el.classList.add('flex');
-                renderPuckSettings(); // Render puck list when opening settings
-            } else {
-                el.classList.add('hidden');
-                el.classList.remove('flex');
-            }
-        }
-
-        window.toggleSetting = function(key) {
-            state.settings[key] = !state.settings[key];
-            localStorage.setItem('ns_' + key, state.settings[key]);
             
             // Side Effects
             if (key === 'darkMode') {
