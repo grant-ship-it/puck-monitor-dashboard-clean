@@ -485,7 +485,7 @@ async function fetchData() {
             `;
             lucide.createIcons();
 
-            const [devRes, puckRes] = await Promise.all([
+            const [devRes, puckRes] = Promise.all([
                 client.from('devices').select('*'),
                 client.from('pucks').select('*')
             ]);
