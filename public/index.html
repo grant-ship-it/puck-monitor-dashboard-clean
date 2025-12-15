@@ -820,8 +820,9 @@ async function fetchData() {
         function sortDevices(devs) {
             const { key, dir } = state.sort;
             return devs.sort((a, b) => {
-                let valA = a[key] || '';
-                let valB = b[key] || '';
+                const k = state.sort.key;
+                const valA = a[key] || '';
+                const valB = b[key] || '';
                 if (key === 'status') {
                     valA = a.status === 'online' ? 1 : 0;
                     valB = b.status === 'online' ? 1 : 0;
