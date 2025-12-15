@@ -332,32 +332,43 @@
 // ... previous code ends here ...
         // const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let state = {
-                   window.toggleSettings = function() {
-            const el = document.getElementById('settings-modal');
-            if (el.classList.contains('hidden')) {
-                el.classList.remove('hidden');
-                el.classList.add('flex');
-                renderPuckSettings(); // Render puck list when opening settings
-            } else {
-                el.classList.add('hidden');
-                el.classList.remove('flex');
-            }
-        }
-
-        window.toggleSetting = function(key) {
-            state.settings[key] = !state.settings[key];
-            localStorage.setItem('ns_' + key, state.settings[key]);
-         
+let state = {
             devices: [],
             pucks: [],
             flashingIds: new Set(),
             sort: { key: 'status', dir: 'desc' },
             settings: {
-                // ... existing settings ...
+                darkMode: localStorage.getItem('ns_darkMode') === 'true', // Auto-load setting
+                useAbsoluteTime: false,
+                showHostPuck: true,
+                showMacAddress: false,
+                trackIpChanges: false,
+                showManufacturer: false,
+                aidedDetection: false
             },
             editingId: null,
-            isAuthenticated: false // NEW STATE VARIABLE
+            isAuthenticated: false
+        }; 
+        // ^^^ IMPORTANT: The state block MUST end with }; here.
+
+        // --- SAFE ZONE: Define global functions AFTER the state block ---
+
+        window.toggleSettings = function() {
+            const el = document.getElementById('settings-modal');
+            // Safety check: if the element doesn't exist yet, do nothing
+            if (!el) return;
+
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+                el.classList.add('flex');
+                // Only try to render if the function exists
+                if (typeof renderPuckSettings === 'function') {
+                    renderPuckSettings();
+                }
+            } else {
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            }
         };
 
         // --- AUTHENTICATION FUNCTIONS (NEW BLOCK) ---
@@ -1548,7 +1559,7 @@ window.addManualPuck = async function() {
 
             render(); 
             updateSettingsUI(); 
-        }
+
         
         function updateSettingsUI() {
              updateToggleBtn('btn-toggle-host', state.settings.showHostPuck);
