@@ -486,7 +486,7 @@ async function fetchData() {
             if (puckRes.data) {
                 state.pucks = puckRes.data.map(p => ({
                     ...p,
-                    mac: p.mac_address// <--- The Critical Map
+                    mac: p.mac_address,// <--- The Critical Map
                     ip: p.ip_address // 'Unknown'
                     }));
                 console.log("✅ PROCESSED PUCKS STATE:", state.pucks);
