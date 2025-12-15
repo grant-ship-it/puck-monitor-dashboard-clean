@@ -652,23 +652,23 @@ async function fetchData() {
         }
 
         // --- HOST PUCK STATUS LOGIC (THREE-STATE) ---
-        function getPuckStatus(puck) {
-            if (!puck) return { 
-                code: 'UNKNOWN', label: 'UNKNOWN', 
-                colorClass: 'text-slate-500', bgClass: 'bg-slate-100 dark:bg-slate-800' 
-            };
+function getPuckStatus(puck) {
+            // FIX 1: If date is missing/null, treat as "Never Seen" instead of 1970
+            if (!puck || !puck.last_seen) {
+                 return { 
+                    code: 'UNKNOWN', 
+                    label: 'NEVER SEEN', 
+                    colorClass: 'text-slate-400', 
+                    bgClass: 'bg-slate-100 dark:bg-slate-800' 
+                };
+            }
 
-            const lastSeenTime = new Date(puck.last_seen || 0);
+            const lastSeenTime = new Date(puck.last_seen);
             const currentTime = new Date();
             const timeDiffMs = currentTime.getTime() - lastSeenTime.getTime();
             const timeDiffMinutes = timeDiffMs / (1000 * 60);
 
             const GREEN_THRESHOLD_MINUTES = 5;
-            
-            // 3-State Logic Implementation:
-            // 1. OFFLINE: Explicitly marked offline by backend dead-man switch
-            // 2. GREEN: Online AND heard from recently (<= 5m)
-            // 3. STALE (Orange): Online but silence > 5m
             
             if (puck.status === 'offline') {
                 return { 
@@ -693,7 +693,6 @@ async function fetchData() {
                 };
             }
         }
-
         // --- RENDER LOGIC ---
         function render() {
             updateStats();
@@ -1611,7 +1610,7 @@ window.addManualPuck = async function() {
             }
         }
 
-        function renderPuckSettings() {
+function renderPuckSettings() {
             const container = document.getElementById('puck-settings-list');
             if(!container) return;
             
@@ -1620,29 +1619,40 @@ window.addManualPuck = async function() {
                 return;
             }
 
-            container.innerHTML = state.pucks.map(p => {
+            // FIX 2: Added a safe sort so it doesn't crash on "key"
+            const sortedPucks = [...state.pucks].sort((a, b) => {
+                const statusA = a.status === 'online' ? 1 : 0;
+                const statusB = b.status === 'online' ? 1 : 0;
+                return statusB - statusA; // Online first
+            });
+
+            container.innerHTML = sortedPucks.map(p => {
                 const status = getPuckStatus(p);
+                // Safe string escaping for HTML
+                const safeMac = escapeStr(p.mac);
+                const safeName = escapeStr(p.name);
+                
                 return `
                 <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex flex-col gap-2">
                     <div class="flex items-center justify-between">
                          <div class="flex flex-col">
-                            <span class="text-sm font-bold text-slate-900 dark:text-white font-mono">${p.current_ip || '0.0.0.0'}</span>
+                            <span class="text-sm font-bold text-slate-900 dark:text-white font-mono">${p.ip || '0.0.0.0'}</span>
                             ${state.settings.showMacAddress ? `<span class="text-[10px] font-mono text-slate-500 tracking-wide">${p.mac || 'UNKNOWN-MAC'}</span>` : ''}
                          </div>
                         <div class="flex items-center gap-1">
                             <span class="px-1.5 py-0.5 rounded text-[10px] uppercase font-bold mr-1 ${status.bgClass} ${status.colorClass}">${status.label}</span>
                             
-                            <button onclick="event.stopPropagation(); window.handleCommand(this, '${escapeStr(p.mac)}', 'SCAN_NETWORK')" type="button" class="text-slate-400 hover:text-indigo-500 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 p-1.5 rounded transition-colors" title="Force Network Scan">
+                            <button onclick="event.stopPropagation(); window.handleCommand(this, '${safeMac}', 'SCAN_NETWORK')" type="button" class="text-slate-400 hover:text-indigo-500 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 p-1.5 rounded transition-colors" title="Force Network Scan">
                                 <i data-lucide="scan-barcode" class="w-4 h-4"></i>
                             </button>
                             
-                            <button onclick="event.stopPropagation(); window.handleCommand(this, '${escapeStr(p.mac)}', 'REBOOT')" type="button" class="text-slate-400 hover:text-amber-500 hover:bg-amber-100 dark:hover:bg-amber-900/30 p-1.5 rounded transition-colors" title="Reboot Device">
+                            <button onclick="event.stopPropagation(); window.handleCommand(this, '${safeMac}', 'REBOOT')" type="button" class="text-slate-400 hover:text-amber-500 hover:bg-amber-100 dark:hover:bg-amber-900/30 p-1.5 rounded transition-colors" title="Reboot Device">
                                 <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                             </button>
 
                             <div class="w-px h-4 bg-slate-200 dark:bg-slate-700 mx-0.5"></div>
 
-                            <button onclick="event.stopPropagation(); window.deletePuck('${escapeStr(p.mac)}')" type="button" class="text-slate-400 hover:text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/30 p-1.5 rounded transition-colors" title="Remove Puck">
+                            <button onclick="event.stopPropagation(); window.deletePuck('${safeMac}')" type="button" class="text-slate-400 hover:text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/30 p-1.5 rounded transition-colors" title="Remove Puck">
                                 <i data-lucide="trash-2" class="w-4 h-4"></i>
                             </button>
                         </div>
@@ -1650,10 +1660,10 @@ window.addManualPuck = async function() {
                     <div class="flex items-center gap-2">
                         <i data-lucide="tag" class="w-3 h-3 text-slate-400"></i>
                         <input type="text" 
-                            value="${p.name || ''}" 
+                            value="${safeName || ''}" 
                             placeholder="Name this Puck..." 
                             class="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded px-2 py-1 text-sm text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors"
-                            onblur="window.savePuckName('${escapeStr(p.mac)}', this.value)" 
+                            onblur="window.savePuckName('${safeMac}', this.value)" 
                             onkeydown="if(event.key==='Enter') this.blur()"
                         >
                     </div>
