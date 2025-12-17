@@ -1465,6 +1465,24 @@ window.addManualPuck = async function() {
             }
         }
 
+        // 1. Fix the "Close" and "X" buttons
+        window.closeDiag = function() {
+            const modal = document.getElementById('diag-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+            // Reset content so it's fresh next time
+            const content = document.getElementById('diag-content');
+            if(content) content.innerHTML = '';
+        }
+
+        // 2. Fix the "Run Diagnostics" button (Name Bridge)
+        // Your HTML asks for 'runDiagnostics', so we redirect it to the right function
+        window.runDiagnostics = function(mac, ip) {
+            window.runDeviceDiagnostics(mac, ip);
+        }
+
         // --- DIAGNOSTICS UI ---
         
 // LEVEL 1: ISP / GLOBAL DIAGNOSTICS
