@@ -1,68 +1,78 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
         const SUPABASE_URL = 'https://tbajywjbemnwhsdgjuqg.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiYWp5d2piZW1ud2hzZGdqdXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDkzMjYsImV4cCI6MjA4MDE4NTMyNn0.5mhZQ4OTjV6f0p2v0LxADpQnaTyJIp5BIuw2kP0mdUU';
-        
+
         // Now it is safe to use 'supabase'
         const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    </script> 
-    
+    </script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>SECTOR LINK Command</title>
-    </head>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
+</head>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
         darkMode: 'class',
         theme: {
-          extend: {
-            fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
-            colors: { industrial: { 900: '#0f172a', 800: '#1e293b', 950: '#020617' } },
-            animation: {
-              'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'flash-red': 'flashRed 2s infinite',
-              'heartbeat': 'heartbeat 3s ease-in-out infinite', // Slowed to 3s
-            },
-            keyframes: {
-              flashRed: {
-                '0%, 100%': { backgroundColor: 'transparent' },
-                '50%': { backgroundColor: 'rgba(244, 63, 94, 0.2)' }, // rose-500/20
-              },
-              heartbeat: {
-                '0%, 100%': { opacity: '1', transform: 'scale(1)' },
-                '50%': { opacity: '0.6', transform: 'scale(0.9)' }, 
-              }
+            extend: {
+                fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                colors: { industrial: { 900: '#0f172a', 800: '#1e293b', 950: '#020617' } },
+                animation: {
+                    'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    'flash-red': 'flashRed 2s infinite',
+                    'heartbeat': 'heartbeat 3s ease-in-out infinite', // Slowed to 3s
+                },
+                keyframes: {
+                    flashRed: {
+                        '0%, 100%': { backgroundColor: 'transparent' },
+                        '50%': { backgroundColor: 'rgba(244, 63, 94, 0.2)' }, // rose-500/20
+                    },
+                    heartbeat: {
+                        '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+                        '50%': { opacity: '0.6', transform: 'scale(0.9)' },
+                    }
+                }
             }
-          }
         }
-      }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        /* Base styles with Tailwind override capability */
-        body { -webkit-tap-highlight-color: transparent; }
-        
-        /* Glass Panel - Adaptive */
-        .glass-panel { 
-            background: rgba(255, 255, 255, 0.8); 
-            backdrop-filter: blur(10px); 
-            border: 1px solid rgba(203, 213, 225, 0.6); 
-        }
-        .dark .glass-panel { 
-            background: rgba(30, 41, 59, 0.7); 
-            border: 1px solid rgba(51, 65, 85, 0.5); 
-        }
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+<style>
+    /* Base styles with Tailwind override capability */
+    body {
+        -webkit-tap-highlight-color: transparent;
+    }
 
-        /* Mobile optimizations */
-        input, select, button { touch-action: manipulation; }
-    </style>
+    /* Glass Panel - Adaptive */
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(203, 213, 225, 0.6);
+    }
+
+    .dark .glass-panel {
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(51, 65, 85, 0.5);
+    }
+
+    /* Mobile optimizations */
+    input,
+    select,
+    button {
+        touch-action: manipulation;
+    }
+</style>
 <script type="importmap">
 {
   "imports": {
@@ -76,10 +86,13 @@
 }
 </script>
 </head>
-<body class="min-h-screen pb-20 bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-200 transition-colors duration-300">
+
+<body
+    class="min-h-screen pb-20 bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-200 transition-colors duration-300">
 
     <!-- TOP BAR: ISP & BRAND -->
-    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex justify-between items-center shadow-sm">
+    <header id="main-header"
+        class="hidden sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex justify-between items-center shadow-sm">
         <div class="flex items-center gap-3">
             <div class="bg-sky-500/10 p-2 rounded-lg border border-sky-500/20">
                 <!-- Using radar icon for SECTOR LINK -->
@@ -93,434 +106,650 @@
                         <span class="w-3 h-3 rounded-full bg-slate-500"></span>
                         <span class="text-slate-500">CONNECTING...</span>
                     </div>
-                    <button onclick="window.runIspDiagnostics()" class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-sky-500 transition-colors" title="Test ISP Connection">
+                    <button onclick="window.runIspDiagnostics()"
+                        class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-sky-500 transition-colors"
+                        title="Test ISP Connection">
                         <i data-lucide="wrench" class="w-4 h-4"></i>
                     </button>
-                <button id="logout-button" onclick="window.handleLogout()" class="p-2 text-slate-500 dark:text-slate-400 hover:text-rose-900 dark:hover:text-rose-400 transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 hidden" title="Log Out">
-            <i data-lucide="log-out" class="w-6 h-6"></i>
-        </button>
-        <button onclick="window.toggleSettings()" class="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
-            <i data-lucide="settings" class="w-6 h-6"></i>
-        </button>
-                                </div>
+                    <button id="logout-button" onclick="window.handleLogout()"
+                        class="p-2 text-slate-500 dark:text-slate-400 hover:text-rose-900 dark:hover:text-rose-400 transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 hidden"
+                        title="Log Out">
+                        <i data-lucide="log-out" class="w-6 h-6"></i>
+                    </button>
+                    <button onclick="window.toggleSettings()"
+                        class="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i data-lucide="settings" class="w-6 h-6"></i>
+                    </button>
+                </div>
             </div>
         </div>
-        <button onclick="window.toggleSettings()" class="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+        <button onclick="window.toggleSettings()"
+            class="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
             <i data-lucide="settings" class="w-6 h-6"></i>
         </button>
     </header>
-<div id="auth-ui" class="max-w-md mx-auto p-8 mt-16 glass-panel rounded-xl shadow-lg">
+    <div id="auth-ui" class="max-w-md mx-auto p-8 mt-16 glass-panel rounded-xl shadow-lg">
         <h2 class="text-2xl font-bold text-center mb-6 text-slate-900 dark:text-white">SECTOR LINK Login</h2>
         <form id="login-form" class="space-y-4">
             <input type="email" id="login-email" placeholder="Email" required
-                   class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded px-4 py-2 text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors">
+                class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded px-4 py-2 text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors">
             <input type="password" id="login-password" placeholder="Password" required
-                   class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded px-4 py-2 text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors">
-            <button type="submit" class="w-full bg-sky-600 hover:bg-sky-500 text-white py-2 rounded text-base font-bold transition-colors">Log In</button>
+                class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded px-4 py-2 text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors">
+            <button type="submit"
+                class="w-full bg-sky-600 hover:bg-sky-500 text-white py-2 rounded text-base font-bold transition-colors">Log
+                In</button>
+            <button type="button" onclick="window.showForgotPassword()"
+                class="w-full text-sm text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300 mt-2 py-1 transition-colors">
+                Forgot Password?
+            </button>
         </form>
-        
-        <button id="signup-button" type="button" class="w-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-900 dark:text-white py-2 rounded text-base font-medium transition-colors mt-4">Sign Up</button>
-        
+
+        <button id="signup-button" type="button"
+            class="w-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-900 dark:text-white py-2 rounded text-base font-medium transition-colors mt-4">Sign
+            Up</button>
+
         <div id="auth-message" class="text-center text-sm mt-4 text-rose-500 dark:text-rose-400 hidden"></div>
     </div>
 
     <main id="data-container" class="max-w-7xl mx-auto p-4 space-y-6 hidden">
-    
+
         <!-- MAIN CONTENT -->
-    <main class="max-w-7xl mx-auto p-4 space-y-6">
+        <main class="max-w-7xl mx-auto p-4 space-y-6">
 
-        <!-- STATS GRID -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div class="glass-panel p-3 rounded-lg flex flex-col items-center justify-center text-center">
-                <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Total Devices</span>
-                <span id="stat-total" class="text-2xl font-bold text-slate-800 dark:text-white mt-1">--</span>
+            <!-- STATS GRID -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="glass-panel p-3 rounded-lg flex flex-col items-center justify-center text-center">
+                    <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Total Devices</span>
+                    <span id="stat-total" class="text-2xl font-bold text-slate-800 dark:text-white mt-1">--</span>
+                </div>
+                <div
+                    class="glass-panel p-3 rounded-lg flex flex-col items-center justify-center text-center border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-900/10">
+                    <span
+                        class="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400/80 font-bold">Online</span>
+                    <span id="stat-online"
+                        class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">--</span>
+                </div>
+                <div class="glass-panel p-3 rounded-lg flex flex-col items-center justify-center text-center">
+                    <span
+                        class="text-[10px] uppercase tracking-wider text-sky-600 dark:text-sky-500/80 font-bold">Monitored</span>
+                    <span id="stat-tracked" class="text-2xl font-bold text-sky-600 dark:text-sky-400 mt-1">--</span>
+                </div>
+                <div class="glass-panel p-3 rounded-lg flex flex-col items-center justify-center text-center">
+                    <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Alerts</span>
+                    <span id="stat-alerts" class="text-2xl font-bold text-amber-500 mt-1">0</span>
+                </div>
             </div>
-            <div class="glass-panel p-3 rounded-lg flex flex-col items-center justify-center text-center border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-900/10">
-                <span class="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400/80 font-bold">Online</span>
-                <span id="stat-online" class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">--</span>
+
+            <!-- GROUPS CONTAINER -->
+            <div id="groups-container" class="space-y-8">
+                <!-- Groups injected via JS -->
+                <div class="text-center py-12">
+                    <i data-lucide="loader-2" class="w-8 h-8 text-sky-500 animate-spin mx-auto"></i>
+                    <p class="mt-2 text-sm text-slate-500 font-mono">Loading Fleet...</p>
+                </div>
             </div>
-            <div class="glass-panel p-3 rounded-lg flex flex-col items-center justify-center text-center">
-                <span class="text-[10px] uppercase tracking-wider text-sky-600 dark:text-sky-500/80 font-bold">Monitored</span>
-                <span id="stat-tracked" class="text-2xl font-bold text-sky-600 dark:text-sky-400 mt-1">--</span>
-            </div>
-            <div class="glass-panel p-3 rounded-lg flex flex-col items-center justify-center text-center">
-                <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Alerts</span>
-                <span id="stat-alerts" class="text-2xl font-bold text-amber-500 mt-1">0</span>
+
+        </main>
+
+        <!-- DIAGNOSTIC MODAL OVERLAY -->
+        <div id="diag-modal"
+            class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex-col items-center justify-center p-4 animate-fade-in">
+            <div
+                class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 w-full max-w-sm rounded-xl shadow-2xl overflow-hidden transform transition-all scale-100">
+                <div
+                    class="bg-slate-50 dark:bg-slate-800 p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                    <h3 class="text-slate-900 dark:text-white font-bold flex items-center gap-2">
+                        <i data-lucide="wrench" class="w-5 h-5 text-sky-500"></i> Diagnostics
+                    </h3>
+                    <button onclick="window.closeDiag()"
+                        class="text-slate-400 hover:text-slate-900 dark:hover:text-white"><i data-lucide="x"
+                            class="w-5 h-5"></i></button>
+                </div>
+                <div class="p-6 text-center space-y-4" id="diag-content">
+                    <!-- Content injected -->
+                </div>
             </div>
         </div>
 
-        <!-- GROUPS CONTAINER -->
-        <div id="groups-container" class="space-y-8">
-            <!-- Groups injected via JS -->
-            <div class="text-center py-12">
-                <i data-lucide="loader-2" class="w-8 h-8 text-sky-500 animate-spin mx-auto"></i>
-                <p class="mt-2 text-sm text-slate-500 font-mono">Loading Fleet...</p>
-            </div>
-        </div>
+        <!-- SETTINGS MODAL OVERLAY -->
+        <div id="settings-modal"
+            class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-sm hidden flex-col items-end sm:items-center justify-start sm:justify-center">
+            <div
+                class="w-full sm:max-w-md bg-white dark:bg-slate-900 sm:rounded-xl border-b sm:border border-slate-200 dark:border-slate-800 shadow-2xl h-screen sm:h-[80vh] overflow-y-auto">
+                <div
+                    class="sticky top-0 bg-white dark:bg-slate-900 p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center z-10">
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Display Settings</h2>
+                    <button onclick="window.toggleSettings()"
+                        class="bg-slate-100 dark:bg-slate-800 p-2 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-6">
 
-    </main>
-
-    <!-- DIAGNOSTIC MODAL OVERLAY -->
-    <div id="diag-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex-col items-center justify-center p-4 animate-fade-in">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 w-full max-w-sm rounded-xl shadow-2xl overflow-hidden transform transition-all scale-100">
-            <div class="bg-slate-50 dark:bg-slate-800 p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-                <h3 class="text-slate-900 dark:text-white font-bold flex items-center gap-2">
-                    <i data-lucide="wrench" class="w-5 h-5 text-sky-500"></i> Diagnostics
-                </h3>
-                <button onclick="window.closeDiag()" class="text-slate-400 hover:text-slate-900 dark:hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <div class="p-6 text-center space-y-4" id="diag-content">
-                <!-- Content injected -->
-            </div>
-        </div>
-    </div>
-
-    <!-- SETTINGS MODAL OVERLAY -->
-    <div id="settings-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-sm hidden flex-col items-end sm:items-center justify-start sm:justify-center">
-        <div class="w-full sm:max-w-md bg-white dark:bg-slate-900 sm:rounded-xl border-b sm:border border-slate-200 dark:border-slate-800 shadow-2xl h-screen sm:h-[80vh] overflow-y-auto">
-            <div class="sticky top-0 bg-white dark:bg-slate-900 p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center z-10">
-                <h2 class="text-lg font-bold text-slate-900 dark:text-white">Display Settings</h2>
-                <button onclick="window.toggleSettings()" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-white">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            <div class="p-6 space-y-6">
-                
-                <!-- Dark Mode Toggle -->
-                <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div>
-                        <div class="text-slate-900 dark:text-white font-medium flex items-center gap-2">
-                            <i data-lucide="moon" class="w-4 h-4 text-slate-400"></i> Dark Mode
+                    <!-- Dark Mode Toggle -->
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+                        <div>
+                            <div class="text-slate-900 dark:text-white font-medium flex items-center gap-2">
+                                <i data-lucide="moon" class="w-4 h-4 text-slate-400"></i> Dark Mode
+                            </div>
+                            <div class="text-xs text-slate-500">Toggle application theme</div>
                         </div>
-                        <div class="text-xs text-slate-500">Toggle application theme</div>
+                        <button id="btn-toggle-dark" onclick="window.toggleSetting('darkMode')"
+                            class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
+                            <div
+                                class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm">
+                            </div>
+                        </button>
                     </div>
-                    <button id="btn-toggle-dark" onclick="window.toggleSetting('darkMode')" class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
-                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm"></div>
-                    </button>
-                </div>
 
-                <!-- Absolute Time Toggle -->
-                 <div class="flex items-center justify-between">
-                    <div>
-                        <div class="text-slate-900 dark:text-white font-medium">Absolute Timestamps</div>
-                        <div class="text-xs text-slate-500">Show exact Date/Time vs Relative</div>
+                    <!-- Absolute Time Toggle -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-slate-900 dark:text-white font-medium">Absolute Timestamps</div>
+                            <div class="text-xs text-slate-500">Show exact Date/Time vs Relative</div>
+                        </div>
+                        <button id="btn-toggle-time" onclick="window.toggleSetting('useAbsoluteTime')"
+                            class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
+                            <div
+                                class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm">
+                            </div>
+                        </button>
                     </div>
-                    <button id="btn-toggle-time" onclick="window.toggleSetting('useAbsoluteTime')" class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
-                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm"></div>
-                    </button>
-                </div>
 
-                <!-- Host Puck Toggle (Disabled/Hidden or kept for legacy view?) -->
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="text-slate-900 dark:text-white font-medium">Show Host Pucks</div>
-                        <div class="text-xs text-slate-500">Display controller units in settings</div>
+                    <!-- Host Puck Toggle (Disabled/Hidden or kept for legacy view?) -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-slate-900 dark:text-white font-medium">Show Host Pucks</div>
+                            <div class="text-xs text-slate-500">Display controller units in settings</div>
+                        </div>
+                        <button id="btn-toggle-host" onclick="window.toggleSetting('showHostPuck')"
+                            class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
+                            <div
+                                class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm">
+                            </div>
+                        </button>
                     </div>
-                    <button id="btn-toggle-host" onclick="window.toggleSetting('showHostPuck')" class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
-                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm"></div>
-                    </button>
-                </div>
 
-                <!-- Show MAC Address Toggle -->
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="text-slate-900 dark:text-white font-medium">Show MAC Address</div>
-                        <div class="text-xs text-slate-500">Display hardware IDs in tables</div>
+                    <!-- Show MAC Address Toggle -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-slate-900 dark:text-white font-medium">Show MAC Address</div>
+                            <div class="text-xs text-slate-500">Display hardware IDs in tables</div>
+                        </div>
+                        <button id="btn-toggle-mac" onclick="window.toggleSetting('showMacAddress')"
+                            class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
+                            <div
+                                class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm">
+                            </div>
+                        </button>
                     </div>
-                    <button id="btn-toggle-mac" onclick="window.toggleSetting('showMacAddress')" class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
-                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm"></div>
-                    </button>
-                </div>
 
-                <!-- IP Tracking Toggle -->
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="text-slate-900 dark:text-white font-medium">Track IP Changes</div>
-                        <div class="text-xs text-slate-500">Highlight IP mismatches</div>
+                    <!-- IP Tracking Toggle -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-slate-900 dark:text-white font-medium">Track IP Changes</div>
+                            <div class="text-xs text-slate-500">Highlight IP mismatches</div>
+                        </div>
+                        <button id="btn-toggle-ip" onclick="window.toggleSetting('trackIpChanges')"
+                            class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
+                            <div
+                                class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm">
+                            </div>
+                        </button>
                     </div>
-                    <button id="btn-toggle-ip" onclick="window.toggleSetting('trackIpChanges')" class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
-                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm"></div>
-                    </button>
-                </div>
 
-                <!-- Show Manufacturer Toggle -->
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="text-slate-900 dark:text-white font-medium">Show Manufacturer</div>
-                        <div class="text-xs text-slate-500">Display hardware vendor</div>
+                    <!-- Show Manufacturer Toggle -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-slate-900 dark:text-white font-medium">Show Manufacturer</div>
+                            <div class="text-xs text-slate-500">Display hardware vendor</div>
+                        </div>
+                        <button id="btn-toggle-manufacturer" onclick="window.toggleSetting('showManufacturer')"
+                            class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
+                            <div
+                                class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm">
+                            </div>
+                        </button>
                     </div>
-                    <button id="btn-toggle-manufacturer" onclick="window.toggleSetting('showManufacturer')" class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
-                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm"></div>
-                    </button>
-                </div>
 
-                <!-- Aided Detection Toggle -->
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="text-slate-900 dark:text-white font-medium">Aided Detection</div>
-                        <div class="text-xs text-slate-500">Flash red on drop-out</div>
+                    <!-- Aided Detection Toggle -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-slate-900 dark:text-white font-medium">Aided Detection</div>
+                            <div class="text-xs text-slate-500">Flash red on drop-out</div>
+                        </div>
+                        <button id="btn-toggle-aided" onclick="window.toggleSetting('aidedDetection')"
+                            class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
+                            <div
+                                class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm">
+                            </div>
+                        </button>
                     </div>
-                    <button id="btn-toggle-aided" onclick="window.toggleSetting('aidedDetection')" class="w-12 h-6 rounded-full bg-slate-200 dark:bg-slate-700 relative transition-colors duration-200">
-                        <div class="w-4 h-4 bg-white rounded-full absolute top-1 left-1 transition-transform duration-200 shadow-sm"></div>
-                    </button>
-                </div>
 
-                <!-- Host Puck Config Section -->
-                <div class="border-t border-slate-100 dark:border-slate-800 pt-4">
-                     <div class="flex items-center justify-between mb-3">
-                         <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <i data-lucide="cpu" class="w-4 h-4 text-sky-500"></i> Host Puck Configuration
-                         </h3>
-                         <button onclick="window.addManualPuck()" class="text-[10px] bg-slate-200 dark:bg-slate-800 hover:bg-sky-500 hover:text-white text-slate-600 dark:text-slate-400 px-2 py-1 rounded transition-colors flex items-center gap-1">
-                             <i data-lucide="plus" class="w-3 h-3"></i> Add
-                         </button>
-                     </div>
-                     <div id="puck-settings-list" class="space-y-3">
-                        <!-- Injected via JS -->
-                         <div class="text-center py-4 text-slate-500 text-xs italic">Loading Puck Data...</div>
-                     </div>
-                </div>
-
-                 <!-- WiFi Config Section -->
-                 <div class="border-t border-slate-100 dark:border-slate-800 pt-4 mt-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                           <i data-lucide="wifi" class="w-4 h-4 text-sky-500"></i> Host WiFi Configuration
-                        </h3>
-                        <!-- WiFi Status Badge -->
-                        <div id="wifi-status-badge">
+                    <!-- Host Puck Config Section -->
+                    <div class="border-t border-slate-100 dark:border-slate-800 pt-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i data-lucide="cpu" class="w-4 h-4 text-sky-500"></i> Host Puck Configuration
+                            </h3>
+                            <button onclick="window.addManualPuck()"
+                                class="text-[10px] bg-slate-200 dark:bg-slate-800 hover:bg-sky-500 hover:text-white text-slate-600 dark:text-slate-400 px-2 py-1 rounded transition-colors flex items-center gap-1">
+                                <i data-lucide="plus" class="w-3 h-3"></i> Add
+                            </button>
+                        </div>
+                        <div id="puck-settings-list" class="space-y-3">
                             <!-- Injected via JS -->
+                            <div class="text-center py-4 text-slate-500 text-xs italic">Loading Puck Data...</div>
                         </div>
                     </div>
-                    <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 space-y-3">
-                        <div class="space-y-1">
-                            <label class="text-[10px] uppercase font-bold text-slate-500">Network SSID</label>
-                            <input type="text" id="wifi-ssid" placeholder="Enter WiFi Name" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded px-2 py-1.5 text-sm text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors">
+
+                    <!-- WiFi Config Section -->
+                    <div class="border-t border-slate-100 dark:border-slate-800 pt-4 mt-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i data-lucide="wifi" class="w-4 h-4 text-sky-500"></i> Host WiFi Configuration
+                            </h3>
+                            <!-- WiFi Status Badge -->
+                            <div id="wifi-status-badge">
+                                <!-- Injected via JS -->
+                            </div>
                         </div>
-                        <div class="space-y-1">
-                             <label class="text-[10px] uppercase font-bold text-slate-500">Password</label>
-                             <input type="password" id="wifi-pass" placeholder="Enter WiFi Password" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded px-2 py-1.5 text-sm text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors">
+                        <div
+                            class="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 space-y-3">
+                            <div class="space-y-1">
+                                <label class="text-[10px] uppercase font-bold text-slate-500">Network SSID</label>
+                                <input type="text" id="wifi-ssid" placeholder="Enter WiFi Name"
+                                    class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded px-2 py-1.5 text-sm text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] uppercase font-bold text-slate-500">Password</label>
+                                <input type="password" id="wifi-pass" placeholder="Enter WiFi Password"
+                                    class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded px-2 py-1.5 text-sm text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors">
+                            </div>
+                            <button onclick="window.saveWifiConfig()"
+                                class="w-full bg-sky-600 hover:bg-sky-500 text-white py-2 rounded text-xs font-bold uppercase tracking-wide transition-colors">Update
+                                Credentials</button>
                         </div>
-                        <button onclick="window.saveWifiConfig()" class="w-full bg-sky-600 hover:bg-sky-500 text-white py-2 rounded text-xs font-bold uppercase tracking-wide transition-colors">Update Credentials</button>
                     </div>
-               </div>
 
-                <!-- Group Management Hint -->
-                <div class="bg-slate-100 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700 mt-4">
-                    <p class="text-xs text-slate-500 leading-relaxed">
-                        <strong class="text-sky-600 dark:text-sky-400">Pro Tip:</strong> Click the group name header on the dashboard to rename an entire group at once.
-                    </p>
-                </div>
+                    <!-- Group Management Hint -->
+                    <div
+                        class="bg-slate-100 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700 mt-4">
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            <strong class="text-sky-600 dark:text-sky-400">Pro Tip:</strong> Click the group name header
+                            on the dashboard to rename an entire group at once.
+                        </p>
+                    </div>
 
-                <!-- Account Reference -->
-                <div class="pt-8 mt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col items-center">
-                    <div class="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-2">Account Reference ID</div>
-                    <button id="settings-account-id" onclick="window.copySupportId()" class="font-mono text-xl font-bold text-slate-700 dark:text-slate-300 tracking-wider border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-lg hover:border-sky-500 dark:hover:border-sky-500 transition-colors w-full text-center group relative">
-                        <!-- Injected -->
-                        <span class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="copy" class="w-4 h-4 text-slate-400"></i></span>
-                    </button>
-                    <p class="text-[10px] text-slate-400 mt-3 text-center px-4">
-                        Please provide this ID when contacting Sector Link support for faster resolution.
-                    </p>
+                    <!-- Account Reference -->
+                    <div class="pt-8 mt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col items-center">
+                        <div class="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-2">Account
+                            Reference ID</div>
+                        <button id="settings-account-id" onclick="window.copySupportId()"
+                            class="font-mono text-xl font-bold text-slate-700 dark:text-slate-300 tracking-wider border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-lg hover:border-sky-500 dark:hover:border-sky-500 transition-colors w-full text-center group relative">
+                            <!-- Injected -->
+                            <span
+                                class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"><i
+                                    data-lucide="copy" class="w-4 h-4 text-slate-400"></i></span>
+                        </button>
+                        <p class="text-[10px] text-slate-400 mt-3 text-center px-4">
+                            Please provide this ID when contacting Sector Link support for faster resolution.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- JAVASCRIPT LOGIC -->
-    <script>
-// ... previous code ends here ...
-        // const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        <!-- CUSTOM CONFIRM MODAL (Mobile-Friendly) -->
+        <div id="confirm-modal"
+            class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex-col items-center justify-center p-4">
+            <div
+                class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 w-full max-w-sm rounded-xl shadow-2xl overflow-hidden">
+                <div class="p-6">
+                    <h3 id="confirm-title" class="text-lg font-bold text-slate-900 dark:text-white mb-3"></h3>
+                    <p id="confirm-message" class="text-sm text-slate-600 dark:text-slate-400 mb-6 whitespace-pre-line">
+                    </p>
+                    <div class="flex gap-3">
+                        <button id="confirm-cancel"
+                            class="flex-1 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white py-3 rounded-lg font-medium transition-colors">
+                            Cancel
+                        </button>
+                        <button id="confirm-ok"
+                            class="flex-1 bg-sky-600 hover:bg-sky-500 text-white py-3 rounded-lg font-medium transition-colors">
+                            Confirm
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-let state = {
-            devices: [],
-            pucks: [],
-            flashingIds: new Set(),
-            sort: { key: 'status', dir: 'desc' },
-            settings: {
-                darkMode: localStorage.getItem('ns_darkMode') === 'true', // Auto-load setting
-                useAbsoluteTime: false,
-                showHostPuck: true,
-                showMacAddress: false,
-                trackIpChanges: false,
-                showManufacturer: false,
-                aidedDetection: false
-            },
-            editingId: null,
-            isAuthenticated: false
-        }; 
-        // ^^^ IMPORTANT: The state block MUST end with }; here.
+        <!-- CUSTOM PROMPT MODAL (Mobile-Friendly) -->
+        <div id="prompt-modal"
+            class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex-col items-center justify-center p-4">
+            <div
+                class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 w-full max-w-sm rounded-xl shadow-2xl overflow-hidden">
+                <div class="p-6">
+                    <h3 id="prompt-title" class="text-lg font-bold text-slate-900 dark:text-white mb-3"></h3>
+                    <input id="prompt-input" type="text"
+                        class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded px-4 py-3 text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors mb-6">
+                    <div class="flex gap-3">
+                        <button id="prompt-cancel"
+                            class="flex-1 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white py-3 rounded-lg font-medium transition-colors">
+                            Cancel
+                        </button>
+                        <button id="prompt-ok"
+                            class="flex-1 bg-sky-600 hover:bg-sky-500 text-white py-3 rounded-lg font-medium transition-colors">
+                            OK
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        // --- SAFE ZONE: Define global functions AFTER the state block ---
+        <!-- JAVASCRIPT LOGIC -->
+        <script>
+            // ... previous code ends here ...
+            // const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        window.toggleSettings = function() {
-            const el = document.getElementById('settings-modal');
-            // Safety check: if the element doesn't exist yet, do nothing
-            if (!el) return;
+            let state = {
+                devices: [],
+                pucks: [],
+                flashingIds: new Set(),
+                sort: { key: 'status', dir: 'desc' },
+                settings: {
+                    darkMode: localStorage.getItem('ns_darkMode') !== 'false', // Default to TRUE (Dark Mode)
+                    useAbsoluteTime: false,
+                    showHostPuck: true,
+                    showMacAddress: false,
+                    trackIpChanges: false,
+                    showManufacturer: false,
+                    aidedDetection: false
+                },
+                editingId: null,
+                isAuthenticated: false
+            };
 
-            if (el.classList.contains('hidden')) {
-                el.classList.remove('hidden');
-                el.classList.add('flex');
-                // Only try to render if the function exists
-                if (typeof renderPuckSettings === 'function') {
-                    renderPuckSettings();
-                }
-            } else {
-                el.classList.add('hidden');
-                el.classList.remove('flex');
+            // --- MOBILE-FRIENDLY HELPER FUNCTIONS ---
+
+            // Custom confirm for mobile
+            function customConfirm(title, message) {
+                return new Promise((resolve) => {
+                    const modal = document.getElementById('confirm-modal');
+                    document.getElementById('confirm-title').textContent = title;
+                    document.getElementById('confirm-message').textContent = message;
+
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+
+                    const handleConfirm = () => {
+                        cleanup();
+                        resolve(true);
+                    };
+
+                    const handleCancel = () => {
+                        cleanup();
+                        resolve(false);
+                    };
+
+                    const cleanup = () => {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                        document.getElementById('confirm-ok').removeEventListener('click', handleConfirm);
+                        document.getElementById('confirm-cancel').removeEventListener('click', handleCancel);
+                    };
+
+                    document.getElementById('confirm-ok').addEventListener('click', handleConfirm);
+                    document.getElementById('confirm-cancel').addEventListener('click', handleCancel);
+                });
             }
-        };
-// Fix for the toggle buttons inside the settings menu
-        window.toggleSetting = function(key) {
-            // Update the state
-            state.settings[key] = !state.settings[key];
-            
-            // Persist Dark Mode specifically
-            if (key === 'darkMode') {
-                localStorage.setItem('ns_darkMode', state.settings[key]);
-                updateTheme();
+
+            // Custom prompt for mobile
+            function customPrompt(title, defaultValue = '') {
+                return new Promise((resolve) => {
+                    const modal = document.getElementById('prompt-modal');
+                    const input = document.getElementById('prompt-input');
+
+                    document.getElementById('prompt-title').textContent = title;
+                    input.value = defaultValue;
+
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+
+                    // Focus input after modal is visible
+                    setTimeout(() => {
+                        input.focus();
+                        input.select();
+                    }, 100);
+
+                    const handleOk = () => {
+                        cleanup();
+                        resolve(input.value);
+                    };
+
+                    const handleCancel = () => {
+                        cleanup();
+                        resolve(null);
+                    };
+
+                    const cleanup = () => {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                        document.getElementById('prompt-ok').removeEventListener('click', handleOk);
+                        document.getElementById('prompt-cancel').removeEventListener('click', handleCancel);
+                        input.removeEventListener('keydown', handleKeydown);
+                    };
+
+                    const handleKeydown = (e) => {
+                        if (e.key === 'Enter') handleOk();
+                        if (e.key === 'Escape') handleCancel();
+                    };
+
+                    document.getElementById('prompt-ok').addEventListener('click', handleOk);
+                    document.getElementById('prompt-cancel').addEventListener('click', handleCancel);
+                    input.addEventListener('keydown', handleKeydown);
+                });
             }
 
-            // Re-render to show the button slide over
-            updateSettingsUI();
-            render();
-        };
-        // --- AUTHENTICATION FUNCTIONS (NEW BLOCK) ---
+            // Forgot password function
+            window.showForgotPassword = async function () {
+                const email = await customPrompt("Enter your email address:", "");
 
-        // NEW: Handles state changes after login/logout
-        async function checkSession() {
-            const { data: { session } } = await client.auth.getSession();
-            const dataContainer = document.getElementById('data-container');
-            const authUi = document.getElementById('auth-ui');
-            const logoutBtn = document.getElementById('logout-button');
-            const authMessage = document.getElementById('auth-message');
+                if (!email) return;
 
-            if (session) {
-                // Logged In
-                state.isAuthenticated = true;
-                authUi.style.display = 'none';
-                dataContainer.style.display = 'block';
-                logoutBtn.style.display = 'block';
-                authMessage.style.display = 'none';
-                fetchData(); // Fetch data only when authenticated
-                setupRealtime(); // Start listening for real-time updates
-            } else {
-                // Logged Out
-                state.isAuthenticated = false;
-                authUi.style.display = 'block';
-                dataContainer.style.display = 'none';
-                logoutBtn.style.display = 'none';
-            }
-            render(); // Rerender to apply state changes (like stats)
-        }
-
-        // Handle Login Form Submission
-        document.addEventListener('DOMContentLoaded', () => {
-             // We need to wait for DOM elements to exist before attaching listeners
-             document.getElementById('login-form')?.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-                const authMessage = document.getElementById('auth-message');
-
-                const { error } = await client.auth.signInWithPassword({ email, password });
+                const { error } = await client.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin
+                });
 
                 if (error) {
-                    authMessage.innerText = 'Login Failed: ' + error.message;
-                    authMessage.style.display = 'block';
+                    await customConfirm("Error", error.message);
                 } else {
-                    // Check session will handle UI update and data fetch
-                    checkSession();
+                    await customConfirm("Success", "Password reset email sent! Check your inbox.");
                 }
-            });
+            }
 
-            // Handle Sign Up Button Click
-            document.getElementById('signup-button')?.addEventListener('click', async () => {
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
+            // Show header after login
+            function showHeader() {
+                document.getElementById('main-header').classList.remove('hidden');
+            }
+
+            // Hide header on logout
+            function hideHeader() {
+                document.getElementById('main-header').classList.add('hidden');
+            }
+            // ^^^ IMPORTANT: The state block MUST end with }; here.
+
+            // --- SAFE ZONE: Define global functions AFTER the state block ---
+
+            window.toggleSettings = function () {
+                const el = document.getElementById('settings-modal');
+                // Safety check: if the element doesn't exist yet, do nothing
+                if (!el) return;
+
+                if (el.classList.contains('hidden')) {
+                    el.classList.remove('hidden');
+                    el.classList.add('flex');
+                    // Only try to render if the function exists
+                    if (typeof renderPuckSettings === 'function') {
+                        renderPuckSettings();
+                    }
+                } else {
+                    el.classList.add('hidden');
+                    el.classList.remove('flex');
+                }
+            };
+            // Fix for the toggle buttons inside the settings menu
+            window.toggleSetting = function (key) {
+                // Update the state
+                state.settings[key] = !state.settings[key];
+
+                // Persist Dark Mode specifically
+                if (key === 'darkMode') {
+                    localStorage.setItem('ns_darkMode', state.settings[key]);
+                    updateTheme();
+                }
+
+                // Re-render to show the button slide over
+                updateSettingsUI();
+                render();
+            };
+            // --- AUTHENTICATION FUNCTIONS (NEW BLOCK) ---
+
+            // NEW: Handles state changes after login/logout
+            async function checkSession() {
+                const { data: { session } } = await client.auth.getSession();
+                const dataContainer = document.getElementById('data-container');
+                const authUi = document.getElementById('auth-ui');
+                const logoutBtn = document.getElementById('logout-button');
                 const authMessage = document.getElementById('auth-message');
 
-                if (!email || !password) {
-                    authMessage.innerText = 'Please enter both email and password for signup.';
-                    authMessage.style.display = 'block';
+                if (session) {
+                    // Logged In
+                    state.isAuthenticated = true;
+                    authUi.style.display = 'none';
+                    dataContainer.style.display = 'block';
+                    logoutBtn.style.display = 'block';
+                    authMessage.style.display = 'none';
+                    showHeader(); // Show header
+                    fetchData(); // Fetch data only when authenticated
+                    setupRealtime(); // Start listening for real-time updates
+                } else {
+                    // Logged Out
+                    state.isAuthenticated = false;
+                    authUi.style.display = 'block';
+                    dataContainer.style.display = 'none';
+                    logoutBtn.style.display = 'none';
+                    hideHeader(); // Hide header
+                }
+                render(); // Rerender to apply state changes (like stats)
+            }
+
+            // Handle Login Form Submission
+            document.addEventListener('DOMContentLoaded', () => {
+                // We need to wait for DOM elements to exist before attaching listeners
+                document.getElementById('login-form')?.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('login-email').value;
+                    const password = document.getElementById('login-password').value;
+                    const authMessage = document.getElementById('auth-message');
+
+                    const { error } = await client.auth.signInWithPassword({ email, password });
+
+                    if (error) {
+                        authMessage.innerText = 'Login Failed: ' + error.message;
+                        authMessage.style.display = 'block';
+                    } else {
+                        // Check session will handle UI update and data fetch
+                        checkSession();
+                    }
+                });
+
+                // Handle Sign Up Button Click
+                document.getElementById('signup-button')?.addEventListener('click', async () => {
+                    const email = document.getElementById('login-email').value;
+                    const password = document.getElementById('login-password').value;
+                    const authMessage = document.getElementById('auth-message');
+
+                    if (!email || !password) {
+                        authMessage.innerText = 'Please enter both email and password for signup.';
+                        authMessage.style.display = 'block';
+                        return;
+                    }
+
+                    const { error } = await client.auth.signUp({ email, password });
+
+                    if (error) {
+                        authMessage.innerText = 'Sign Up Failed: ' + error.message;
+                        authMessage.style.display = 'block';
+                    } else {
+                        authMessage.innerText = 'Sign up successful! Please check your email to confirm.';
+                        authMessage.style.display = 'block';
+                        document.getElementById('login-form').reset();
+                    }
+                });
+            });
+
+            // Logout handler
+            window.handleLogout = async function () {
+                const { error } = await client.auth.signOut();
+                if (error) {
+                    alert("Error logging out: " + error.message);
+                }
+                checkSession(); // Update UI after logout
+            }
+
+            // --- END AUTHENTICATION FUNCTIONS ---
+
+            // --- HELPER: Safe String for HTML Attributes ---
+            function escapeStr(str) {
+                if (!str) return '';
+                return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            }
+
+            // --- APP INIT ---
+            async function fetchData() {
+                console.log("🚀 STARTING FETCH...");
+
+                // 1. Check Auth
+                if (!state.isAuthenticated) {
+                    console.log("❌ Not authenticated. Aborting.");
                     return;
                 }
 
-                const { error } = await client.auth.signUp({ email, password });
+                // 2. Fetch Data
+                const [devRes, puckRes] = await Promise.all([
+                    client.from('devices').select('*'),
+                    client.from('pucks').select('*')
+                ]);
 
-                if (error) {
-                    authMessage.innerText = 'Sign Up Failed: ' + error.message;
-                    authMessage.style.display = 'block';
-                } else {
-                    authMessage.innerText = 'Sign up successful! Please check your email to confirm.';
-                    authMessage.style.display = 'block';
-                    document.getElementById('login-form').reset();
+                console.log("📦 RAW PUCKS FROM DB:", puckRes.data);
+                console.log("📦 RAW DEVICES FROM DB:", devRes.data);
+
+                // 3. Process Pucks
+                if (puckRes.data) {
+                    state.pucks = puckRes.data.map(p => ({
+                        ...p,
+                        mac: p.mac_address,
+                        ip: p.current_ip || p.ip_address || 'Unknown',
+                        puckMac: p.customer_id // or p.puck_mac if you have it
+                    }));
+                    console.log("✅ PROCESSED PUCKS STATE:", state.pucks);
                 }
-            });
-        });
-        
-        // Logout handler
-        window.handleLogout = async function() {
-             const { error } = await client.auth.signOut();
-             if (error) {
-                 alert("Error logging out: " + error.message);
-             }
-             checkSession(); // Update UI after logout
-        }
 
-        // --- END AUTHENTICATION FUNCTIONS ---
+                // 4. Process Devices (THIS WAS THE MISSING PART)
+                if (devRes.data) {
+                    state.devices = devRes.data.map(d => ({
+                        ...d,
+                        mac: d.mac_address,      // DATABASE -> DASHBOARD
+                        ip: d.ip_address,        // DATABASE -> DASHBOARD
+                        puckMac: d.puck_mac      // DATABASE -> DASHBOARD
+                    }));
+                    console.log("✅ PROCESSED DEVICES STATE:", state.devices);
+                }
 
-        // --- HELPER: Safe String for HTML Attributes ---
-        function escapeStr(str) {
-            if (!str) return '';
-            return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        }
-
-        // --- APP INIT ---
-async function fetchData() {
-            console.log("🚀 STARTING FETCH...");
-            
-            // 1. Check Auth
-            if (!state.isAuthenticated) {
-                console.log("❌ Not authenticated. Aborting.");
-                return;
+                // 5. Render
+                render();
+                console.log("🎨 RENDER COMPLETE");
             }
-
-            // 2. Fetch Data
-            const [devRes, puckRes] = await Promise.all([
-                client.from('devices').select('*'),
-                client.from('pucks').select('*')
-            ]);
-
-            console.log("📦 RAW PUCKS FROM DB:", puckRes.data);
-            console.log("📦 RAW DEVICES FROM DB:", devRes.data);
-
-            // 3. Process Pucks
-            if (puckRes.data) {
-                state.pucks = puckRes.data.map(p => ({
-                    ...p,
-                    mac: p.mac_address,
-                    ip: p.ip_address || 'Unknown',
-                    puckMac: p.customer_id // or p.puck_mac if you have it
-                }));
-                console.log("✅ PROCESSED PUCKS STATE:", state.pucks);
-            }
-
-            // 4. Process Devices (THIS WAS THE MISSING PART)
-            if (devRes.data) {
-                state.devices = devRes.data.map(d => ({
-                    ...d,
-                    mac: d.mac_address,      // DATABASE -> DASHBOARD
-                    ip: d.ip_address,        // DATABASE -> DASHBOARD
-                    puckMac: d.puck_mac      // DATABASE -> DASHBOARD
-                }));
-                console.log("✅ PROCESSED DEVICES STATE:", state.devices);
-            }
-
-            // 5. Render
-            render();
-            console.log("🎨 RENDER COMPLETE");
-        }
             // Show loading state temporarily
             document.getElementById('groups-container').innerHTML = `
                 <div class="text-center py-12">
@@ -529,15 +758,15 @@ async function fetchData() {
                 </div>
             `;
             lucide.createIcons();
-          
+
             // ... rest of your existing fetchData logic (which you keep) ...
-            
+
             // ... your existing logic for handling devRes.data ...
 
             // ... your existing logic for handling puckRes.data ...
 
             render(); // Existing call to render
-            
+
             // Init Support ID
             let sid = localStorage.getItem('ns_supportId');
             if (!sid) {
@@ -550,7 +779,7 @@ async function fetchData() {
                 localStorage.setItem('ns_supportId', sid);
             }
             const idEl = document.getElementById('settings-account-id');
-            if(idEl) {
+            if (idEl) {
                 // Keep the button structure but set the text
                 idEl.innerHTML = `
                     ${sid}
@@ -563,170 +792,170 @@ async function fetchData() {
             setupRealtime();
 
             // Setup Real-time Staleness Check Loop
-            // Refreshes UI every 30s to update "Last Seen" and Staleness Badges
+            // Refreshes UI every 5s to update "Last Seen" and Staleness Badges
             setInterval(() => {
                 render();
-            }, 30000);
-    
-        function updateTheme() {
-            if (state.settings.darkMode) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        }
-        function setupRealtime() {
-            client.channel('public:all')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'devices' }, payload => {
-                    handleRealtimeUpdate(payload, 'devices');
-                })
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'pucks' }, payload => {
-                    handleRealtimeUpdate(payload, 'pucks');
-                })
-                .subscribe();
-        }
+            }, 5000);
 
-        function handleRealtimeUpdate(payload, table) {
-            if (payload.eventType === 'INSERT') {
-                state[table].push(payload.new);
-            } else if (payload.eventType === 'UPDATE') {
-                if (table === 'devices' && state.settings.aidedDetection) {
-                    if (payload.old.status === 'online' && payload.new.status === 'offline') {
-                        state.flashingIds.add(payload.new.mac);
-                        setTimeout(() => {
-                            state.flashingIds.delete(payload.new.mac);
-                            render();
-                        }, 5000);
+            function updateTheme() {
+                if (state.settings.darkMode) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+            function setupRealtime() {
+                client.channel('public:all')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'devices' }, payload => {
+                        handleRealtimeUpdate(payload, 'devices');
+                    })
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'pucks' }, payload => {
+                        handleRealtimeUpdate(payload, 'pucks');
+                    })
+                    .subscribe();
+            }
+
+            function handleRealtimeUpdate(payload, table) {
+                if (payload.eventType === 'INSERT') {
+                    state[table].push(payload.new);
+                } else if (payload.eventType === 'UPDATE') {
+                    if (table === 'devices' && state.settings.aidedDetection) {
+                        if (payload.old.status === 'online' && payload.new.status === 'offline') {
+                            state.flashingIds.add(payload.new.mac);
+                            setTimeout(() => {
+                                state.flashingIds.delete(payload.new.mac);
+                                render();
+                            }, 5000);
+                        }
                     }
+
+                    // Apply Persistence Logic to Realtime Updates
+                    let newData = payload.new;
+                    if (table === 'devices') {
+                        const localNames = JSON.parse(localStorage.getItem('ns_dev_names') || '{}');
+                        const localMonitors = JSON.parse(localStorage.getItem('ns_dev_monitor') || '{}');
+                        const mac = newData.mac || newData.mac_address;
+
+                        newData = {
+                            ...newData,
+                            mac: mac,
+                            name: localNames[mac] || newData.name,
+                            is_monitored: localMonitors[mac] !== undefined ? localMonitors[mac] : newData.is_monitored
+                        };
+                    }
+
+                    state[table] = state[table].map(d => d.mac === newData.mac ? newData : d);
+                } else if (payload.eventType === 'DELETE') {
+                    state[table] = state[table].filter(d => d.mac !== payload.old.mac);
                 }
-                
-                // Apply Persistence Logic to Realtime Updates
-                let newData = payload.new;
-                if (table === 'devices') {
-                     const localNames = JSON.parse(localStorage.getItem('ns_dev_names') || '{}');
-                     const localMonitors = JSON.parse(localStorage.getItem('ns_dev_monitor') || '{}');
-                     const mac = newData.mac || newData.mac_address;
-                     
-                     newData = {
-                         ...newData,
-                         mac: mac,
-                         name: localNames[mac] || newData.name,
-                         is_monitored: localMonitors[mac] !== undefined ? localMonitors[mac] : newData.is_monitored
-                     };
+
+                // Re-sort pucks on update to ensure active one stays top
+                if (table === 'pucks') {
+                    state.pucks.sort((a, b) => new Date(b.last_seen || 0) - new Date(a.last_seen || 0));
                 }
 
-                state[table] = state[table].map(d => d.mac === newData.mac ? newData : d);
-            } else if (payload.eventType === 'DELETE') {
-                state[table] = state[table].filter(d => d.mac !== payload.old.mac);
-            }
-            
-            // Re-sort pucks on update to ensure active one stays top
-            if (table === 'pucks') {
-                 state.pucks.sort((a, b) => new Date(b.last_seen || 0) - new Date(a.last_seen || 0));
+                render();
             }
 
-            render();
-        }
+            function formatTime(isoString) {
+                if (!isoString) return 'Never';
+                if (state.settings.useAbsoluteTime) {
+                    const date = new Date(isoString);
+                    return date.toLocaleDateString() + ', ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+                const diff = Date.now() - new Date(isoString).getTime();
+                const secs = Math.floor(diff / 1000);
+                const mins = Math.floor(secs / 60);
+                const hours = Math.floor(mins / 60);
 
-        function formatTime(isoString) {
-            if (!isoString) return 'Never';
-            if (state.settings.useAbsoluteTime) {
-                const date = new Date(isoString);
-                return date.toLocaleDateString() + ', ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            }
-            const diff = Date.now() - new Date(isoString).getTime();
-            const secs = Math.floor(diff / 1000);
-            const mins = Math.floor(secs / 60);
-            const hours = Math.floor(mins / 60);
-            
-            if (secs < 60) return 'Just now';
-            if (mins < 60) return `${mins}m ago`;
-            if (hours < 24) return `${hours}h ago`;
-            return `${Math.floor(hours/24)}d ago`;
-        }
-
-        function getHostName(puckMac) {
-            if (!puckMac) return null;
-            const puck = state.pucks.find(p => p.mac === puckMac);
-            return puck ? puck.name : `Puck-${puckMac.slice(-2).toUpperCase()}`;
-        }
-
-        // --- HOST PUCK STATUS LOGIC (THREE-STATE) ---
-function getPuckStatus(puck) {
-            // FIX 1: If date is missing/null, treat as "Never Seen" instead of 1970
-            if (!puck || !puck.last_seen) {
-                 return { 
-                    code: 'UNKNOWN', 
-                    label: 'NEVER SEEN', 
-                    colorClass: 'text-slate-400', 
-                    bgClass: 'bg-slate-100 dark:bg-slate-800' 
-                };
+                if (secs < 60) return 'Just now';
+                if (mins < 60) return `${mins}m ago`;
+                if (hours < 24) return `${hours}h ago`;
+                return `${Math.floor(hours / 24)}d ago`;
             }
 
-            const lastSeenTime = new Date(puck.last_seen);
-            const currentTime = new Date();
-            const timeDiffMs = currentTime.getTime() - lastSeenTime.getTime();
-            const timeDiffMinutes = timeDiffMs / (1000 * 60);
-
-            const GREEN_THRESHOLD_MINUTES = 5;
-            
-            if (puck.status === 'offline') {
-                return { 
-                    code: 'OFFLINE', 
-                    label: 'OFFLINE (DB Alert)', 
-                    colorClass: 'text-rose-600 dark:text-rose-400', 
-                    bgClass: 'bg-rose-100 dark:bg-rose-950/30' 
-                };
-            } else if (timeDiffMinutes <= GREEN_THRESHOLD_MINUTES) {
-                 return { 
-                    code: 'ONLINE', 
-                    label: 'ONLINE', 
-                    colorClass: 'text-emerald-600 dark:text-emerald-400', 
-                    bgClass: 'bg-emerald-100 dark:bg-emerald-950/30' 
-                };
-            } else {
-                 return { 
-                    code: 'STALE', 
-                    label: `STALE (Silent for ${Math.floor(timeDiffMinutes)}m)`, 
-                    colorClass: 'text-amber-600 dark:text-amber-400', 
-                    bgClass: 'bg-amber-100 dark:bg-amber-950/30' 
-                };
+            function getHostName(puckMac) {
+                if (!puckMac) return null;
+                const puck = state.pucks.find(p => p.mac === puckMac);
+                return puck ? puck.name : `Puck-${puckMac.slice(-2).toUpperCase()}`;
             }
-        }
-        // --- RENDER LOGIC ---
-        function render() {
-            updateStats();
-            updateIspStatus();
-            renderGroups();
-            lucide.createIcons();
-            updateSettingsUI();
-            updateWifiSettingsUI();
-            
-            // Critical Update: Refresh Puck Settings if modal is open
-            // This ensures status buttons (Online/Offline) stay live
-            const settingsModal = document.getElementById('settings-modal');
-            if (settingsModal && !settingsModal.classList.contains('hidden')) {
-                renderPuckSettings();
+
+            // --- HOST PUCK STATUS LOGIC (THREE-STATE) ---
+            function getPuckStatus(puck) {
+                // FIX 1: If date is missing/null, treat as "Never Seen" instead of 1970
+                if (!puck || !puck.last_seen) {
+                    return {
+                        code: 'UNKNOWN',
+                        label: 'NEVER SEEN',
+                        colorClass: 'text-slate-400',
+                        bgClass: 'bg-slate-100 dark:bg-slate-800'
+                    };
+                }
+
+                const lastSeenTime = new Date(puck.last_seen);
+                const currentTime = new Date();
+                const timeDiffMs = currentTime.getTime() - lastSeenTime.getTime();
+                const timeDiffMinutes = timeDiffMs / (1000 * 60);
+
+                const GREEN_THRESHOLD_MINUTES = 5;
+
+                if (puck.status === 'offline') {
+                    return {
+                        code: 'OFFLINE',
+                        label: 'OFFLINE (DB Alert)',
+                        colorClass: 'text-rose-600 dark:text-rose-400',
+                        bgClass: 'bg-rose-100 dark:bg-rose-950/30'
+                    };
+                } else if (timeDiffMinutes <= GREEN_THRESHOLD_MINUTES) {
+                    return {
+                        code: 'ONLINE',
+                        label: 'ONLINE',
+                        colorClass: 'text-emerald-600 dark:text-emerald-400',
+                        bgClass: 'bg-emerald-100 dark:bg-emerald-950/30'
+                    };
+                } else {
+                    return {
+                        code: 'STALE',
+                        label: `STALE (Silent for ${Math.floor(timeDiffMinutes)}m)`,
+                        colorClass: 'text-amber-600 dark:text-amber-400',
+                        bgClass: 'bg-amber-100 dark:bg-amber-950/30'
+                    };
+                }
             }
-        }
+            // --- RENDER LOGIC ---
+            function render() {
+                updateStats();
+                updateIspStatus();
+                renderGroups();
+                lucide.createIcons();
+                updateSettingsUI();
+                updateWifiSettingsUI();
 
-        function updateIspStatus() {
-            const ispEl = document.getElementById('isp-status');
-            const hostPuck = state.pucks.length > 0 ? state.pucks[0] : null;
+                // Critical Update: Refresh Puck Settings if modal is open
+                // This ensures status buttons (Online/Offline) stay live
+                const settingsModal = document.getElementById('settings-modal');
+                if (settingsModal && !settingsModal.classList.contains('hidden')) {
+                    renderPuckSettings();
+                }
+            }
 
-            if (!hostPuck) {
-                 ispEl.innerHTML = `
+            function updateIspStatus() {
+                const ispEl = document.getElementById('isp-status');
+                const hostPuck = state.pucks.length > 0 ? state.pucks[0] : null;
+
+                if (!hostPuck) {
+                    ispEl.innerHTML = `
                     <span class="w-3 h-3 rounded-full bg-slate-500"></span>
                     <span class="text-slate-900 dark:text-white">NO HOST</span>
                 `;
-                return;
-            }
+                    return;
+                }
 
-            const status = getPuckStatus(hostPuck);
-            
-            if (status.code === 'ONLINE') {
-                // Online with Heartbeat
-                ispEl.innerHTML = `
+                const status = getPuckStatus(hostPuck);
+
+                if (status.code === 'ONLINE') {
+                    // Online with Heartbeat
+                    ispEl.innerHTML = `
                     <div class="flex items-center gap-2">
                          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-heartbeat"></span>
                          <span class="text-slate-900 dark:text-white font-bold tracking-tight">ISP</span>
@@ -742,163 +971,163 @@ function getPuckStatus(puck) {
                          <span class="text-slate-900 dark:text-white font-bold tracking-tight">WIFI</span>
                     </div>
                 `;
-            } else if (status.code === 'STALE') {
-                 // Stale Warning
-                 ispEl.innerHTML = `
+                } else if (status.code === 'STALE') {
+                    // Stale Warning
+                    ispEl.innerHTML = `
                     <div class="flex items-center gap-2" title="${status.label}">
                          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
                          <span class="text-amber-600 dark:text-amber-500 font-bold tracking-tight">ISP: STALE</span>
                     </div>
                 `;
-            } else {
-                // Offline
-                 ispEl.innerHTML = `
+                } else {
+                    // Offline
+                    ispEl.innerHTML = `
                     <span class="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]"></span>
                     <span class="text-rose-600 dark:text-rose-500 font-bold">ISP: OFFLINE</span>
                 `;
-            }
-        }
-
-        function updateWifiSettingsUI() {
-            const badge = document.getElementById('wifi-status-badge');
-            if(!badge) return;
-
-            const hostPuck = state.pucks.length > 0 ? state.pucks[0] : null;
-            
-            // Auto-fill Logic
-            const ssidInput = document.getElementById('wifi-ssid');
-            const wifiName = (hostPuck && hostPuck.status === 'online') ? (hostPuck.ssid || hostPuck.wifi_ssid || '') : '';
-            
-            // Only auto-fill if we have a wifi name AND the input is empty (so we don't overwrite user typing)
-            if (ssidInput && wifiName && ssidInput.value === '') {
-                ssidInput.value = wifiName;
+                }
             }
 
-            const status = getPuckStatus(hostPuck);
+            function updateWifiSettingsUI() {
+                const badge = document.getElementById('wifi-status-badge');
+                if (!badge) return;
 
-            if (status.code === 'ONLINE') {
-                const displayName = wifiName || 'Connected';
-                badge.innerHTML = `
+                const hostPuck = state.pucks.length > 0 ? state.pucks[0] : null;
+
+                // Auto-fill Logic
+                const ssidInput = document.getElementById('wifi-ssid');
+                const wifiName = (hostPuck && hostPuck.status === 'online') ? (hostPuck.ssid || hostPuck.wifi_ssid || '') : '';
+
+                // Only auto-fill if we have a wifi name AND the input is empty (so we don't overwrite user typing)
+                if (ssidInput && wifiName && ssidInput.value === '') {
+                    ssidInput.value = wifiName;
+                }
+
+                const status = getPuckStatus(hostPuck);
+
+                if (status.code === 'ONLINE') {
+                    const displayName = wifiName || 'Connected';
+                    badge.innerHTML = `
                     <div class="flex items-center gap-1.5 px-2 py-1 rounded bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 transition-all">
                         <i data-lucide="wifi" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 animate-heartbeat"></i>
                         <span class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wide">${escapeStr(displayName)}</span>
                     </div>
                 `;
-            } else if (status.code === 'STALE') {
-                 badge.innerHTML = `
+                } else if (status.code === 'STALE') {
+                    badge.innerHTML = `
                     <div class="flex items-center gap-1.5 px-2 py-1 rounded bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 transition-all">
                         <i data-lucide="wifi" class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400"></i>
                         <span class="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wide">Data Stale</span>
                     </div>
                 `;
-            } else {
-                badge.innerHTML = `
+                } else {
+                    badge.innerHTML = `
                      <div class="flex items-center gap-1.5 px-2 py-1 rounded bg-rose-100 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 transition-all">
                         <i data-lucide="wifi-off" class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400"></i>
                         <span class="text-[10px] font-bold text-rose-700 dark:text-rose-300 uppercase tracking-wide">Disconnected</span>
                     </div>
                 `;
+                }
+                lucide.createIcons();
             }
-            lucide.createIcons();
-        }
 
-        function updateStats() {
-            const devices = getFilteredDevices();
-            const total = devices.length;
-            const online = devices.filter(d => d.status === 'online').length;
-            const tracked = devices.filter(d => d.is_monitored).length;
-            
-            document.getElementById('stat-total').innerText = total;
-            document.getElementById('stat-online').innerText = online;
-            document.getElementById('stat-tracked').innerText = tracked;
-            
-            const alerts = devices.filter(d => state.settings.trackIpChanges && d.last_ip && d.ip !== d.last_ip).length;
-            const alertEl = document.getElementById('stat-alerts');
-            alertEl.innerText = alerts;
-            alertEl.parentElement.className = `glass-panel p-3 rounded-lg flex flex-col items-center justify-center text-center ${alerts > 0 ? 'border-amber-500/50 bg-amber-50 dark:bg-amber-900/20' : ''}`;
-        }
+            function updateStats() {
+                const devices = getFilteredDevices();
+                const total = devices.length;
+                const online = devices.filter(d => d.status === 'online').length;
+                const tracked = devices.filter(d => d.is_monitored).length;
 
-        function getFilteredDevices() {
-             // CRITICAL ARCHITECTURE FIX: SEPARATION OF CONCERNS
-             // The Puck is the Observer (Gateway), not the Observed (Inventory).
-             
-             // 1. Get IPs of all known Host Pucks to filter them OUT of the inventory list
-            const puckIps = new Set(state.pucks.map(p => p.current_ip).filter(ip => ip));
+                document.getElementById('stat-total').innerText = total;
+                document.getElementById('stat-online').innerText = online;
+                document.getElementById('stat-tracked').innerText = tracked;
 
-            // 2. Filter devices: Remove any row where the IP matches a Puck's IP
-            // This ensures the Puck itself does not appear in the general device list.
-            let devs = state.devices.filter(d => !puckIps.has(d.ip));
-            
-            // 3. Apply standard sorting
-            return sortDevices(devs);
-        }
+                const alerts = devices.filter(d => state.settings.trackIpChanges && d.last_ip && d.ip !== d.last_ip).length;
+                const alertEl = document.getElementById('stat-alerts');
+                alertEl.innerText = alerts;
+                alertEl.parentElement.className = `glass-panel p-3 rounded-lg flex flex-col items-center justify-center text-center ${alerts > 0 ? 'border-amber-500/50 bg-amber-50 dark:bg-amber-900/20' : ''}`;
+            }
 
-function sortDevices(devs) {
-            const { key, dir } = state.sort;
-            
-            return devs.sort((a, b) => {
-                // CHANGE 'const' TO 'let' SO WE CAN UPDATE THEM BELOW
-                let valA = a[key] || ''; 
-                let valB = b[key] || '';
+            function getFilteredDevices() {
+                // CRITICAL ARCHITECTURE FIX: SEPARATION OF CONCERNS
+                // The Puck is the Observer (Gateway), not the Observed (Inventory).
 
-                // Handle status sorting specifically
-                if (key === 'status') {
-                    valA = a.status === 'online' ? 1 : 0;
-                    valB = b.status === 'online' ? 1 : 0;
+                // 1. Get IPs of all known Host Pucks to filter them OUT of the inventory list
+                const puckIps = new Set(state.pucks.map(p => p.current_ip).filter(ip => ip));
+
+                // 2. Filter devices: Remove any row where the IP matches a Puck's IP
+                // This ensures the Puck itself does not appear in the general device list.
+                let devs = state.devices.filter(d => !puckIps.has(d.ip));
+
+                // 3. Apply standard sorting
+                return sortDevices(devs);
+            }
+
+            function sortDevices(devs) {
+                const { key, dir } = state.sort;
+
+                return devs.sort((a, b) => {
+                    // CHANGE 'const' TO 'let' SO WE CAN UPDATE THEM BELOW
+                    let valA = a[key] || '';
+                    let valB = b[key] || '';
+
+                    // Handle status sorting specifically
+                    if (key === 'status') {
+                        valA = a.status === 'online' ? 1 : 0;
+                        valB = b.status === 'online' ? 1 : 0;
+                    }
+
+                    if (valA < valB) return dir === 'asc' ? -1 : 1;
+                    if (valA > valB) return dir === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+
+            function renderGroups() {
+                const container = document.getElementById('groups-container');
+                container.innerHTML = '';
+
+                const devices = getFilteredDevices();
+                const groups = {};
+                devices.forEach(d => {
+                    const loc = d.location || 'Devices';
+                    if (!groups[loc]) groups[loc] = [];
+                    groups[loc].push(d);
+                });
+
+                const groupNames = Object.keys(groups).sort((a, b) => {
+                    // Host Controllers group is now effectively empty/hidden via filter, 
+                    // but good to keep sort logic robust
+                    if (a === 'Host Controllers') return -1;
+                    if (b === 'Host Controllers') return 1;
+                    if (a === 'Devices') return 1;
+                    if (b === 'Devices') return -1;
+                    return a.localeCompare(b);
+                });
+
+                if (groupNames.length === 0) {
+                    container.innerHTML = `<div class="text-center text-slate-500 py-10">No devices found. Check settings or connection.</div>`;
+                    return;
                 }
 
-                if (valA < valB) return dir === 'asc' ? -1 : 1;
-                if (valA > valB) return dir === 'asc' ? 1 : -1;
-                return 0;
-            });
-        }
+                groupNames.forEach(loc => {
+                    const groupDevs = groups[loc];
+                    const borderClass = 'border-slate-200 dark:border-slate-800';
+                    const headerBg = 'bg-slate-50 dark:bg-slate-900/50';
 
-        function renderGroups() {
-            const container = document.getElementById('groups-container');
-            container.innerHTML = '';
-            
-            const devices = getFilteredDevices();
-            const groups = {};
-            devices.forEach(d => {
-                const loc = d.location || 'Devices';
-                if (!groups[loc]) groups[loc] = [];
-                groups[loc].push(d);
-            });
-            
-            const groupNames = Object.keys(groups).sort((a, b) => {
-                // Host Controllers group is now effectively empty/hidden via filter, 
-                // but good to keep sort logic robust
-                if (a === 'Host Controllers') return -1;
-                if (b === 'Host Controllers') return 1;
-                if (a === 'Devices') return 1;
-                if (b === 'Devices') return -1;
-                return a.localeCompare(b);
-            });
+                    let groupIcon = 'map-pin';
+                    if (loc === 'Host Controllers') groupIcon = 'server';
 
-            if (groupNames.length === 0) {
-                container.innerHTML = `<div class="text-center text-slate-500 py-10">No devices found. Check settings or connection.</div>`;
-                return;
-            }
-
-            groupNames.forEach(loc => {
-                const groupDevs = groups[loc];
-                const borderClass = 'border-slate-200 dark:border-slate-800';
-                const headerBg = 'bg-slate-50 dark:bg-slate-900/50';
-
-                let groupIcon = 'map-pin';
-                if (loc === 'Host Controllers') groupIcon = 'server';
-
-                const iconHtml = loc === 'Devices' ? '' : `
+                    const iconHtml = loc === 'Devices' ? '' : `
                     <div class="p-1.5 rounded bg-white dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700">
                         <i data-lucide="${groupIcon}" class="w-4 h-4"></i>
                     </div>
                 `;
 
-                // Add Rename Feature to Header
-                const safeLoc = escapeStr(loc);
-                const isHostGroup = loc === 'Host Controllers';
-                
-                const html = `
+                    // Add Rename Feature to Header
+                    const safeLoc = escapeStr(loc);
+                    const isHostGroup = loc === 'Host Controllers';
+
+                    const html = `
                     <div class="glass-panel rounded-xl overflow-hidden border ${borderClass}">
                         <div class="px-4 py-3 ${headerBg} border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
                             <div class="flex items-center gap-3">
@@ -931,37 +1160,37 @@ function sortDevices(devs) {
                         </div>
                     </div>
                 `;
-                container.innerHTML += html;
-            });
-        }
+                    container.innerHTML += html;
+                });
+            }
 
-        function getConnectionIcon(type) {
-             if (!type) return 'wifi';
-             if (type === 'ethernet' || type === 'wired') return 'network';
-             return 'wifi';
-        }
+            function getConnectionIcon(type) {
+                if (!type) return 'wifi';
+                if (type === 'ethernet' || type === 'wired') return 'network';
+                return 'wifi';
+            }
 
-        function renderDesktopRow(d) {
-            const isOnline = d.status === 'online';
-            const ipChanged = state.settings.trackIpChanges && d.last_ip && d.ip !== d.last_ip;
-            const connIcon = getConnectionIcon(d.connection_type);
-            const isFlashing = state.flashingIds.has(d.mac);
-            const isVirtual = d.is_virtual || false;
-            const hostName = getHostName(d.puck_mac);
-            const safeMac = escapeStr(d.mac);
-            
-            // --- SMART ID SELECTION ---
-            let targetMac = null;
-            if (d.puck_mac && d.puck_mac.trim() !== '') targetMac = d.puck_mac;
-            else if (d.mac && d.mac.trim() !== '') targetMac = d.mac;
+            function renderDesktopRow(d) {
+                const isOnline = d.status === 'online';
+                const ipChanged = state.settings.trackIpChanges && d.last_ip && d.ip !== d.last_ip;
+                const connIcon = getConnectionIcon(d.connection_type);
+                const isFlashing = state.flashingIds.has(d.mac);
+                const isVirtual = d.is_virtual || false;
+                const hostName = getHostName(d.puck_mac);
+                const safeMac = escapeStr(d.mac);
 
-            const hasMac = targetMac && targetMac.trim() !== '';
-            
-            const rowClass = ipChanged 
-                ? 'bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/30 border-l-4 border-l-amber-500' 
-                : `hover:bg-slate-50 dark:hover:bg-slate-800/30 border-l-4 border-l-transparent ${isFlashing ? 'animate-flash-red' : ''}`;
+                // --- SMART ID SELECTION ---
+                let targetMac = null;
+                if (d.puck_mac && d.puck_mac.trim() !== '') targetMac = d.puck_mac;
+                else if (d.mac && d.mac.trim() !== '') targetMac = d.mac;
 
-            return `
+                const hasMac = targetMac && targetMac.trim() !== '';
+
+                const rowClass = ipChanged
+                    ? 'bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/30 border-l-4 border-l-amber-500'
+                    : `hover:bg-slate-50 dark:hover:bg-slate-800/30 border-l-4 border-l-transparent ${isFlashing ? 'animate-flash-red' : ''}`;
+
+                return `
                 <tr class="${rowClass} transition-colors">
                     <td class="p-4">
                         <span class="inline-flex items-center gap-2 px-2 py-1 rounded-full text-xs font-bold border ${isOnline ? 'bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' : 'bg-rose-100 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-500/20'}">
@@ -970,14 +1199,14 @@ function sortDevices(devs) {
                         </span>
                     </td>
                     <td class="p-4">
-                        ${state.editingId === d.mac && !isVirtual ? 
-                            `<input type="text" value="${d.name || ''}" class="bg-white dark:bg-slate-950 border border-sky-500 rounded px-2 py-1 text-slate-900 dark:text-white text-sm w-40" 
+                        ${state.editingId === d.mac && !isVirtual ?
+                        `<input type="text" value="${d.name || ''}" class="bg-white dark:bg-slate-950 border border-sky-500 rounded px-2 py-1 text-slate-900 dark:text-white text-sm w-40" 
                                 onblur="window.saveName('${safeMac}', this.value)" onkeydown="if(event.key==='Enter') this.blur()">` :
-                            `<div class="font-medium text-slate-900 dark:text-white cursor-pointer hover:text-sky-500 dark:hover:text-sky-400 flex items-center gap-2 group" ${!isVirtual ? `onclick="window.startEdit('${safeMac}')"` : ''}>
+                        `<div class="font-medium text-slate-900 dark:text-white cursor-pointer hover:text-sky-500 dark:hover:text-sky-400 flex items-center gap-2 group" ${!isVirtual ? `onclick="window.startEdit('${safeMac}')"` : ''}>
                                 <i data-lucide="${connIcon}" class="w-3.5 h-3.5 text-slate-400"></i>
                                 ${d.name || 'Unknown Device'} ${!isVirtual ? `<i data-lucide="edit-2" class="w-3 h-3 opacity-0 group-hover:opacity-100 text-slate-400"></i>` : ''}
                             </div>`
-                        }
+                    }
                         ${state.settings.showManufacturer ? `<div class="text-sm font-bold text-slate-400 ml-5">${d.manufacturer || 'Generic'}</div>` : ''}
                         ${(hostName && state.settings.showHostPuck) ? `<div class="text-xs text-sky-600 dark:text-sky-400 ml-5 mt-0.5 flex items-center gap-1"><i data-lucide="cpu" class="w-3 h-3"></i> ${hostName}</div>` : ''}
                     </td>
@@ -1043,29 +1272,29 @@ function sortDevices(devs) {
                     </td>
                 </tr>
             `;
-        }
+            }
 
-        function renderMobileCard(d) {
-            const isOnline = d.status === 'online';
-            const ipChanged = state.settings.trackIpChanges && d.last_ip && d.ip !== d.last_ip;
-            const connIcon = getConnectionIcon(d.connection_type);
-            const isFlashing = state.flashingIds.has(d.mac);
-            const isVirtual = d.is_virtual || false;
-            const hostName = getHostName(d.puck_mac);
-            const safeMac = escapeStr(d.mac);
-            
-             // --- SMART ID SELECTION ---
-            let targetMac = null;
-            if (d.puck_mac && d.puck_mac.trim() !== '') targetMac = d.puck_mac;
-            else if (d.mac && d.mac.trim() !== '') targetMac = d.mac;
+            function renderMobileCard(d) {
+                const isOnline = d.status === 'online';
+                const ipChanged = state.settings.trackIpChanges && d.last_ip && d.ip !== d.last_ip;
+                const connIcon = getConnectionIcon(d.connection_type);
+                const isFlashing = state.flashingIds.has(d.mac);
+                const isVirtual = d.is_virtual || false;
+                const hostName = getHostName(d.puck_mac);
+                const safeMac = escapeStr(d.mac);
 
-            const hasMac = targetMac && targetMac.trim() !== '';
+                // --- SMART ID SELECTION ---
+                let targetMac = null;
+                if (d.puck_mac && d.puck_mac.trim() !== '') targetMac = d.puck_mac;
+                else if (d.mac && d.mac.trim() !== '') targetMac = d.mac;
 
-            const cardClass = ipChanged 
-                ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800' 
-                : '';
+                const hasMac = targetMac && targetMac.trim() !== '';
 
-            return `
+                const cardClass = ipChanged
+                    ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                    : '';
+
+                return `
                 <div class="p-4 active:bg-slate-50 dark:active:bg-slate-800/40 transition-colors ${isFlashing ? 'animate-flash-red' : ''} ${cardClass}">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex items-start gap-3 w-full">
@@ -1073,13 +1302,13 @@ function sortDevices(devs) {
                                 <i data-lucide="${connIcon}" class="w-5 h-5"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                ${state.editingId === d.mac && !isVirtual ? 
-                                    `<input type="text" value="${d.name || ''}" class="bg-white dark:bg-slate-950 border border-sky-500 rounded px-2 py-1 text-slate-900 dark:text-white text-sm w-full mb-1" 
+                                ${state.editingId === d.mac && !isVirtual ?
+                        `<input type="text" value="${d.name || ''}" class="bg-white dark:bg-slate-950 border border-sky-500 rounded px-2 py-1 text-slate-900 dark:text-white text-sm w-full mb-1" 
                                         onblur="window.saveName('${safeMac}', this.value)" onkeydown="if(event.key==='Enter') this.blur()">` :
-                                    `<div class="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2 truncate" ${!isVirtual ? `onclick="window.startEdit('${safeMac}')"` : ''}>
+                        `<div class="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2 truncate" ${!isVirtual ? `onclick="window.startEdit('${safeMac}')"` : ''}>
                                         ${d.name || 'Unknown Device'}
                                     </div>`
-                                }
+                    }
                                 
                                 ${ipChanged ? `
                                     <div class="mt-2 bg-amber-100 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700 rounded p-2 text-xs">
@@ -1121,12 +1350,12 @@ function sortDevices(devs) {
                     
                     <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-200 dark:border-slate-800/50">
                         <div class="flex gap-2">
-                             ${!isVirtual ? 
-                                 `<button onclick="event.stopPropagation(); window.promptLocation('${safeMac}')" class="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                             ${!isVirtual ?
+                        `<button onclick="event.stopPropagation(); window.promptLocation('${safeMac}')" class="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
                                     ${d.location || 'Assign Group'}
-                                 </button>` : 
-                                 `<span class="text-[10px] bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 px-2 py-1 rounded uppercase font-bold tracking-wider">Controller</span>`
-                             }
+                                 </button>` :
+                        `<span class="text-[10px] bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 px-2 py-1 rounded uppercase font-bold tracking-wider">Controller</span>`
+                    }
                              
                              ${isVirtual ? (hasMac ? `
                                 <button onclick="event.stopPropagation(); window.handleCommand(this, '${escapeStr(targetMac)}', 'SCAN_NETWORK')" class="p-1.5 rounded bg-slate-100 dark:bg-slate-800 text-indigo-500 dark:text-indigo-400" title="Scan">
@@ -1144,372 +1373,388 @@ function sortDevices(devs) {
                     </div>
                 </div>
             `;
-        }
-
-        // --- ACTIONS ---
-        
-        window.acknowledgeIpChange = async function(mac) {
-             const device = state.devices.find(d => d.mac === mac);
-             if (!device) return;
-             
-             // Optimistic
-             state.devices = state.devices.map(d => d.mac === mac ? {...d, last_ip: d.ip} : d);
-             render();
-             
-             // Database
-             const { error } = await client.from('devices').update({ last_ip: device.ip }).eq('mac', mac);
-             if (error) {
-                 alert("Failed to update database: " + error.message);
-                 // Revert if needed, but for now just alert
-             }
-        }
-
-        window.saveName = async function(mac, newName) {
-            state.editingId = null;
-            
-            // 1. Local Persistence (First Line of Defense)
-            const localNames = JSON.parse(localStorage.getItem('ns_dev_names') || '{}');
-            localNames[mac] = newName;
-            localStorage.setItem('ns_dev_names', JSON.stringify(localNames));
-            
-            // 2. Optimistic Update
-            state.devices = state.devices.map(d => d.mac === mac ? {...d, name: newName} : d);
-            render();
-            
-            // 3. Remote Update
-            const { error } = await client.from('devices').update({ name: newName }).eq('mac', mac);
-            if(error) {
-                console.warn("Supabase update failed:", error);
-                // We do NOT revert because we have local persistence protecting the user choice
             }
-        }
 
-        window.savePuckName = async function(mac, newName) {
-            state.pucks = state.pucks.map(p => p.mac === mac ? {...p, name: newName} : p);
-            render();
-            // FIX: Use 'mac_address' for the database query
-            await client.from('pucks').update({ name: newName }).eq('mac_address', mac);
-        }
+            // --- ACTIONS ---
 
-        window.deletePuck = async function(mac) {
-            // Robust check
-            if (!mac || mac === 'undefined' || mac === 'null') {
-                console.warn("Delete attempt with invalid MAC");
-                return;
+            window.acknowledgeIpChange = async function (mac) {
+                const device = state.devices.find(d => d.mac === mac);
+                if (!device) return;
+
+                // Optimistic
+                state.devices = state.devices.map(d => d.mac === mac ? { ...d, last_ip: d.ip } : d);
+                render();
+
+                // Database
+                const { error } = await client.from('devices').update({ last_ip: device.ip }).eq('mac', mac);
+                if (error) {
+                    alert("Failed to update database: " + error.message);
+                    // Revert if needed, but for now just alert
+                }
             }
-            
-            // Force confirmation using setTimeout to unblock UI event loop first if needed
-            setTimeout(async () => {
-                 const confirmed = confirm("Are you sure you want to remove this Host Puck? This cannot be undone.");
-                 if (!confirmed) return;
-                 
-                 state.pucks = state.pucks.filter(p => p.mac !== mac);
-                 render();
-                 renderPuckSettings();
-                 
-                 // FIX: Use 'mac_address' for the database query
-                 const { error } = await client.from('pucks').delete().eq('mac_address', mac);
-                 if (error) {
-                     alert("Error removing from database: " + error.message);
-                 }
-            }, 10);
-        }
 
-        // NEW: Generic Command Handler with UI Feedback
-        window.handleCommand = async function(btn, mac, type) {
-            // Confirmation Logic
-            let message = "Send this command?";
-            if (type === 'REBOOT') message = "Are you sure you want to REBOOT this Host Controller?\n\nThe device will go offline for approximately 60 seconds.";
-            if (type === 'SCAN_NETWORK') message = "Are you sure you want to force a NETWORK SCAN?\n\nThis will bypass the schedule and may cause temporary network load.";
+            window.saveName = async function (mac, newName) {
+                state.editingId = null;
 
-            if (!confirm(message)) return;
+                // 1. Local Persistence (First Line of Defense)
+                const localNames = JSON.parse(localStorage.getItem('ns_dev_names') || '{}');
+                localNames[mac] = newName;
+                localStorage.setItem('ns_dev_names', JSON.stringify(localNames));
 
-            // UI Feedback: Loading
-            const originalHtml = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin text-sky-500"></i>`;
-            lucide.createIcons();
+                // 2. Optimistic Update
+                state.devices = state.devices.map(d => d.mac === mac ? { ...d, name: newName } : d);
+                render();
 
-            try {
-                await window.sendCommand(mac, type);
-                
-                // UI Feedback: Success
-                btn.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-emerald-500"></i>`;
+                // 3. Remote Update
+                const { error } = await client.from('devices').update({ name: newName }).eq('mac', mac);
+                if (error) {
+                    console.warn("Supabase update failed:", error);
+                    // We do NOT revert because we have local persistence protecting the user choice
+                }
+            }
+
+            window.savePuckName = async function (mac, newName) {
+                state.pucks = state.pucks.map(p => p.mac === mac ? { ...p, name: newName } : p);
+                render();
+                // FIX: Use 'mac_address' for the database query
+                await client.from('pucks').update({ name: newName }).eq('mac_address', mac);
+            }
+
+            window.deletePuck = async function (mac) {
+                // Robust check
+                if (!mac || mac === 'undefined' || mac === 'null') {
+                    console.warn("Delete attempt with invalid MAC");
+                    return;
+                }
+
+                const confirmed = await customConfirm(
+                    "Remove Host Puck",
+                    "Are you sure you want to remove this Host Puck? This cannot be undone."
+                );
+                if (!confirmed) return;
+
+                state.pucks = state.pucks.filter(p => p.mac !== mac);
+                render();
+                renderPuckSettings();
+
+                // FIX: Use 'mac_address' for the database query
+                const { error } = await client.from('pucks').delete().eq('mac_address', mac);
+                if (error) {
+                    await customConfirm("Error", "Error removing from database: " + error.message);
+                }
+            }
+
+            // NEW: Generic Command Handler with UI Feedback
+            window.handleCommand = async function (btn, mac, type) {
+                // Confirmation Logic
+                let message = "Send this command?";
+                if (type === 'REBOOT') message = "Are you sure you want to REBOOT this Host Controller?\n\nThe device will go offline for approximately 60 seconds.";
+                if (type === 'SCAN_NETWORK') message = "Are you sure you want to force a NETWORK SCAN?\n\nThis will bypass the schedule and may cause temporary network load.";
+
+                const confirmed = await customConfirm(
+                    type === 'REBOOT' ? "Reboot Device" : "Confirm Action",
+                    message
+                );
+                if (!confirmed) return;
+
+                // UI Feedback: Loading
+                const originalHtml = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin text-sky-500"></i>`;
                 lucide.createIcons();
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalHtml;
+
+                try {
+                    await window.sendCommand(mac, type);
+
+                    // UI Feedback: Success
+                    btn.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-emerald-500"></i>`;
+                    lucide.createIcons();
+
+                    setTimeout(() => {
+                        btn.innerHTML = originalHtml;
+                        btn.disabled = false;
+                        lucide.createIcons();
+                    }, 2000);
+                } catch (err) {
+                    // UI Feedback: Error
+                    console.error("Command Execution Error:", err);
+                    alert("Failed to send command: " + (err.message || "Unknown error"));
+                    btn.innerHTML = originalHtml; // Revert
                     btn.disabled = false;
                     lucide.createIcons();
-                }, 2000);
-            } catch (err) {
-                // UI Feedback: Error
-                console.error("Command Execution Error:", err);
-                alert("Failed to send command: " + (err.message || "Unknown error"));
-                btn.innerHTML = originalHtml; // Revert
-                btn.disabled = false;
-                lucide.createIcons();
+                }
             }
-        }
 
-        // NEW: Core Command Logic
-        window.sendCommand = async function(mac, type) {
-            console.log(`[Command] Sending ${type} to ${mac}`);
-            
-            const payload = { 
-                puck_mac: mac,        // Explicit column as requested
-                command_type: type,
-                payload: { target_mac: mac }, // Keep payload for backward compatibility
-                status: 'pending'
-            };
+            // NEW: Core Command Logic
+            window.sendCommand = async function (mac, type) {
+                console.log(`[Command] Sending ${type} to ${mac}`);
 
-            const { data, error } = await client
-                .from('commands')
-                .insert(payload)
-                .select();
+                const payload = {
+                    puck_mac: mac,        // Explicit column as requested
+                    command_type: type,
+                    payload: { target_mac: mac }, // Keep payload for backward compatibility
+                    status: 'pending'
+                };
 
-            if (error) {
-                console.error("[Supabase Error]", error);
-                throw error;
+                const { data, error } = await client
+                    .from('commands')
+                    .insert(payload)
+                    .select();
+
+                if (error) {
+                    console.error("[Supabase Error]", error);
+                    throw error;
+                }
+
+                console.log("[Command] Success:", data);
+                return data;
             }
-            
-            console.log("[Command] Success:", data);
-            return data;
-        }
 
-        window.saveWifiConfig = async function() {
-            const ssid = document.getElementById('wifi-ssid').value;
-            const pass = document.getElementById('wifi-pass').value;
-            if(!ssid || !pass) return alert("Please enter both SSID and Password");
-            
-            const confirmed = confirm(`Update fleet credentials to network: "${ssid}"?`);
-            if(confirmed) {
-                const { error } = await client.from('commands').insert({
-                     command_type: 'UPDATE_WIFI',
-                     payload: { ssid, pass },
-                     status: 'pending'
+            window.saveWifiConfig = async function () {
+                const ssid = document.getElementById('wifi-ssid').value;
+                const pass = document.getElementById('wifi-pass').value;
+                if (!ssid || !pass) return alert("Please enter both SSID and Password");
+
+                const confirmed = await customConfirm("Update WiFi", `Update fleet credentials to network: "${ssid}"?`);
+                if (confirmed) {
+                    const { error } = await client.from('commands').insert({
+                        command_type: 'UPDATE_WIFI',
+                        payload: { ssid, pass },
+                        status: 'pending'
+                    });
+
+                    if (!error) {
+                        await customConfirm("Success", "WiFi Credentials Sent to Fleet.");
+                        document.getElementById('wifi-ssid').value = '';
+                        document.getElementById('wifi-pass').value = '';
+                    } else {
+                        await customConfirm("Error", "Error sending config: " + error.message);
+                    }
+                }
+            }
+
+            window.addManualPuck = async function () {
+                const mac = await customPrompt("Enter Puck MAC Address (e.g., AA:BB:CC:DD:EE:FF):");
+                if (!mac) return;
+                const name = await customPrompt("Enter Puck Name:", "New Puck");
+                if (!name) return;
+
+                // 1. GET CURRENT USER ID
+                const { data: { user } } = await client.auth.getUser();
+
+                if (!user) {
+                    await customConfirm("Error", "You must be logged in to add a puck.");
+                    return;
+                }
+
+                // 2. INCLUDE CUSTOMER_ID IN THE DATA
+                const newPuck = {
+                    mac_address: mac,
+                    name: name,
+                    status: 'offline',
+                    last_seen: new Date().toISOString(),
+                    customer_id: user.id
+                };
+
+                // Optimistic UI update
+                state.pucks.push(newPuck);
+                render();
+
+                // Render the specific settings list again
+                if (typeof renderPuckSettings === 'function') {
+                    renderPuckSettings();
+                }
+
+                const { error } = await client.from('pucks').insert([newPuck]);
+
+                if (error) {
+                    await customConfirm("Error", "Error adding puck: " + error.message);
+                    // Revert UI if failed
+                    state.pucks = state.pucks.filter(p => p.mac_address !== mac);
+                    render();
+                }
+            }
+            window.renameGroup = async function (oldName) {
+                const newName = await customPrompt(`Rename group "${oldName}" to:`, oldName);
+                if (!newName || newName === oldName) return;
+
+                const cleanNew = newName.trim();
+                const cleanOld = oldName === 'Devices' ? null : oldName; // Handle default null
+
+                // Optimistic Update
+                state.devices = state.devices.map(d => {
+                    if ((d.location || 'Devices') === oldName) {
+                        return { ...d, location: cleanNew };
+                    }
+                    return d;
                 });
-                
-                if(!error) {
-                    alert("WiFi Credentials Sent to Fleet.");
-                    document.getElementById('wifi-ssid').value = '';
-                    document.getElementById('wifi-pass').value = '';
+                render();
+
+                // Bulk Update DB
+                // If oldName was "Devices" (null in DB), update where location is null
+                let query = client.from('devices').update({ location: cleanNew });
+
+                if (oldName === 'Devices') {
+                    query = query.is('location', null);
                 } else {
-                    alert("Error sending config: " + error.message);
+                    query = query.eq('location', oldName);
+                }
+
+                const { error } = await query;
+                if (error) {
+                    console.error("Group rename failed:", error);
+                    await customConfirm("Error", "Failed to rename group on server.");
                 }
             }
-        }
 
-window.addManualPuck = async function() {
-            const mac = prompt("Enter Puck MAC Address (e.g., AA:BB:CC:DD:EE:FF):");
-            if (!mac) return;
-            const name = prompt("Enter Puck Name:", "New Puck");
-            if (!name) return;
+            window.promptLocation = async function (mac) {
+                // Find device in current state (real or just-fetched)
+                const device = state.devices.find(d => d.mac === mac);
 
-            // 1. GET CURRENT USER ID
-            const { data: { user } } = await client.auth.getUser();
-
-            if (!user) {
-                alert("You must be logged in to add a puck.");
-                return;
-            }
-
-            // 2. INCLUDE CUSTOMER_ID IN THE DATA
-            const newPuck = { 
-                mac_address: mac, 
-                name: name, 
-                status: 'offline', 
-                last_seen: new Date().toISOString(),
-                customer_id: user.id
-            };
-
-            // Optimistic UI update
-            state.pucks.push(newPuck);
-            render();
-            
-            // Render the specific settings list again
-            if (typeof renderPuckSettings === 'function') {
-                renderPuckSettings();
-            }
-
-            const { error } = await client.from('pucks').insert([newPuck]);
-            
-            if (error) {
-                alert("Error adding puck: " + error.message);
-                // Revert UI if failed
-                state.pucks = state.pucks.filter(p => p.mac_address !== mac);
-                render();
-            }
-        }
-        window.renameGroup = async function(oldName) {
-            const newName = prompt(`Rename group "${oldName}" to:`, oldName);
-            if (!newName || newName === oldName) return;
-            
-            const cleanNew = newName.trim();
-            const cleanOld = oldName === 'Devices' ? null : oldName; // Handle default null
-
-            // Optimistic Update
-            state.devices = state.devices.map(d => {
-                if ((d.location || 'Devices') === oldName) {
-                    return { ...d, location: cleanNew };
+                if (!device) {
+                    console.warn('Device not found in state:', mac);
+                    return;
                 }
-                return d;
-            });
-            render();
 
-            // Bulk Update DB
-            // If oldName was "Devices" (null in DB), update where location is null
-            let query = client.from('devices').update({ location: cleanNew });
-            
-            if (oldName === 'Devices') {
-                query = query.is('location', null);
-            } else {
-                query = query.eq('location', oldName);
-            }
-            
-            const { error } = await query;
-            if (error) {
-                console.error("Group rename failed:", error);
-                alert("Failed to rename group on server.");
-            }
-        }
+                const current = device.location || '';
+                const newLoc = await customPrompt("Enter Group Name (e.g., Kitchen, Office):", current);
 
-        window.promptLocation = async function(mac) {
-            // Find device in current state (real or just-fetched)
-            const device = state.devices.find(d => d.mac === mac);
-            
-            if (!device) {
-                console.warn('Device not found in state:', mac);
-                return;
+                if (newLoc !== null) {
+                    const updatedLoc = newLoc.trim();
+                    // Optimistic UI Update
+                    state.devices = state.devices.map(d => d.mac === mac ? { ...d, location: updatedLoc } : d);
+                    render();
+
+                    // DB Update
+                    const { error } = await client.from('devices').update({ location: updatedLoc }).eq('mac', mac);
+                    if (error) console.error('Failed to update location:', error);
+                }
             }
 
-            const current = device.location || '';
-            const newLoc = prompt("Enter Group Name (e.g., Kitchen, Office):", current);
-            
-            if (newLoc !== null) {
-                const updatedLoc = newLoc.trim();
-                // Optimistic UI Update
-                state.devices = state.devices.map(d => d.mac === mac ? {...d, location: updatedLoc} : d);
+            window.toggleMonitor = async function (mac) {
+                const device = state.devices.find(d => d.mac === mac);
+                if (!device) return;
+
+                // Confirmation only needed when turning OFF
+                if (device.is_monitored == true || device.is_monitored === 'true') {
+                    const confirmed = await customConfirm("Disable Alerts", "Are you sure you want to disable alerts for this device?");
+                    if (!confirmed) return;
+                }
+
+                const newStatus = !device.is_monitored;
+
+                // 1. Local Persistence
+                const localMonitors = JSON.parse(localStorage.getItem('ns_dev_monitor') || '{}');
+                localMonitors[mac] = newStatus;
+                localStorage.setItem('ns_dev_monitor', JSON.stringify(localMonitors));
+
+                // 2. Optimistic Update
+                state.devices = state.devices.map(d => d.mac === mac ? { ...d, is_monitored: newStatus } : d);
                 render();
-                
-                // DB Update
-                const { error } = await client.from('devices').update({ location: updatedLoc }).eq('mac', mac);
-                if (error) console.error('Failed to update location:', error);
-            }
-        }
 
-        window.toggleMonitor = async function(mac) {
-            const device = state.devices.find(d => d.mac === mac);
-            if (!device) return;
-
-            // Confirmation only needed when turning OFF
-            if (device.is_monitored == true || device.is_monitored === 'true') {
-                const confirmed = window.confirm("Are you sure you want to disable alerts for this device?");
-                if (!confirmed) return;
+                // 3. Remote Update (with error handling)
+                const { error } = await client.from('devices').update({ is_monitored: newStatus }).eq('mac', mac);
+                if (error) {
+                    console.warn("Supabase monitor update failed:", error);
+                    // We keep local state valid
+                }
             }
 
-            const newStatus = !device.is_monitored;
-            
-            // 1. Local Persistence
-            const localMonitors = JSON.parse(localStorage.getItem('ns_dev_monitor') || '{}');
-            localMonitors[mac] = newStatus;
-            localStorage.setItem('ns_dev_monitor', JSON.stringify(localMonitors));
+            window.startEdit = function (mac) {
+                state.editingId = mac;
+                render();
 
-            // 2. Optimistic Update
-            state.devices = state.devices.map(d => d.mac === mac ? {...d, is_monitored: newStatus} : d);
-            render();
-            
-            // 3. Remote Update (with error handling)
-            const { error } = await client.from('devices').update({ is_monitored: newStatus }).eq('mac', mac);
-            if(error) {
-                console.warn("Supabase monitor update failed:", error);
-                // We keep local state valid
-            }
-        }
-
-        window.startEdit = function(mac) {
-            state.editingId = mac;
-            render();
-            setTimeout(() => {
-                const inp = document.querySelector(`input[value="${state.devices.find(d => d.mac === mac).name}"]`);
-                if(inp) inp.focus();
-            }, 50);
-        }
-
-        window.changeSort = function(key) {
-            if (state.sort.key === key) {
-                state.sort.dir = state.sort.dir === 'asc' ? 'desc' : 'asc';
-            } else {
-                state.sort.key = key;
-                state.sort.dir = 'asc';
-            }
-            render();
-        }
-
-        window.copySupportId = function() {
-            const el = document.getElementById('settings-account-id');
-            if(el) {
-                // Get just the text content (ID)
-                const textToCopy = el.innerText.trim();
-                navigator.clipboard.writeText(textToCopy);
-                
-                const originalHtml = el.innerHTML;
-                el.innerText = "COPIED!";
-                el.classList.add('text-emerald-500', 'dark:text-emerald-400', 'border-emerald-500');
-                
+                // Mobile-friendly focus with longer delay and better selector
                 setTimeout(() => {
-                    el.innerHTML = originalHtml;
-                    el.classList.remove('text-emerald-500', 'dark:text-emerald-400', 'border-emerald-500');
-                    lucide.createIcons(); // Re-init icon
-                }, 1500);
+                    const device = state.devices.find(d => d.mac === mac);
+                    if (!device) return;
+
+                    // Create more specific selector to avoid conflicts
+                    const inputs = document.querySelectorAll('input[type="text"]');
+                    for (const inp of inputs) {
+                        if (inp.value === device.name) {
+                            inp.focus();
+                            inp.select(); // Select all text for easy editing
+                            break;
+                        }
+                    }
+                }, 150); // Longer delay for mobile rendering
             }
-        }
 
-        // 1. Fix the "Close" and "X" buttons
-        window.closeDiag = function() {
-            const modal = document.getElementById('diag-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
+            window.changeSort = function (key) {
+                if (state.sort.key === key) {
+                    state.sort.dir = state.sort.dir === 'asc' ? 'desc' : 'asc';
+                } else {
+                    state.sort.key = key;
+                    state.sort.dir = 'asc';
+                }
+                render();
             }
-            // Reset content so it's fresh next time
-            const content = document.getElementById('diag-content');
-            if(content) content.innerHTML = '';
-        }
 
-        // 2. Fix the "Run Diagnostics" button (Name Bridge)
-        // Your HTML asks for 'runDiagnostics', so we redirect it to the right function
-        window.runDiagnostics = function(mac, ip) {
-            window.runDeviceDiagnostics(mac, ip);
-        }
+            window.copySupportId = function () {
+                const el = document.getElementById('settings-account-id');
+                if (el) {
+                    // Get just the text content (ID)
+                    const textToCopy = el.innerText.trim();
+                    navigator.clipboard.writeText(textToCopy);
 
-        // --- DIAGNOSTICS UI ---
-        
-// LEVEL 1: ISP / GLOBAL DIAGNOSTICS
-        window.runIspDiagnostics = function() {
-            // Target: Cloudflare DNS (Fast & Reliable)
-            executeDiagnosticCommand(null, '1.1.1.1', 'ISP Uplink Check');
-        }
+                    const originalHtml = el.innerHTML;
+                    el.innerText = "COPIED!";
+                    el.classList.add('text-emerald-500', 'dark:text-emerald-400', 'border-emerald-500');
 
-        // LEVEL 2: DEVICE / ROW DIAGNOSTICS
-        window.runDeviceDiagnostics = function(mac, ip) {
-            if(!ip || ip === 'Unknown') {
-                alert("Cannot diagnose a device without an IP address.");
-                return;
+                    setTimeout(() => {
+                        el.innerHTML = originalHtml;
+                        el.classList.remove('text-emerald-500', 'dark:text-emerald-400', 'border-emerald-500');
+                        lucide.createIcons(); // Re-init icon
+                    }, 1500);
+                }
             }
-            executeDiagnosticCommand(mac, ip, `Device Check: ${ip}`);
-        }
 
-        // THE ATOM: SHARED EXECUTION LOGIC
-        async function executeDiagnosticCommand(deviceMac, targetIp, label) {
-            const modal = document.getElementById('diag-modal');
-            const content = document.getElementById('diag-content');
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            
-            // 1. Loading UI
-            content.innerHTML = `
+            // 1. Fix the "Close" and "X" buttons
+            window.closeDiag = function () {
+                const modal = document.getElementById('diag-modal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+                // Reset content so it's fresh next time
+                const content = document.getElementById('diag-content');
+                if (content) content.innerHTML = '';
+            }
+
+            // 2. Fix the "Run Diagnostics" button (Name Bridge)
+            // Your HTML asks for 'runDiagnostics', so we redirect it to the right function
+            window.runDiagnostics = function (mac, ip) {
+                window.runDeviceDiagnostics(mac, ip);
+            }
+
+            // --- DIAGNOSTICS UI ---
+
+            // LEVEL 1: ISP / GLOBAL DIAGNOSTICS
+            window.runIspDiagnostics = function () {
+                // Target: Cloudflare DNS (Fast & Reliable)
+                executeDiagnosticCommand(null, '1.1.1.1', 'ISP Uplink Check');
+            }
+
+            // LEVEL 2: DEVICE / ROW DIAGNOSTICS
+            window.runDeviceDiagnostics = function (mac, ip) {
+                if (!ip || ip === 'Unknown') {
+                    alert("Cannot diagnose a device without an IP address.");
+                    return;
+                }
+                executeDiagnosticCommand(mac, ip, `Device Check: ${ip}`);
+            }
+
+            // THE ATOM: SHARED EXECUTION LOGIC
+            async function executeDiagnosticCommand(deviceMac, targetIp, label) {
+                const modal = document.getElementById('diag-modal');
+                const content = document.getElementById('diag-content');
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                // 1. Loading UI
+                content.innerHTML = `
                 <div class="py-8">
                     <div class="relative w-16 h-16 mx-auto mb-4">
                         <div class="absolute inset-0 border-4 border-slate-200 dark:border-slate-700 rounded-full"></div>
@@ -1519,61 +1764,61 @@ window.addManualPuck = async function() {
                     <p class="text-xs text-slate-400 mt-4">Pinging ${targetIp} via Host Controller...</p>
                 </div>
             `;
-            lucide.createIcons();
+                lucide.createIcons();
 
-            try {
-                // 2. Find Host Puck
-                const hostPuck = state.pucks.length > 0 ? state.pucks[0] : null;
-                if (!hostPuck) throw new Error("No Host Puck online.");
+                try {
+                    // 2. Find Host Puck
+                    const hostPuck = state.pucks.length > 0 ? state.pucks[0] : null;
+                    if (!hostPuck) throw new Error("No Host Puck online.");
 
-                // 3. Send Command
-                const { data, error } = await client.from('commands').insert({
-                    puck_mac: hostPuck.mac_address, 
-                    command_type: 'RUN_DIAGNOSTICS',
-                    payload: { target_ip: targetIp }, // <--- DYNAMIC TARGET
-                    status: 'pending'
-                }).select().single();
+                    // 3. Send Command
+                    const { data, error } = await client.from('commands').insert({
+                        puck_mac: hostPuck.mac_address,
+                        command_type: 'RUN_DIAGNOSTICS',
+                        payload: { target_ip: targetIp }, // <--- DYNAMIC TARGET
+                        status: 'pending'
+                    }).select().single();
 
-                if (error) throw error;
+                    if (error) throw error;
 
-                // 4. Poll for Result
-                const commandId = data.id;
-                let attempts = 0;
-                
-                const pollInterval = setInterval(async () => {
-                    attempts++;
-                    if (attempts > 10) { // 10s Timeout
-                        clearInterval(pollInterval);
-                        content.innerHTML = `<div class="text-rose-500 p-4 font-bold">Request Timed Out</div>`;
-                        return;
-                    }
+                    // 4. Poll for Result
+                    const commandId = data.id;
+                    let attempts = 0;
 
-                    const { data: cmd } = await client.from('commands')
-                        .select('*')
-                        .eq('id', commandId)
-                        .single();
+                    const pollInterval = setInterval(async () => {
+                        attempts++;
+                        if (attempts > 10) { // 10s Timeout
+                            clearInterval(pollInterval);
+                            content.innerHTML = `<div class="text-rose-500 p-4 font-bold">Request Timed Out</div>`;
+                            return;
+                        }
 
-                    if (cmd.status === 'success') {
-                        clearInterval(pollInterval);
-                        showDiagnosticResults(cmd.result_payload, label);
-                    } else if (cmd.status === 'failed') {
-                        clearInterval(pollInterval);
-                        content.innerHTML = `<div class="text-rose-500 p-4 font-bold">Target Unreachable</div>`;
-                        setTimeout(() => window.closeDiag(), 3000);
-                    }
-                }, 1000);
+                        const { data: cmd } = await client.from('commands')
+                            .select('*')
+                            .eq('id', commandId)
+                            .single();
 
-            } catch (err) {
-                content.innerHTML = `<div class="text-rose-500 p-4">Error: ${err.message}</div>`;
-                setTimeout(() => window.closeDiag(), 3000);
+                        if (cmd.status === 'success') {
+                            clearInterval(pollInterval);
+                            showDiagnosticResults(cmd.result_payload, label);
+                        } else if (cmd.status === 'failed') {
+                            clearInterval(pollInterval);
+                            content.innerHTML = `<div class="text-rose-500 p-4 font-bold">Target Unreachable</div>`;
+                            setTimeout(() => window.closeDiag(), 3000);
+                        }
+                    }, 1000);
+
+                } catch (err) {
+                    content.innerHTML = `<div class="text-rose-500 p-4">Error: ${err.message}</div>`;
+                    setTimeout(() => window.closeDiag(), 3000);
+                }
             }
-        }
 
-        // Shared Result Renderer
-        function showDiagnosticResults(results, title) {
-            const content = document.getElementById('diag-content');
-            
-            content.innerHTML = `
+            // Shared Result Renderer
+            function showDiagnosticResults(results, title) {
+                const content = document.getElementById('diag-content');
+
+                content.innerHTML = `
                 <div class="text-sm font-bold text-slate-500 mb-2 uppercase">${title}</div>
                 <div class="grid grid-cols-3 gap-2 mb-4">
                     <div class="bg-slate-100 dark:bg-slate-950 p-3 rounded border border-slate-200 dark:border-slate-800">
@@ -1591,73 +1836,73 @@ window.addManualPuck = async function() {
                 </div>
                 <button onclick="window.closeDiag()" class="w-full mt-4 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white py-3 rounded-lg font-medium transition-colors">Close</button>
             `;
-            lucide.createIcons();
-        }        // --- SETTINGS UI ---
+                lucide.createIcons();
+            }        // --- SETTINGS UI ---
 
-            
+
             // Side Effects
             if (key === 'darkMode') {
                 updateTheme();
             }
 
-            render(); 
-            updateSettingsUI(); 
+            render();
+            updateSettingsUI();
 
-        
-        function updateSettingsUI() {
-             updateToggleBtn('btn-toggle-host', state.settings.showHostPuck);
-             updateToggleBtn('btn-toggle-dark', state.settings.darkMode);
-             updateToggleBtn('btn-toggle-ip', state.settings.trackIpChanges);
-             updateToggleBtn('btn-toggle-manufacturer', state.settings.showManufacturer);
-             updateToggleBtn('btn-toggle-aided', state.settings.aidedDetection);
-             updateToggleBtn('btn-toggle-time', state.settings.useAbsoluteTime);
-             updateToggleBtn('btn-toggle-mac', state.settings.showMacAddress);
-        }
 
-        function updateToggleBtn(id, active) {
-            const btn = document.getElementById(id);
-            if (!btn) return;
-            
-            if (active) {
-                btn.classList.remove('bg-slate-200', 'dark:bg-slate-700');
-                btn.classList.add('bg-sky-500');
-                const dot = btn.querySelector('div');
-                if (dot) dot.classList.add('translate-x-6');
-            } else {
-                btn.classList.add('bg-slate-200', 'dark:bg-slate-700');
-                btn.classList.remove('bg-sky-500');
-                const dot = btn.querySelector('div');
-                if (dot) dot.classList.remove('translate-x-6');
-            }
-        }
-
-function renderPuckSettings() {
-            const container = document.getElementById('puck-settings-list');
-            if(!container) return;
-            
-            if (state.pucks.length === 0) {
-                container.innerHTML = '<div class="text-xs text-slate-500 italic">No Host Pucks detected.</div>';
-                return;
+            function updateSettingsUI() {
+                updateToggleBtn('btn-toggle-host', state.settings.showHostPuck);
+                updateToggleBtn('btn-toggle-dark', state.settings.darkMode);
+                updateToggleBtn('btn-toggle-ip', state.settings.trackIpChanges);
+                updateToggleBtn('btn-toggle-manufacturer', state.settings.showManufacturer);
+                updateToggleBtn('btn-toggle-aided', state.settings.aidedDetection);
+                updateToggleBtn('btn-toggle-time', state.settings.useAbsoluteTime);
+                updateToggleBtn('btn-toggle-mac', state.settings.showMacAddress);
             }
 
-            // FIX 2: Added a safe sort so it doesn't crash on "key"
-            const sortedPucks = [...state.pucks].sort((a, b) => {
-                const statusA = a.status === 'online' ? 1 : 0;
-                const statusB = b.status === 'online' ? 1 : 0;
-                return statusB - statusA; // Online first
-            });
+            function updateToggleBtn(id, active) {
+                const btn = document.getElementById(id);
+                if (!btn) return;
 
-            container.innerHTML = sortedPucks.map(p => {
-                const status = getPuckStatus(p);
-                // Safe string escaping for HTML
-                const safeMac = escapeStr(p.mac);
-                const safeName = escapeStr(p.name);
-                
-                return `
+                if (active) {
+                    btn.classList.remove('bg-slate-200', 'dark:bg-slate-700');
+                    btn.classList.add('bg-sky-500');
+                    const dot = btn.querySelector('div');
+                    if (dot) dot.classList.add('translate-x-6');
+                } else {
+                    btn.classList.add('bg-slate-200', 'dark:bg-slate-700');
+                    btn.classList.remove('bg-sky-500');
+                    const dot = btn.querySelector('div');
+                    if (dot) dot.classList.remove('translate-x-6');
+                }
+            }
+
+            function renderPuckSettings() {
+                const container = document.getElementById('puck-settings-list');
+                if (!container) return;
+
+                if (state.pucks.length === 0) {
+                    container.innerHTML = '<div class="text-xs text-slate-500 italic">No Host Pucks detected.</div>';
+                    return;
+                }
+
+                // FIX 2: Added a safe sort so it doesn't crash on "key"
+                const sortedPucks = [...state.pucks].sort((a, b) => {
+                    const statusA = a.status === 'online' ? 1 : 0;
+                    const statusB = b.status === 'online' ? 1 : 0;
+                    return statusB - statusA; // Online first
+                });
+
+                container.innerHTML = sortedPucks.map(p => {
+                    const status = getPuckStatus(p);
+                    // Safe string escaping for HTML
+                    const safeMac = escapeStr(p.mac);
+                    const safeName = escapeStr(p.name);
+
+                    return `
                 <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex flex-col gap-2">
                     <div class="flex items-center justify-between">
-                         <div class="flex flex-col">
-                            <span class="text-sm font-bold text-slate-900 dark:text-white font-mono">${p.ip || '0.0.0.0'}</span>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-slate-900 dark:text-white font-mono">${p.ip && p.ip !== 'Unknown' ? p.ip : (p.current_ip || 'IP Pending')}</span>
                             ${state.settings.showMacAddress ? `<span class="text-[10px] font-mono text-slate-500 tracking-wide">${p.mac || 'UNKNOWN-MAC'}</span>` : ''}
                          </div>
                         <div class="flex items-center gap-1">
@@ -1694,27 +1939,28 @@ function renderPuckSettings() {
                     </div>
                 </div>
             `}).join('');
-            
-            lucide.createIcons();
-        }
-// --- STARTUP ---
-        async function init() {
-            console.log("Initializing App...");
-            
-            // 1. Load LocalStorage Settings
-            if(localStorage.getItem('ns_darkMode') === 'true') {
-                state.settings.darkMode = true;
-                document.documentElement.classList.add('dark');
-            }
-            // (Load other settings if needed)
-            
-            // 2. Check Login Session (This will trigger fetchData if logged in)
-            await checkSession();
-            
-            console.log("App Ready.");
-        }
 
-        init();
-    </script>
+                lucide.createIcons();
+            }
+            // --- STARTUP ---
+            async function init() {
+                console.log("Initializing App...");
+
+                // 1. Load LocalStorage Settings
+                if (localStorage.getItem('ns_darkMode') === 'true') {
+                    state.settings.darkMode = true;
+                    document.documentElement.classList.add('dark');
+                }
+                // (Load other settings if needed)
+
+                // 2. Check Login Session (This will trigger fetchData if logged in)
+                await checkSession();
+
+                console.log("App Ready.");
+            }
+
+            init();
+        </script>
 </body>
+
 </html>

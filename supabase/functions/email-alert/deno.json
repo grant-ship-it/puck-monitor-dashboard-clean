@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.ns", "deno.window", "dom", "es2020"],
+    "strict": true
+  },
+  "imports": {
+    "serve": "https://deno.land/std@0.177.0/http/server.ts",
+    "supabase-js": "https://esm.sh/@supabase/supabase-js@2",
+    "smtp_client": "https://deno.land/x/smtp@v0.7.0/mod.ts"
+  }
+}
