@@ -1420,7 +1420,8 @@
                     .eq('mac', mac);
 
                 if (error) {
-                    console.warn("Supabase update failed:", error);
+                    console.error("Supabase name update failed:", error);
+                    await customConfirm("Error", "Failed to save name to server: " + error.message);
                     // We do NOT revert because we have local persistence protecting the user choice
                 }
             }
@@ -1639,12 +1640,11 @@
                 });
                 render();
 
-                // Bulk Update DB
+                // Bulk Update DB (Robust null/empty check)
                 let query = client.from('devices').update({ location: cleanNew });
 
                 if (oldName === 'Devices') {
-                    // Logic: location is null OR empty string
-                    query = query.filter('location', 'is', null);
+                    query = query.or('location.is.null,location.eq.""');
                 } else {
                     query = query.eq('location', oldName);
                 }
@@ -1652,7 +1652,7 @@
                 const { error } = await query;
                 if (error) {
                     console.error("Group rename failed:", error);
-                    await customConfirm("Error", "Failed to preserve group name on server.");
+                    await customConfirm("Error", "Failed to save group change to server: " + error.message);
                 }
             }
 
@@ -1678,7 +1678,10 @@
                     const { error } = await client.from('devices')
                         .update({ location: updatedLoc })
                         .eq('mac', mac);
-                    if (error) console.error('Failed to update location:', error);
+                    if (error) {
+                        console.error('Failed to update location:', error);
+                        await customConfirm("Error", "Failed to move device to group on server: " + error.message);
+                    }
                 }
             }
 
@@ -1967,7 +1970,7 @@
                         
                         <div class="flex items-center gap-1.5 pl-0.5 border-t border-slate-200 dark:border-slate-800/50 pt-3 mt-1">
                             <i data-lucide="heart" class="w-4 h-4 text-emerald-500 fill-emerald-500/20"></i>
-                            <span class="text-[9px] text-slate-500 dark:text-slate-400 font-mono uppercase tracking-wider font-bold">LATEST: ${formatTime(p.last_seen)}</span>
+                            <span class="text-[9px] text-slate-500 dark:text-slate-400 font-mono uppercase tracking-wider font-bold">${formatTime(p.last_seen)}</span>
                             ${state.settings.showMacAddress ? `<span class="ml-auto text-[9px] font-mono text-slate-400 uppercase tracking-tighter">${p.mac || ''}</span>` : ''}
                         </div>
                     </div>
