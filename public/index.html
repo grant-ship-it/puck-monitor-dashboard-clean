@@ -27,7 +27,7 @@
                 animation: {
                     'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     'flash-red': 'flashRed 2s infinite',
-                    'heartbeat': 'heartbeat 3s ease-in-out infinite', // Slowed to 3s
+                    'heartbeat': 'heartbeat 5s ease-in-out infinite', // Slowed to 5s
                 },
                 keyframes: {
                     flashRed: {
@@ -36,7 +36,7 @@
                     },
                     heartbeat: {
                         '0%, 100%': { opacity: '1', transform: 'scale(1)' },
-                        '50%': { opacity: '0.6', transform: 'scale(0.9)' },
+                        '50%': { opacity: '0.8', transform: 'scale(0.98)' },
                     }
                 }
             }
@@ -788,8 +788,7 @@
                 lucide.createIcons();
             }
 
-            fetchData();
-            setupRealtime();
+            // setupRealtime(); - Now called via checkSession
 
             // Setup Real-time Staleness Check Loop
             // Refreshes UI every 5s to update "Last Seen" and Staleness Badges
@@ -839,6 +838,7 @@
                         newData = {
                             ...newData,
                             mac: mac,
+                            ip: newData.ip_address || newData.ip,
                             name: localNames[mac] || newData.name,
                             is_monitored: localMonitors[mac] !== undefined ? localMonitors[mac] : newData.is_monitored
                         };
@@ -952,39 +952,44 @@
                 }
 
                 const status = getPuckStatus(hostPuck);
+                let newHtml = '';
 
                 if (status.code === 'ONLINE') {
-                    // Online with Heartbeat
-                    ispEl.innerHTML = `
+                    newHtml = `
                     <div class="flex items-center gap-2">
                          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-heartbeat"></span>
-                         <span class="text-slate-900 dark:text-white font-bold tracking-tight">ISP</span>
+                         <span class="text-slate-900 dark:text-white font-bold tracking-tight uppercase">ISP</span>
                     </div>
                     <div class="w-px h-3 bg-slate-300 dark:bg-slate-700"></div>
                      <div class="flex items-center gap-2">
                          <i data-lucide="network" class="w-4 h-4 text-emerald-500 animate-heartbeat"></i>
-                         <span class="text-slate-900 dark:text-white font-bold tracking-tight">ETH</span>
+                         <span class="text-slate-900 dark:text-white font-bold tracking-tight uppercase">ETH</span>
                     </div>
                     <div class="w-px h-3 bg-slate-300 dark:bg-slate-700"></div>
                     <div class="flex items-center gap-2">
                          <i data-lucide="wifi" class="w-4 h-4 text-emerald-500 animate-heartbeat"></i>
-                         <span class="text-slate-900 dark:text-white font-bold tracking-tight">WIFI</span>
+                         <span class="text-slate-900 dark:text-white font-bold tracking-tight uppercase">WIFI</span>
                     </div>
                 `;
                 } else if (status.code === 'STALE') {
-                    // Stale Warning
-                    ispEl.innerHTML = `
+                    newHtml = `
                     <div class="flex items-center gap-2" title="${status.label}">
                          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                         <span class="text-amber-600 dark:text-amber-500 font-bold tracking-tight">ISP: STALE</span>
+                         <span class="text-amber-600 dark:text-amber-500 font-bold tracking-tight uppercase">ISP: STALE</span>
                     </div>
                 `;
                 } else {
-                    // Offline
-                    ispEl.innerHTML = `
+                    newHtml = `
                     <span class="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]"></span>
-                    <span class="text-rose-600 dark:text-rose-500 font-bold">ISP: OFFLINE</span>
+                    <span class="text-rose-600 dark:text-rose-500 font-bold uppercase">ISP: OFFLINE</span>
                 `;
+                }
+
+                // Optimization: Only update if content changed to prevent animation blip
+                if (ispEl.getAttribute('data-last-status') !== status.code) {
+                    ispEl.innerHTML = newHtml;
+                    ispEl.setAttribute('data-last-status', status.code);
+                    lucide.createIcons();
                 }
             }
 
@@ -1084,8 +1089,6 @@
 
             function renderGroups() {
                 const container = document.getElementById('groups-container');
-                container.innerHTML = '';
-
                 const devices = getFilteredDevices();
                 const groups = {};
                 devices.forEach(d => {
@@ -1095,8 +1098,6 @@
                 });
 
                 const groupNames = Object.keys(groups).sort((a, b) => {
-                    // Host Controllers group is now effectively empty/hidden via filter, 
-                    // but good to keep sort logic robust
                     if (a === 'Host Controllers') return -1;
                     if (b === 'Host Controllers') return 1;
                     if (a === 'Devices') return 1;
@@ -1109,6 +1110,7 @@
                     return;
                 }
 
+                let fullHtml = '';
                 groupNames.forEach(loc => {
                     const groupDevs = groups[loc];
                     const borderClass = 'border-slate-200 dark:border-slate-800';
@@ -1123,11 +1125,10 @@
                     </div>
                 `;
 
-                    // Add Rename Feature to Header
                     const safeLoc = escapeStr(loc);
                     const isHostGroup = loc === 'Host Controllers';
 
-                    const html = `
+                    fullHtml += `
                     <div class="glass-panel rounded-xl overflow-hidden border ${borderClass}">
                         <div class="px-4 py-3 ${headerBg} border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
                             <div class="flex items-center gap-3">
@@ -1160,8 +1161,9 @@
                         </div>
                     </div>
                 `;
-                    container.innerHTML += html;
                 });
+                container.innerHTML = fullHtml;
+                lucide.createIcons();
             }
 
             function getConnectionIcon(type) {
@@ -1595,7 +1597,7 @@
                 let query = client.from('devices').update({ location: cleanNew });
 
                 if (oldName === 'Devices') {
-                    query = query.is('location', null);
+                    query = query.or('location.is.null,location.eq.""'); // Handle both null and empty
                 } else {
                     query = query.eq('location', oldName);
                 }
@@ -1885,61 +1887,64 @@
                     return;
                 }
 
-                // FIX 2: Added a safe sort so it doesn't crash on "key"
                 const sortedPucks = [...state.pucks].sort((a, b) => {
                     const statusA = a.status === 'online' ? 1 : 0;
                     const statusB = b.status === 'online' ? 1 : 0;
-                    return statusB - statusA; // Online first
+                    return statusB - statusA;
                 });
 
-                container.innerHTML = sortedPucks.map(p => {
+                let fullHtml = '';
+                sortedPucks.forEach(p => {
                     const status = getPuckStatus(p);
-                    // Safe string escaping for HTML
                     const safeMac = escapeStr(p.mac);
                     const safeName = escapeStr(p.name);
+                    const ip = p.ip && p.ip !== 'Unknown' ? p.ip : (p.current_ip || 'IP Pending');
 
-                    return `
-                <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex flex-col gap-2">
-                    <div class="flex items-center justify-between">
-                        <div class="flex flex-col">
-                            <span class="text-sm font-bold text-slate-900 dark:text-white font-mono">${p.ip && p.ip !== 'Unknown' ? p.ip : (p.current_ip || 'IP Pending')}</span>
-                            ${state.settings.showMacAddress ? `<span class="text-[10px] font-mono text-slate-500 tracking-wide">${p.mac || 'UNKNOWN-MAC'}</span>` : ''}
-                         </div>
-                        <div class="flex items-center gap-1">
-                            <span class="px-1.5 py-0.5 rounded text-[10px] uppercase font-bold mr-1 ${status.bgClass} ${status.colorClass}">${status.label}</span>
-                            
-                            <button onclick="event.stopPropagation(); window.handleCommand(this, '${safeMac}', 'SCAN_NETWORK')" type="button" class="text-slate-400 hover:text-indigo-500 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 p-1.5 rounded transition-colors" title="Force Network Scan">
-                                <i data-lucide="scan-barcode" class="w-4 h-4"></i>
-                            </button>
-                            
-                            <button onclick="event.stopPropagation(); window.handleCommand(this, '${safeMac}', 'REBOOT')" type="button" class="text-slate-400 hover:text-amber-500 hover:bg-amber-100 dark:hover:bg-amber-900/30 p-1.5 rounded transition-colors" title="Reboot Device">
-                                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                            </button>
+                    fullHtml += `
+                    <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex flex-col gap-2 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col flex-1 min-w-0">
+                                <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight truncate">${safeName || 'Unnamed Controller'}</span>
+                                <span class="text-[11px] font-mono font-bold text-sky-600 dark:text-sky-400 opacity-90">${ip}</span>
+                             </div>
+                            <div class="flex items-center gap-1 shrink-0 ml-2">
+                                <span class="px-1.5 py-0.5 rounded text-[9px] uppercase font-bold border ${status.bgClass} ${status.colorClass} border-current/20">${status.label}</span>
+                                
+                                <button onclick="event.stopPropagation(); window.handleCommand(this, '${safeMac}', 'SCAN_NETWORK')" type="button" class="text-slate-400 hover:text-indigo-500 hover:bg-slate-200 dark:hover:bg-slate-700 p-1.5 rounded transition-colors" title="Force Network Scan">
+                                    <i data-lucide="scan-barcode" class="w-4 h-4"></i>
+                                </button>
+                                
+                                <button onclick="event.stopPropagation(); window.handleCommand(this, '${safeMac}', 'REBOOT')" type="button" class="text-slate-400 hover:text-amber-500 hover:bg-slate-200 dark:hover:bg-slate-700 p-1.5 rounded transition-colors" title="Reboot Device">
+                                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                </button>
 
-                            <div class="w-px h-4 bg-slate-200 dark:bg-slate-700 mx-0.5"></div>
+                                <div class="w-px h-4 bg-slate-200 dark:bg-slate-700 mx-0.5"></div>
 
-                            <button onclick="event.stopPropagation(); window.deletePuck('${safeMac}')" type="button" class="text-slate-400 hover:text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/30 p-1.5 rounded transition-colors" title="Remove Puck">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
+                                <button onclick="event.stopPropagation(); window.deletePuck('${safeMac}')" type="button" class="text-slate-400 hover:text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/30 p-1.5 rounded transition-colors" title="Remove Puck">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="tag" class="w-3 h-3 text-slate-400"></i>
+                            <input type="text" 
+                                value="${safeName || ''}" 
+                                placeholder="Edit Name..." 
+                                class="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded px-2 py-1 text-sm text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors"
+                                onblur="window.savePuckName('${safeMac}', this.value)" 
+                                onkeydown="if(event.key==='Enter') this.blur()"
+                            >
+                        </div>
+                        <div class="flex items-center gap-1.5 pl-0.5 border-t border-slate-200 dark:border-slate-700 pt-2 mt-1">
+                            <i data-lucide="history" class="w-3 h-3 text-slate-400"></i>
+                            <span class="text-[9px] text-slate-500 dark:text-slate-400 font-mono uppercase tracking-wider">Sync: <span class="text-slate-700 dark:text-slate-300 font-bold">${formatTime(p.last_seen)}</span></span>
+                            ${state.settings.showMacAddress ? `<span class="ml-auto text-[9px] font-mono text-slate-400">${p.mac || ''}</span>` : ''}
                         </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <i data-lucide="tag" class="w-3 h-3 text-slate-400"></i>
-                        <input type="text" 
-                            value="${safeName || ''}" 
-                            placeholder="Name this Puck..." 
-                            class="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded px-2 py-1 text-sm text-slate-900 dark:text-white focus:border-sky-500 outline-none transition-colors"
-                            onblur="window.savePuckName('${safeMac}', this.value)" 
-                            onkeydown="if(event.key==='Enter') this.blur()"
-                        >
-                    </div>
-                    <div class="flex items-center gap-1.5 pl-0.5">
-                        <i data-lucide="activity" class="w-3 h-3 text-slate-400"></i>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-mono">Last Heartbeat: <span class="text-slate-700 dark:text-slate-300 font-bold">${formatTime(p.last_seen)}</span></span>
-                    </div>
-                </div>
-            `}).join('');
+                    `;
+                });
 
+                container.innerHTML = fullHtml;
                 lucide.createIcons();
             }
             // --- STARTUP ---
