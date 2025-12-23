@@ -216,18 +216,20 @@ async function syncInventoryToCloud() {
     .eq('puck_mac', myMacAddress);
 
   if (fetchErr) {
-    console.log('[CLOUD] Metadata fetch skipped:', fetchErr.message);
+    console.error('[CLOUD] Metadata fetch FAILED:', fetchErr.message);
   }
 
   // Create a lookup map
   const cloudMap = {};
   if (cloudDevices) {
+    console.log(`[CLOUD] Found ${cloudDevices.length} devices for this puck in cloud.`);
     cloudDevices.forEach(d => {
       if (d.mac) cloudMap[d.mac.toLowerCase()] = d;
     });
   }
 
   // 2. MERGE: Update Local Config with Cloud Data
+  let adoptions = 0;
   config.devices.forEach(localDev => {
     const macKey = (localDev.mac || '').toLowerCase();
     const cloudDev = cloudMap[macKey];
@@ -235,20 +237,28 @@ async function syncInventoryToCloud() {
     if (cloudDev) {
       // Adopt name if cloud has one
       if (cloudDev.name && cloudDev.name !== 'Unknown Device' && cloudDev.name !== '') {
-        localDev.name = cloudDev.name;
+        if (localDev.name !== cloudDev.name) {
+          localDev.name = cloudDev.name;
+          adoptions++;
+        }
       }
       // Adopt location/group (Even if empty, if it's explicitly set in cloud)
-      if (cloudDev.location !== undefined) {
+      if (cloudDev.location !== undefined && cloudDev.location !== localDev.location) {
         localDev.location = cloudDev.location;
+        adoptions++;
       }
       // Adopt monitor status
-      if (cloudDev.is_monitored !== undefined) {
+      if (cloudDev.is_monitored !== undefined && cloudDev.is_monitored !== localDev.is_monitored) {
         localDev.is_monitored = cloudDev.is_monitored;
+        adoptions++;
       }
     }
   });
 
-  saveConfig();
+  if (adoptions > 0) {
+    console.log(`[CLOUD] Adopted ${adoptions} metadata changes from cloud.`);
+    saveConfig();
+  }
 
   console.log(`[CLOUD] Syncing inventory (${config.devices.length} devices) to Supabase...`);
 

@@ -1657,19 +1657,30 @@
                 });
                 render();
 
-                // 3. Bulk Update DB (Robust null/empty check)
-                let query = client.from('devices').update({ location: cleanNew });
+                // 3. Bulk Update DB (RLS-compliant)
+                // We need to update puck by puck or with a filter that satisfies RLS
+                const pucksToUpdate = Array.from(new Set(affectedDevs.map(d => d.puckMac))).filter(Boolean);
 
-                if (oldName === 'Devices') {
-                    query = query.or('location.is.null,location.eq.""');
-                } else {
-                    query = query.eq('location', oldName);
-                }
+                if (pucksToUpdate.length === 0) return;
 
-                const { error } = await query;
-                if (error) {
-                    console.error("Group rename failed:", error);
-                    await customConfirm("Error", "Failed to preserve group name on server: " + error.message);
+                console.log(`Renaming group for pucks: ${pucksToUpdate.join(', ')}`);
+
+                const promises = pucksToUpdate.map(pMac => {
+                    let query = client.from('devices').update({ location: cleanNew }).eq('puck_mac', pMac);
+                    if (oldName === 'Devices') {
+                        query = query.or('location.is.null,location.eq.""');
+                    } else {
+                        query = query.eq('location', oldName);
+                    }
+                    return query;
+                });
+
+                const results = await Promise.all(promises);
+                const firstError = results.find(r => r.error);
+
+                if (firstError) {
+                    console.error("Group rename failed:", firstError.error);
+                    await customConfirm("Error", "Failed to preserve group name on server: " + firstError.error.message);
                 }
             }
 
