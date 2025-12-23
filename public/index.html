@@ -1131,13 +1131,11 @@
                     fullHtml += `
                     <div class="glass-panel rounded-xl overflow-hidden border ${borderClass}">
                         <div class="px-4 py-3 ${headerBg} border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-                            <div class="flex items-center gap-3">
-                                ${iconHtml}
                                 <div class="flex items-center gap-2 group cursor-pointer" ${!isHostGroup ? `onclick="window.renameGroup('${safeLoc}')"` : ''} title="Click to Rename Group">
+                                    ${iconHtml}
                                     <h2 class="font-bold text-slate-900 dark:text-white text-sm tracking-wide uppercase">${loc}</h2>
                                     ${!isHostGroup ? `<i data-lucide="edit-2" class="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>` : ''}
                                 </div>
-                            </div>
                         </div>
                         <div class="hidden md:block overflow-x-auto">
                             <table class="w-full text-left text-sm">
@@ -1839,16 +1837,8 @@
                 <button onclick="window.closeDiag()" class="w-full mt-4 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white py-3 rounded-lg font-medium transition-colors">Close</button>
             `;
                 lucide.createIcons();
-            }        // --- SETTINGS UI ---
-
-
-            // Side Effects
-            if (key === 'darkMode') {
-                updateTheme();
             }
-
-            render();
-            updateSettingsUI();
+            // --- SETTINGS UI ---
 
 
             function updateSettingsUI() {
@@ -1952,9 +1942,8 @@
                 console.log("Initializing App...");
 
                 // 1. Load LocalStorage Settings
-                // 1. Load LocalStorage Settings
-                // Fix: Always enforce the theme based on state (which handles the default logic)
                 updateTheme();
+                updateSettingsUI();
 
                 // (Load other settings if needed)
 
