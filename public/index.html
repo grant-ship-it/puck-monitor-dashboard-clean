@@ -1664,21 +1664,13 @@
                 state.editingId = mac;
                 render();
 
-                // Mobile-friendly focus with longer delay and better selector
                 setTimeout(() => {
-                    const device = state.devices.find(d => d.mac === mac);
-                    if (!device) return;
-
-                    // Create more specific selector to avoid conflicts
-                    const inputs = document.querySelectorAll('input[type="text"]');
-                    for (const inp of inputs) {
-                        if (inp.value === device.name) {
-                            inp.focus();
-                            inp.select(); // Select all text for easy editing
-                            break;
-                        }
+                    const input = document.getElementById(`edit-name-${mac}`) || document.getElementById(`edit-name-mobile-${mac}`);
+                    if (input) {
+                        input.focus();
+                        input.select();
                     }
-                }, 150); // Longer delay for mobile rendering
+                }, 100);
             }
 
             window.changeSort = function (key) {
