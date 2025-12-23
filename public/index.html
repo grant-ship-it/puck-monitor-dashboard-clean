@@ -830,10 +830,11 @@
 
                     // Apply Persistence Logic to Realtime Updates
                     let newData = payload.new;
+                    const mac = newData.mac || newData.mac_address;
+
                     if (table === 'devices') {
                         const localNames = JSON.parse(localStorage.getItem('ns_dev_names') || '{}');
                         const localMonitors = JSON.parse(localStorage.getItem('ns_dev_monitor') || '{}');
-                        const mac = newData.mac || newData.mac_address;
 
                         newData = {
                             ...newData,
@@ -843,9 +844,15 @@
                             name: localNames[mac] || newData.name,
                             is_monitored: localMonitors[mac] !== undefined ? localMonitors[mac] : newData.is_monitored
                         };
+                    } else if (table === 'pucks') {
+                        newData = {
+                            ...newData,
+                            mac: mac,
+                            ip: newData.current_ip || newData.ip_address || 'Unknown'
+                        };
                     }
 
-                    state[table] = state[table].map(d => d.mac === newData.mac ? newData : d);
+                    state[table] = state[table].map(d => (d.mac || d.mac_address) === mac ? newData : d);
                 } else if (payload.eventType === 'DELETE') {
                     state[table] = state[table].filter(d => d.mac !== payload.old.mac);
                 }
@@ -1387,7 +1394,7 @@
                 render();
 
                 // Database
-                const { error } = await client.from('devices').update({ last_ip: device.ip }).eq('mac_address', mac);
+                const { error } = await client.from('devices').update({ last_ip: device.ip }).eq('mac', mac);
                 if (error) {
                     alert("Failed to update database: " + error.message);
                     // Revert if needed, but for now just alert
@@ -1407,7 +1414,7 @@
                 render();
 
                 // 3. Remote Update
-                const { error } = await client.from('devices').update({ name: newName }).eq('mac_address', mac);
+                const { error } = await client.from('devices').update({ name: newName }).eq('mac', mac);
                 if (error) {
                     console.warn("Supabase update failed:", error);
                     // We do NOT revert because we have local persistence protecting the user choice
@@ -1665,7 +1672,7 @@
                     render();
 
                     // DB Update
-                    const { error } = await client.from('devices').update({ location: updatedLoc }).eq('mac_address', mac);
+                    const { error } = await client.from('devices').update({ location: updatedLoc }).eq('mac', mac);
                     if (error) console.error('Failed to update location:', error);
                 }
             }
@@ -1692,7 +1699,7 @@
                 render();
 
                 // 3. Remote Update (with error handling)
-                const { error } = await client.from('devices').update({ is_monitored: newStatus }).eq('mac_address', mac);
+                const { error } = await client.from('devices').update({ is_monitored: newStatus }).eq('mac', mac);
                 if (error) {
                     console.warn("Supabase monitor update failed:", error);
                     // We keep local state valid
@@ -1953,8 +1960,8 @@
                         </div>
                         
                         <div class="flex items-center gap-1.5 pl-0.5 border-t border-slate-200 dark:border-slate-800/50 pt-3 mt-1">
-                            <i data-lucide="history" class="w-3 h-3 text-slate-400"></i>
-                            <span class="text-[9px] text-slate-500 dark:text-slate-400 font-mono uppercase tracking-wider">Sync: <span class="text-slate-700 dark:text-slate-300 font-bold">${formatTime(p.last_seen)}</span></span>
+                            <i data-lucide="heart" class="w-3 h-3 text-rose-500 fill-rose-500/20"></i>
+                            <span class="text-[9px] text-slate-500 dark:text-slate-400 font-mono uppercase tracking-wider">Living: <span class="text-slate-700 dark:text-slate-300 font-bold">${formatTime(p.last_seen)}</span></span>
                             ${state.settings.showMacAddress ? `<span class="ml-auto text-[9px] font-mono text-slate-400">${p.mac || ''}</span>` : ''}
                         </div>
                     </div>
