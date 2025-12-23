@@ -1512,25 +1512,61 @@
             }
 
             window.saveWifiConfig = async function () {
+                const btn = event?.target || document.querySelector('button[onclick="window.saveWifiConfig()"]');
                 const ssid = document.getElementById('wifi-ssid').value;
                 const pass = document.getElementById('wifi-pass').value;
+
                 if (!ssid || !pass) return alert("Please enter both SSID and Password");
 
-                const confirmed = await customConfirm("Update WiFi", `Update fleet credentials to network: "${ssid}"?`);
-                if (confirmed) {
-                    const { error } = await client.from('commands').insert({
+                const hostPuck = state.pucks.length > 0 ? state.pucks[0] : null;
+                const targeting = hostPuck ? `Controller: ${hostPuck.name}` : "Entire Fleet";
+
+                const confirmed = await customConfirm("Update WiFi", `Update credentials for ${targeting}\nNetwork: "${ssid}"?`);
+                if (!confirmed) return;
+
+                // UI Feedback: Loading
+                const originalHtml = btn.innerHTML;
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin inline-block mr-2"></i> SENDING...`;
+                    lucide.createIcons();
+                }
+
+                try {
+                    const payload = {
                         command_type: 'UPDATE_WIFI',
                         payload: { ssid, pass },
                         status: 'pending'
-                    });
+                    };
 
-                    if (!error) {
-                        await customConfirm("Success", "WiFi Credentials Sent to Fleet.");
+                    // Specific targeting if we have a host puck
+                    if (hostPuck) {
+                        payload.puck_mac = hostPuck.mac || hostPuck.mac_address;
+                    }
+
+                    const { error } = await client.from('commands').insert(payload);
+
+                    if (error) throw error;
+
+                    // Success Feedback
+                    btn.innerHTML = `<i data-lucide="check" class="w-4 h-4 inline-block mr-2"></i> SENT!`;
+                    lucide.createIcons();
+
+                    setTimeout(async () => {
+                        await customConfirm("Success", "WiFi Credentials Sent Successfully.");
                         document.getElementById('wifi-ssid').value = '';
                         document.getElementById('wifi-pass').value = '';
-                    } else {
-                        await customConfirm("Error", "Error sending config: " + error.message);
-                    }
+                        btn.innerHTML = originalHtml;
+                        btn.disabled = false;
+                        lucide.createIcons();
+                    }, 500);
+
+                } catch (err) {
+                    console.error("WiFi Config Error:", err);
+                    alert("Error sending config: " + err.message);
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                    lucide.createIcons();
                 }
             }
 
