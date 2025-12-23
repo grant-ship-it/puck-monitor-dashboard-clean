@@ -731,6 +731,40 @@ async function processCommand(cmd) {
         await updateAgentSafe(cmd.id);
         break;
 
+      case 'UPDATE_WIFI':
+        try {
+          const { ssid, pass } = cmd.payload;
+          console.log(`[COMMAND] Updating WiFi to: ${ssid}`);
+
+          if (!ssid || !pass) throw new Error("Missing SSID or Password");
+
+          // Update Supabase
+          await supabase.from('commands').update({ status: 'processing', result: 'Generating wpa_supplicant config...' }).eq('id', cmd.id);
+
+          // 1. Generate new network block
+          const { stdout: wpaBlock } = await execPromise(`wpa_passphrase "${ssid}" "${pass}"`);
+
+          // 2. Append/Replace in wpa_supplicant.conf
+          // Note: This is a simplified approach, usually we should parse and replace
+          // but appending is often enough for wpa_supplicant to pick up the new one.
+          // Better: overwrite the whole file for predictability
+          const wpaConfig = `ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=US\n\n${wpaBlock}`;
+
+          await execPromise(`echo "${wpaConfig}" | sudo tee /etc/wpa_supplicant/wpa_supplicant.conf`);
+
+          await supabase.from('commands').update({ status: 'completed', result: 'WiFi Config Updated. Reconnecting...' }).eq('id', cmd.id);
+
+          // 3. Reconfigure WiFi
+          setTimeout(() => {
+            exec('sudo wpa_cli -i wlan0 reconfigure');
+          }, 1000);
+
+        } catch (err) {
+          console.error('[WIFI UPDATE ERROR]', err);
+          await supabase.from('commands').update({ status: 'failed', result: err.message }).eq('id', cmd.id);
+        }
+        break;
+
       case 'RUN_DIAGNOSTICS':
         try {
           const target = cmd.payload.target_ip || '8.8.8.8';
