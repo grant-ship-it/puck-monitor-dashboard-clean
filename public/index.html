@@ -1947,10 +1947,10 @@
                 console.log("Initializing App...");
 
                 // 1. Load LocalStorage Settings
-                if (localStorage.getItem('ns_darkMode') === 'true') {
-                    state.settings.darkMode = true;
-                    document.documentElement.classList.add('dark');
-                }
+                // 1. Load LocalStorage Settings
+                // Fix: Always enforce the theme based on state (which handles the default logic)
+                updateTheme();
+
                 // (Load other settings if needed)
 
                 // 2. Check Login Session (This will trigger fetchData if logged in)
