@@ -740,7 +740,7 @@
                     state.devices = devRes.data.map(d => ({
                         ...d,
                         mac: d.mac_address,      // DATABASE -> DASHBOARD
-                        ip: d.ip_address,        // DATABASE -> DASHBOARD
+                        ip: d.ip || d.ip_address || d.current_ip || 'Unknown', // Robust Mapping
                         puckMac: d.puck_mac      // DATABASE -> DASHBOARD
                     }));
                     console.log("✅ PROCESSED DEVICES STATE:", state.devices);
@@ -838,7 +838,7 @@
                         newData = {
                             ...newData,
                             mac: mac,
-                            ip: newData.ip_address || newData.ip,
+                            ip: newData.ip || newData.ip_address || newData.current_ip,
                             name: localNames[mac] || newData.name,
                             is_monitored: localMonitors[mac] !== undefined ? localMonitors[mac] : newData.is_monitored
                         };
@@ -1200,7 +1200,7 @@
                     </td>
                     <td class="p-4">
                         ${state.editingId === d.mac && !isVirtual ?
-                        `<input type="text" value="${d.name || ''}" class="bg-white dark:bg-slate-950 border border-sky-500 rounded px-2 py-1 text-slate-900 dark:text-white text-sm w-40" 
+                        `<input id="edit-name-${safeMac}" type="text" value="${d.name || ''}" class="bg-white dark:bg-slate-950 border border-sky-500 rounded px-2 py-1 text-slate-900 dark:text-white text-sm w-40" 
                                 onblur="window.saveName('${safeMac}', this.value)" onkeydown="if(event.key==='Enter') this.blur()">` :
                         `<div class="font-medium text-slate-900 dark:text-white cursor-pointer hover:text-sky-500 dark:hover:text-sky-400 flex items-center gap-2 group" ${!isVirtual ? `onclick="window.startEdit('${safeMac}')"` : ''}>
                                 <i data-lucide="${connIcon}" class="w-3.5 h-3.5 text-slate-400"></i>
@@ -1303,7 +1303,7 @@
                             </div>
                             <div class="flex-1 min-w-0">
                                 ${state.editingId === d.mac && !isVirtual ?
-                        `<input type="text" value="${d.name || ''}" class="bg-white dark:bg-slate-950 border border-sky-500 rounded px-2 py-1 text-slate-900 dark:text-white text-sm w-full mb-1" 
+                        `<input id="edit-name-mobile-${safeMac}" type="text" value="${d.name || ''}" class="bg-white dark:bg-slate-950 border border-sky-500 rounded px-2 py-1 text-slate-900 dark:text-white text-sm w-full mb-1" 
                                         onblur="window.saveName('${safeMac}', this.value)" onkeydown="if(event.key==='Enter') this.blur()">` :
                         `<div class="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2 truncate" ${!isVirtual ? `onclick="window.startEdit('${safeMac}')"` : ''}>
                                         ${d.name || 'Unknown Device'}
