@@ -172,14 +172,23 @@ async function sendHeartbeat() {
   let wifiSsid = null;
   if (nets.wifi && nets.wifi.connected) {
     try {
-      const { stdout } = await execPromise("wpa_cli -i wlan0 status | grep ^ssid= | cut -d= -f2");
-      wifiSsid = stdout.trim();
+      // 1. Try nmcli (Standard on newer Pi OS)
+      const { stdout: nmcliOut } = await execPromise("nmcli -t -f active,ssid dev wifi | grep '^yes' | cut -d: -f2");
+      wifiSsid = nmcliOut.trim();
+
+      if (!wifiSsid) {
+        // 2. Try wpa_cli (Fallback)
+        const { stdout: wpaOut } = await execPromise("wpa_cli -i wlan0 status | grep ^ssid= | cut -d= -f2");
+        wifiSsid = wpaOut.trim();
+      }
+
+      if (!wifiSsid) {
+        // 3. Try iwgetid (Legacy fallback)
+        const { stdout: iwOut } = await execPromise("iwgetid -r");
+        wifiSsid = iwOut.trim();
+      }
     } catch (e) {
-      // Fallback
-      try {
-        const { stdout } = await execPromise("iwgetid -r");
-        wifiSsid = stdout.trim();
-      } catch (ee) { }
+      console.warn('[AGENT] WiFi SSID detection error:', e.message);
     }
   }
 

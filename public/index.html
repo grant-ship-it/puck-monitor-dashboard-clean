@@ -1393,14 +1393,12 @@
                 state.devices = state.devices.map(d => d.mac === mac ? { ...d, last_ip: d.ip } : d);
                 render();
 
-                // Database
+                // Database (Primary MAC check)
                 const { error } = await client.from('devices')
                     .update({ last_ip: device.ip })
-                    .eq('puck_mac', device.puckMac)
                     .eq('mac', mac);
                 if (error) {
                     alert("Failed to update database: " + error.message);
-                    // Revert if needed, but for now just alert
                 }
             }
 
@@ -1417,10 +1415,8 @@
                 render();
 
                 // 3. Remote Update
-                const device = state.devices.find(d => d.mac === mac);
                 const { error } = await client.from('devices')
                     .update({ name: newName })
-                    .eq('puck_mac', (device ? device.puckMac : ''))
                     .eq('mac', mac);
 
                 if (error) {
@@ -1644,12 +1640,11 @@
                 render();
 
                 // Bulk Update DB
-                // If oldName was "Devices" (null in DB), update where location is null
                 let query = client.from('devices').update({ location: cleanNew });
 
                 if (oldName === 'Devices') {
-                    // Correct logical OR for Supabase/PostgREST
-                    query = query.or('location.is.null,location.eq.""');
+                    // Logic: location is null OR empty string
+                    query = query.filter('location', 'is', null);
                 } else {
                     query = query.eq('location', oldName);
                 }
@@ -1657,7 +1652,7 @@
                 const { error } = await query;
                 if (error) {
                     console.error("Group rename failed:", error);
-                    await customConfirm("Error", "Failed to rename group on server: " + error.message);
+                    await customConfirm("Error", "Failed to preserve group name on server.");
                 }
             }
 
@@ -1682,7 +1677,6 @@
                     // DB Update
                     const { error } = await client.from('devices')
                         .update({ location: updatedLoc })
-                        .eq('puck_mac', device.puckMac)
                         .eq('mac', mac);
                     if (error) console.error('Failed to update location:', error);
                 }
@@ -1712,11 +1706,9 @@
                 // 3. Remote Update (with error handling)
                 const { error } = await client.from('devices')
                     .update({ is_monitored: newStatus })
-                    .eq('puck_mac', device.puckMac)
                     .eq('mac', mac);
                 if (error) {
                     console.warn("Supabase monitor update failed:", error);
-                    // We keep local state valid
                 }
             }
 
@@ -1975,7 +1967,7 @@
                         
                         <div class="flex items-center gap-1.5 pl-0.5 border-t border-slate-200 dark:border-slate-800/50 pt-3 mt-1">
                             <i data-lucide="heart" class="w-4 h-4 text-emerald-500 fill-emerald-500/20"></i>
-                            <span class="text-[9px] text-slate-500 dark:text-slate-400 font-mono uppercase tracking-wider font-bold">${formatTime(p.last_seen)}</span>
+                            <span class="text-[9px] text-slate-500 dark:text-slate-400 font-mono uppercase tracking-wider font-bold">LATEST: ${formatTime(p.last_seen)}</span>
                             ${state.settings.showMacAddress ? `<span class="ml-auto text-[9px] font-mono text-slate-400 uppercase tracking-tighter">${p.mac || ''}</span>` : ''}
                         </div>
                     </div>
