@@ -1403,12 +1403,14 @@
                 state.devices = state.devices.map(d => d.mac === mac ? { ...d, last_ip: d.ip } : d);
                 render();
 
-                // Database (Primary MAC check)
+                // Database (Primary MAC check + Puck targeting for RLS)
                 const { error } = await client.from('devices')
                     .update({ last_ip: device.ip })
+                    .eq('puck_mac', device.puckMac)
                     .eq('mac', mac);
                 if (error) {
-                    alert("Failed to update database: " + error.message);
+                    console.error("Supabase IP ack failed:", error);
+                    await customConfirm("Error", "Failed to acknowledge IP change: " + error.message);
                 }
             }
 
@@ -1424,16 +1426,17 @@
                 state.devices = state.devices.map(d => d.mac === mac ? { ...d, name: newName } : d);
                 render();
 
-                // 3. Remote Update
+                // 3. Remote Update (Include puck_mac for RLS)
+                const device = state.devices.find(d => d.mac === mac);
                 const { error } = await client.from('devices')
                     .update({ name: newName })
+                    .eq('puck_mac', (device ? device.puckMac : ''))
                     .eq('mac', mac);
 
                 if (error) {
                     console.error("Supabase name update failed:", error);
                     await customConfirm("Error", "Failed to save name to server: " + error.message);
-                    // We do NOT revert because we have local persistence protecting the user choice
-                }
+                }    // We do NOT revert because we have local persistence protecting the user choice
             }
 
             window.savePuckName = async function (mac, newName) {
@@ -1694,9 +1697,10 @@
                     state.devices = state.devices.map(d => d.mac === mac ? { ...d, location: updatedLoc } : d);
                     render();
 
-                    // 3. DB Update
+                    // 3. DB Update (Include puck_mac for RLS)
                     const { error } = await client.from('devices')
                         .update({ location: updatedLoc })
+                        .eq('puck_mac', device.puckMac)
                         .eq('mac', mac);
                     if (error) {
                         console.error('Failed to update location:', error);
@@ -1726,12 +1730,14 @@
                 state.devices = state.devices.map(d => d.mac === mac ? { ...d, is_monitored: newStatus } : d);
                 render();
 
-                // 3. Remote Update (with error handling)
+                // 3. Remote Update (with error handling + puck_mac for RLS)
                 const { error } = await client.from('devices')
                     .update({ is_monitored: newStatus })
+                    .eq('puck_mac', device.puckMac)
                     .eq('mac', mac);
                 if (error) {
-                    console.warn("Supabase monitor update failed:", error);
+                    console.error("Supabase monitor update failed:", error);
+                    await customConfirm("Error", "Failed to update notification settings: " + error.message);
                 }
             }
 
