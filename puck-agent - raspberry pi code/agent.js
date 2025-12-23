@@ -168,13 +168,23 @@ async function sendHeartbeat() {
   const currentIp = (nets.eth && nets.eth.connected) ? nets.eth.ip :
     (nets.wifi && nets.wifi.connected) ? nets.wifi.ip : '0.0.0.0';
 
+  // Get WiFi SSID if available
+  let wifiSsid = null;
+  if (nets.wifi && nets.wifi.connected) {
+    try {
+      const { stdout } = await execPromise("iwgetid -r");
+      wifiSsid = stdout.trim();
+    } catch (e) { }
+  }
+
   const { error } = await supabase
     .from('pucks')
     .upsert({
       mac_address: myMacAddress,
       current_ip: currentIp,
       status: 'online',
-      last_seen: new Date().toISOString()
+      last_seen: new Date().toISOString(),
+      wifi_ssid: wifiSsid
     }, { onConflict: 'mac_address' });
 
   if (error) console.error('[SUPABASE] Heartbeat failed:', error.message);
