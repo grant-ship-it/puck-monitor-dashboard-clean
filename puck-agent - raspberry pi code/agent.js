@@ -168,13 +168,19 @@ async function sendHeartbeat() {
   const currentIp = (nets.eth && nets.eth.connected) ? nets.eth.ip :
     (nets.wifi && nets.wifi.connected) ? nets.wifi.ip : '0.0.0.0';
 
-  // Get WiFi SSID if available
+  // Get WiFi SSID if available (More robust method for Pi)
   let wifiSsid = null;
   if (nets.wifi && nets.wifi.connected) {
     try {
-      const { stdout } = await execPromise("iwgetid -r");
+      const { stdout } = await execPromise("wpa_cli -i wlan0 status | grep ^ssid= | cut -d= -f2");
       wifiSsid = stdout.trim();
-    } catch (e) { }
+    } catch (e) {
+      // Fallback
+      try {
+        const { stdout } = await execPromise("iwgetid -r");
+        wifiSsid = stdout.trim();
+      } catch (ee) { }
+    }
   }
 
   const { error } = await supabase
@@ -222,8 +228,8 @@ async function syncInventoryToCloud() {
       if (cloudDev.name && cloudDev.name !== 'Unknown Device' && cloudDev.name !== '') {
         localDev.name = cloudDev.name;
       }
-      // Adopt location/group
-      if (cloudDev.location) {
+      // Adopt location/group (Even if empty, if it's explicitly set in cloud)
+      if (cloudDev.location !== undefined) {
         localDev.location = cloudDev.location;
       }
       // Adopt monitor status
