@@ -735,12 +735,20 @@
                 }
 
                 if (devRes.data) {
-                    state.devices = devRes.data.map(d => ({
-                        ...d,
-                        mac: d.mac || d.mac_address,      // Use whichever exists
-                        ip: d.ip || d.ip_address || d.current_ip || 'Unknown',
-                        puckMac: d.puck_mac      // Map to camelCase for dashboard consistency
-                    }));
+                    const localLocs = JSON.parse(localStorage.getItem('ns_dev_locations') || '{}');
+                    const localNames = JSON.parse(localStorage.getItem('ns_dev_names') || '{}');
+
+                    state.devices = devRes.data.map(d => {
+                        const mac = d.mac || d.mac_address;
+                        return {
+                            ...d,
+                            mac: mac,
+                            ip: d.ip || d.ip_address || d.current_ip || 'Unknown',
+                            puckMac: d.puck_mac,
+                            location: localLocs[mac] || d.location,
+                            name: localNames[mac] || d.name
+                        };
+                    });
                 }
 
                 // 5. Render
@@ -835,6 +843,7 @@
                     if (table === 'devices') {
                         const localNames = JSON.parse(localStorage.getItem('ns_dev_names') || '{}');
                         const localMonitors = JSON.parse(localStorage.getItem('ns_dev_monitor') || '{}');
+                        const localLocs = JSON.parse(localStorage.getItem('ns_dev_locations') || '{}');
 
                         newData = {
                             ...newData,
@@ -842,6 +851,7 @@
                             ip: newData.ip || newData.ip_address || newData.current_ip,
                             puckMac: newData.puck_mac,
                             name: localNames[mac] || newData.name,
+                            location: localLocs[mac] || newData.location,
                             is_monitored: localMonitors[mac] !== undefined ? localMonitors[mac] : newData.is_monitored
                         };
                     } else if (table === 'pucks') {
@@ -1629,18 +1639,22 @@
                 if (!newName || newName === oldName) return;
 
                 const cleanNew = newName.trim();
-                const cleanOld = oldName === 'Devices' ? null : oldName; // Handle default null
+                // 1. Local storage persistence (mirror name logic)
+                const localLocs = JSON.parse(localStorage.getItem('ns_dev_locations') || '{}');
+                const affectedDevs = state.devices.filter(d => (d.location || 'Devices') === oldName);
+                affectedDevs.forEach(d => {
+                    localLocs[d.mac] = cleanNew;
+                });
+                localStorage.setItem('ns_dev_locations', JSON.stringify(localLocs));
 
-                // Optimistic Update
+                // 2. Optimistic Update
                 state.devices = state.devices.map(d => {
-                    if ((d.location || 'Devices') === oldName) {
-                        return { ...d, location: cleanNew };
-                    }
+                    if ((d.location || 'Devices') === oldName) return { ...d, location: cleanNew };
                     return d;
                 });
                 render();
 
-                // Bulk Update DB (Robust null/empty check)
+                // 3. Bulk Update DB (Robust null/empty check)
                 let query = client.from('devices').update({ location: cleanNew });
 
                 if (oldName === 'Devices') {
@@ -1652,7 +1666,7 @@
                 const { error } = await query;
                 if (error) {
                     console.error("Group rename failed:", error);
-                    await customConfirm("Error", "Failed to save group change to server: " + error.message);
+                    await customConfirm("Error", "Failed to preserve group name on server: " + error.message);
                 }
             }
 
@@ -1671,10 +1685,16 @@
                 if (newLoc !== null) {
                     const updatedLoc = newLoc.trim();
                     // Optimistic UI Update
+                    // 1. Local Storage Consistency
+                    const localLocs = JSON.parse(localStorage.getItem('ns_dev_locations') || '{}');
+                    localLocs[mac] = updatedLoc;
+                    localStorage.setItem('ns_dev_locations', JSON.stringify(localLocs));
+
+                    // 2. Optimistic
                     state.devices = state.devices.map(d => d.mac === mac ? { ...d, location: updatedLoc } : d);
                     render();
 
-                    // DB Update
+                    // 3. DB Update
                     const { error } = await client.from('devices')
                         .update({ location: updatedLoc })
                         .eq('mac', mac);
