@@ -728,22 +728,19 @@
                 if (puckRes.data) {
                     state.pucks = puckRes.data.map(p => ({
                         ...p,
-                        mac: p.mac_address,
+                        mac: p.mac_address || p.mac,
                         ip: p.current_ip || p.ip_address || 'Unknown',
-                        puckMac: p.customer_id // or p.puck_mac if you have it
+                        puckMac: p.customer_id
                     }));
-                    console.log("✅ PROCESSED PUCKS STATE:", state.pucks);
                 }
 
-                // 4. Process Devices (THIS WAS THE MISSING PART)
                 if (devRes.data) {
                     state.devices = devRes.data.map(d => ({
                         ...d,
-                        mac: d.mac_address,      // DATABASE -> DASHBOARD
-                        ip: d.ip || d.ip_address || d.current_ip || 'Unknown', // Robust Mapping
-                        puckMac: d.puck_mac      // DATABASE -> DASHBOARD (Mapped to camelCase)
+                        mac: d.mac || d.mac_address,      // Use whichever exists
+                        ip: d.ip || d.ip_address || d.current_ip || 'Unknown',
+                        puckMac: d.puck_mac      // Map to camelCase for dashboard consistency
                     }));
-                    console.log("✅ PROCESSED DEVICES STATE:", state.devices);
                 }
 
                 // 5. Render
@@ -842,7 +839,7 @@
                             ...newData,
                             mac: mac,
                             ip: newData.ip || newData.ip_address || newData.current_ip,
-                            puckMac: newData.puck_mac, // Ensure mapping for realtime updates
+                            puckMac: newData.puck_mac,
                             name: localNames[mac] || newData.name,
                             is_monitored: localMonitors[mac] !== undefined ? localMonitors[mac] : newData.is_monitored
                         };
@@ -1390,7 +1387,7 @@
                 render();
 
                 // Database
-                const { error } = await client.from('devices').update({ last_ip: device.ip }).eq('mac_address', mac);
+                const { error } = await client.from('devices').update({ last_ip: device.ip }).eq('mac', mac);
                 if (error) {
                     alert("Failed to update database: " + error.message);
                     // Revert if needed, but for now just alert
@@ -1410,7 +1407,7 @@
                 render();
 
                 // 3. Remote Update
-                const { error } = await client.from('devices').update({ name: newName }).eq('mac_address', mac);
+                const { error } = await client.from('devices').update({ name: newName }).eq('mac', mac);
                 if (error) {
                     console.warn("Supabase update failed:", error);
                     // We do NOT revert because we have local persistence protecting the user choice
@@ -1630,7 +1627,7 @@
                     render();
 
                     // DB Update
-                    const { error } = await client.from('devices').update({ location: updatedLoc }).eq('mac_address', mac);
+                    const { error } = await client.from('devices').update({ location: updatedLoc }).eq('mac', mac);
                     if (error) console.error('Failed to update location:', error);
                 }
             }
@@ -1657,7 +1654,7 @@
                 render();
 
                 // 3. Remote Update (with error handling)
-                const { error } = await client.from('devices').update({ is_monitored: newStatus }).eq('mac_address', mac);
+                const { error } = await client.from('devices').update({ is_monitored: newStatus }).eq('mac', mac);
                 if (error) {
                     console.warn("Supabase monitor update failed:", error);
                     // We keep local state valid
