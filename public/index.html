@@ -741,7 +741,7 @@
                         ...d,
                         mac: d.mac_address,      // DATABASE -> DASHBOARD
                         ip: d.ip || d.ip_address || d.current_ip || 'Unknown', // Robust Mapping
-                        puckMac: d.puck_mac      // DATABASE -> DASHBOARD
+                        puckMac: d.puck_mac      // DATABASE -> DASHBOARD (Mapped to camelCase)
                     }));
                     console.log("✅ PROCESSED DEVICES STATE:", state.devices);
                 }
@@ -793,7 +793,10 @@
             // Setup Real-time Staleness Check Loop
             // Refreshes UI every 5s to update "Last Seen" and Staleness Badges
             setInterval(() => {
-                render();
+                // Stabilize Render Loop: Pause if user is currently editing a name
+                if (!state.editingId) {
+                    render();
+                }
             }, 5000);
 
             function updateTheme() {
@@ -839,6 +842,7 @@
                             ...newData,
                             mac: mac,
                             ip: newData.ip || newData.ip_address || newData.current_ip,
+                            puckMac: newData.puck_mac, // Ensure mapping for realtime updates
                             name: localNames[mac] || newData.name,
                             is_monitored: localMonitors[mac] !== undefined ? localMonitors[mac] : newData.is_monitored
                         };
@@ -1176,12 +1180,12 @@
                 const connIcon = getConnectionIcon(d.connection_type);
                 const isFlashing = state.flashingIds.has(d.mac);
                 const isVirtual = d.is_virtual || false;
-                const hostName = getHostName(d.puck_mac);
+                const hostName = getHostName(d.puckMac);
                 const safeMac = escapeStr(d.mac);
 
                 // --- SMART ID SELECTION ---
                 let targetMac = null;
-                if (d.puck_mac && d.puck_mac.trim() !== '') targetMac = d.puck_mac;
+                if (d.puckMac && d.puckMac.trim() !== '') targetMac = d.puckMac;
                 else if (d.mac && d.mac.trim() !== '') targetMac = d.mac;
 
                 const hasMac = targetMac && targetMac.trim() !== '';
@@ -1214,7 +1218,7 @@
                         <td class="p-4 font-mono">
                             <div class="flex flex-col gap-1">
                                 <span class="text-[10px] text-slate-400">Self: ${d.mac || '--'}</span>
-                                <span class="text-[10px] text-sky-400">Host: ${d.puck_mac || '--'}</span>
+                                <span class="text-[10px] text-sky-400">Host: ${d.puckMac || '--'}</span>
                             </div>
                         </td>` : ''
                     }
@@ -1280,12 +1284,12 @@
                 const connIcon = getConnectionIcon(d.connection_type);
                 const isFlashing = state.flashingIds.has(d.mac);
                 const isVirtual = d.is_virtual || false;
-                const hostName = getHostName(d.puck_mac);
+                const hostName = getHostName(d.puckMac);
                 const safeMac = escapeStr(d.mac);
 
                 // --- SMART ID SELECTION ---
                 let targetMac = null;
-                if (d.puck_mac && d.puck_mac.trim() !== '') targetMac = d.puck_mac;
+                if (d.puckMac && d.puckMac.trim() !== '') targetMac = d.puckMac;
                 else if (d.mac && d.mac.trim() !== '') targetMac = d.mac;
 
                 const hasMac = targetMac && targetMac.trim() !== '';
@@ -1332,7 +1336,7 @@
                                 ${state.settings.showMacAddress ? `
                                     <div class="mt-1 flex flex-col gap-0.5">
                                         <div class="text-[10px] font-mono text-slate-400">Self: ${d.mac || '--'}</div>
-                                        <div class="text-[10px] font-mono text-sky-400">Host: ${d.puck_mac || '--'}</div>
+                                        <div class="text-[10px] font-mono text-sky-400">Host: ${d.puckMac || '--'}</div>
                                     </div>` : ''}
 
                                 ${state.settings.showManufacturer ? `<div class="text-sm font-bold text-slate-400 mt-1">${d.manufacturer || 'Generic'}</div>` : ''}
@@ -1386,7 +1390,7 @@
                 render();
 
                 // Database
-                const { error } = await client.from('devices').update({ last_ip: device.ip }).eq('mac', mac);
+                const { error } = await client.from('devices').update({ last_ip: device.ip }).eq('mac_address', mac);
                 if (error) {
                     alert("Failed to update database: " + error.message);
                     // Revert if needed, but for now just alert
@@ -1406,7 +1410,7 @@
                 render();
 
                 // 3. Remote Update
-                const { error } = await client.from('devices').update({ name: newName }).eq('mac', mac);
+                const { error } = await client.from('devices').update({ name: newName }).eq('mac_address', mac);
                 if (error) {
                     console.warn("Supabase update failed:", error);
                     // We do NOT revert because we have local persistence protecting the user choice
@@ -1626,7 +1630,7 @@
                     render();
 
                     // DB Update
-                    const { error } = await client.from('devices').update({ location: updatedLoc }).eq('mac', mac);
+                    const { error } = await client.from('devices').update({ location: updatedLoc }).eq('mac_address', mac);
                     if (error) console.error('Failed to update location:', error);
                 }
             }
@@ -1653,7 +1657,7 @@
                 render();
 
                 // 3. Remote Update (with error handling)
-                const { error } = await client.from('devices').update({ is_monitored: newStatus }).eq('mac', mac);
+                const { error } = await client.from('devices').update({ is_monitored: newStatus }).eq('mac_address', mac);
                 if (error) {
                     console.warn("Supabase monitor update failed:", error);
                     // We keep local state valid
