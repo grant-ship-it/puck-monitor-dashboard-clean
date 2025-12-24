@@ -1404,13 +1404,16 @@
                 render();
 
                 // Database (Primary MAC check + Puck targeting for RLS)
+                const { data: { session } } = await client.auth.getSession();
+                console.log(`[DB DEBUG] Acknowledge IP Change. Mac: ${mac}, PuckMac: ${device.puckMac}, User: ${session?.user?.id || 'NO SESSION'}`);
+
                 const { error } = await client.from('devices')
                     .update({ last_ip: device.ip })
                     .eq('puck_mac', device.puckMac)
                     .eq('mac', mac);
                 if (error) {
                     console.error("Supabase IP ack failed:", error);
-                    await customConfirm("Error", "Failed to acknowledge IP change: " + error.message);
+                    await customConfirm("Error", `Failed to acknowledge IP change (Code: ${error.code}): ${error.message}`);
                 }
             }
 
@@ -1428,6 +1431,9 @@
 
                 // 3. Remote Update (Include puck_mac for RLS)
                 const device = state.devices.find(d => d.mac === mac);
+                const { data: { session } } = await client.auth.getSession();
+                console.log(`[DB DEBUG] Save Name. Mac: ${mac}, PuckMac: ${device?.puckMac}, NewName: ${newName}, User: ${session?.user?.id || 'NO SESSION'}`);
+
                 const { error } = await client.from('devices')
                     .update({ name: newName })
                     .eq('puck_mac', (device ? device.puckMac : ''))
@@ -1435,7 +1441,7 @@
 
                 if (error) {
                     console.error("Supabase name update failed:", error);
-                    await customConfirm("Error", "Failed to save name to server: " + error.message);
+                    await customConfirm("Error", `Failed to save name to server (Code: ${error.code}): ${error.message}`);
                 }    // We do NOT revert because we have local persistence protecting the user choice
             }
 
@@ -1660,6 +1666,8 @@
                 // 3. Bulk Update DB (RLS-compliant)
                 // We need to update puck by puck or with a filter that satisfies RLS
                 const pucksToUpdate = Array.from(new Set(affectedDevs.map(d => d.puckMac))).filter(Boolean);
+                const { data: { session } } = await client.auth.getSession();
+                console.log(`[DB DEBUG] Bulk Rename. Group: ${oldName} -> ${cleanNew}, Pucks: ${pucksToUpdate.join(', ')}, User: ${session?.user?.id || 'NO SESSION'}`);
 
                 if (pucksToUpdate.length === 0) return;
 
@@ -1680,7 +1688,7 @@
 
                 if (firstError) {
                     console.error("Group rename failed:", firstError.error);
-                    await customConfirm("Error", "Failed to preserve group name on server: " + firstError.error.message);
+                    await customConfirm("Error", `Failed to preserve group name on server (Code: ${firstError.error.code}): ${firstError.error.message}`);
                 }
             }
 
@@ -1709,13 +1717,16 @@
                     render();
 
                     // 3. DB Update (Include puck_mac for RLS)
+                    const { data: { session } } = await client.auth.getSession();
+                    console.log(`[DB DEBUG] Move Device to Group. Mac: ${mac}, PuckMac: ${device.puckMac}, NewLoc: ${updatedLoc}, User: ${session?.user?.id || 'NO SESSION'}`);
+
                     const { error } = await client.from('devices')
                         .update({ location: updatedLoc })
                         .eq('puck_mac', device.puckMac)
                         .eq('mac', mac);
                     if (error) {
                         console.error('Failed to update location:', error);
-                        await customConfirm("Error", "Failed to move device to group on server: " + error.message);
+                        await customConfirm("Error", `Failed to move device to group on server (Code: ${error.code}): ${error.message}`);
                     }
                 }
             }
@@ -1742,13 +1753,16 @@
                 render();
 
                 // 3. Remote Update (with error handling + puck_mac for RLS)
+                const { data: { session } } = await client.auth.getSession();
+                console.log(`[DB DEBUG] Toggle Monitor. Mac: ${mac}, PuckMac: ${device.puckMac}, NewStatus: ${newStatus}, User: ${session?.user?.id || 'NO SESSION'}`);
+
                 const { error } = await client.from('devices')
                     .update({ is_monitored: newStatus })
                     .eq('puck_mac', device.puckMac)
                     .eq('mac', mac);
                 if (error) {
                     console.error("Supabase monitor update failed:", error);
-                    await customConfirm("Error", "Failed to update notification settings: " + error.message);
+                    await customConfirm("Error", `Failed to update notification settings (Code: ${error.code}): ${error.message}`);
                 }
             }
 
