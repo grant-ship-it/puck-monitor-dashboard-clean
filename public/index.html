@@ -734,17 +734,27 @@
                     }));
                 }
 
+                // 4. Update state
                 if (devRes.data) {
                     const localLocs = JSON.parse(localStorage.getItem('ns_dev_locations') || '{}');
                     const localNames = JSON.parse(localStorage.getItem('ns_dev_names') || '{}');
+                    const session = (await client.auth.getSession()).data.session;
+                    const userId = session?.user?.id;
 
                     state.devices = devRes.data.map(d => {
                         const mac = d.mac || d.mac_address;
+
+                        // AUTO-LINK: If device has no customer_id but puck does, we "claim" it locally
+                        // This helps if the agent hasn't caught up yet
+                        const parentPuck = state.pucks.find(p => p.mac === d.puck_mac);
+                        const effectiveCustomerId = d.customer_id || parentPuck?.customer_id || userId;
+
                         return {
                             ...d,
                             mac: mac,
                             ip: d.ip || d.ip_address || d.current_ip || 'Unknown',
                             puckMac: d.puck_mac,
+                            customer_id: effectiveCustomerId,
                             location: localLocs[mac] || d.location,
                             name: localNames[mac] || d.name
                         };
@@ -1407,12 +1417,14 @@
                 const { data: { session } } = await client.auth.getSession();
                 const puckMac = (device.puck_mac || device.puckMac || '').toLowerCase();
                 const deviceMac = (mac || '').toLowerCase();
-                console.log(`[DB DEBUG] Acknowledge IP Change. Mac: ${deviceMac}, PuckMac: ${puckMac}, User: ${session?.user?.id || 'NO SESSION'}`);
+                const userId = session?.user?.id;
+                console.log(`[DB DEBUG] Acknowledge IP Change. Mac: ${deviceMac}, PuckMac: ${puckMac}, User: ${userId || 'NO SESSION'}`);
 
                 const { error } = await client.from('devices')
-                    .update({ last_ip: device.ip })
+                    .update({ last_ip: device.ip, customer_id: userId })
                     .eq('puck_mac', puckMac)
-                    .eq('mac', deviceMac);
+                    .eq('mac', deviceMac)
+                    .eq('customer_id', userId);
                 if (error) {
                     console.error("Supabase IP ack failed:", error);
                     await customConfirm("Error", `Failed to acknowledge IP change (Code: ${error.code}): ${error.message}`);
@@ -1431,17 +1443,19 @@
                 state.devices = state.devices.map(d => d.mac === mac ? { ...d, name: newName } : d);
                 render();
 
-                // 3. Remote Update (Include puck_mac for RLS)
+                // 3. Remote Update (Include puck_mac + customer_id for RLS)
                 const device = state.devices.find(d => d.mac === mac);
                 const { data: { session } } = await client.auth.getSession();
                 const puckMac = (device?.puck_mac || device?.puckMac || '').toLowerCase();
                 const deviceMac = (mac || '').toLowerCase();
-                console.log(`[DB DEBUG] Save Name. Mac: ${deviceMac}, PuckMac: ${puckMac}, NewName: ${newName}, User: ${session?.user?.id || 'NO SESSION'}`);
+                const userId = session?.user?.id;
+                console.log(`[DB DEBUG] Save Name. Mac: ${deviceMac}, PuckMac: ${puckMac}, NewName: ${newName}, User: ${userId || 'NO SESSION'}`);
 
                 const { error } = await client.from('devices')
-                    .update({ name: newName })
+                    .update({ name: newName, customer_id: userId })
                     .eq('puck_mac', puckMac)
-                    .eq('mac', deviceMac);
+                    .eq('mac', deviceMac)
+                    .eq('customer_id', userId);
 
                 if (error) {
                     console.error("Supabase name update failed:", error);
@@ -1671,14 +1685,18 @@
                 // We need to update puck by puck or with a filter that satisfies RLS
                 const pucksToUpdate = Array.from(new Set(affectedDevs.map(d => (d.puck_mac || d.puckMac || '').toLowerCase()))).filter(Boolean);
                 const { data: { session } } = await client.auth.getSession();
-                console.log(`[DB DEBUG] Bulk Rename. Group: ${oldName} -> ${cleanNew}, Pucks: ${pucksToUpdate.join(', ')}, User: ${session?.user?.id || 'NO SESSION'}`);
+                const userId = session?.user?.id;
+                console.log(`[DB DEBUG] Bulk Rename. Group: ${oldName} -> ${cleanNew}, Pucks: ${pucksToUpdate.join(', ')}, User: ${userId || 'NO SESSION'}`);
 
                 if (pucksToUpdate.length === 0) return;
 
                 console.log(`Renaming group for pucks: ${pucksToUpdate.join(', ')}`);
 
                 const promises = pucksToUpdate.map(pMac => {
-                    let query = client.from('devices').update({ location: cleanNew }).eq('puck_mac', pMac.toLowerCase());
+                    let query = client.from('devices')
+                        .update({ location: cleanNew, customer_id: userId })
+                        .eq('puck_mac', pMac.toLowerCase())
+                        .eq('customer_id', userId);
                     if (oldName === 'Devices') {
                         query = query.or('location.is.null,location.eq.""');
                     } else {
@@ -1720,16 +1738,18 @@
                     state.devices = state.devices.map(d => d.mac === mac ? { ...d, location: updatedLoc } : d);
                     render();
 
-                    // 3. DB Update (Include puck_mac for RLS)
+                    // 3. DB Update (Include puck_mac + customer_id for RLS)
                     const { data: { session } } = await client.auth.getSession();
                     const puckMac = (device.puck_mac || device.puckMac || '').toLowerCase();
                     const deviceMac = (mac || '').toLowerCase();
-                    console.log(`[DB DEBUG] Move Device to Group. Mac: ${deviceMac}, PuckMac: ${puckMac}, NewLoc: ${updatedLoc}, User: ${session?.user?.id || 'NO SESSION'}`);
+                    const userId = session?.user?.id;
+                    console.log(`[DB DEBUG] Move Device to Group. Mac: ${deviceMac}, PuckMac: ${puckMac}, NewLoc: ${updatedLoc}, User: ${userId || 'NO SESSION'}`);
 
                     const { error } = await client.from('devices')
-                        .update({ location: updatedLoc })
+                        .update({ location: updatedLoc, customer_id: userId })
                         .eq('puck_mac', puckMac)
-                        .eq('mac', deviceMac);
+                        .eq('mac', deviceMac)
+                        .eq('customer_id', userId);
                     if (error) {
                         console.error('Failed to update location:', error);
                         await customConfirm("Error", `Failed to move device to group on server (Code: ${error.code}): ${error.message}`);
@@ -1758,16 +1778,18 @@
                 state.devices = state.devices.map(d => d.mac === mac ? { ...d, is_monitored: newStatus } : d);
                 render();
 
-                // 3. Remote Update (with error handling + puck_mac for RLS)
+                // 3. Remote Update (with error handling + puck_mac + customer_id for RLS)
                 const { data: { session } } = await client.auth.getSession();
                 const puckMac = (device.puck_mac || device.puckMac || '').toLowerCase();
                 const deviceMac = (mac || '').toLowerCase();
-                console.log(`[DB DEBUG] Toggle Monitor. Mac: ${deviceMac}, PuckMac: ${puckMac}, NewStatus: ${newStatus}, User: ${session?.user?.id || 'NO SESSION'}`);
+                const userId = session?.user?.id;
+                console.log(`[DB DEBUG] Toggle Monitor. Mac: ${deviceMac}, PuckMac: ${puckMac}, NewStatus: ${newStatus}, User: ${userId || 'NO SESSION'}`);
 
                 const { error } = await client.from('devices')
-                    .update({ is_monitored: newStatus })
+                    .update({ is_monitored: newStatus, customer_id: userId })
                     .eq('puck_mac', puckMac)
-                    .eq('mac', deviceMac);
+                    .eq('mac', deviceMac)
+                    .eq('customer_id', userId);
                 if (error) {
                     console.error("Supabase monitor update failed:", error);
                     await customConfirm("Error", `Failed to update notification settings (Code: ${error.code}): ${error.message}`);

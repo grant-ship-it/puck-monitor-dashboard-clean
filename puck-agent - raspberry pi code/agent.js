@@ -255,6 +255,18 @@ async function syncInventoryToCloud() {
     }
   });
 
+  // 1b. Fetch our puck record to get the customer_id (Owner)
+  const { data: puckData } = await supabase
+    .from('pucks')
+    .select('customer_id')
+    .eq('mac_address', myMacAddress)
+    .single();
+
+  const myCustomerId = puckData?.customer_id || null;
+  if (myCustomerId) {
+    console.log(`[CLOUD] Identified owner: ${myCustomerId}`);
+  }
+
   if (adoptions > 0) {
     console.log(`[CLOUD] Adopted ${adoptions} metadata changes from cloud.`);
     saveConfig();
@@ -262,16 +274,17 @@ async function syncInventoryToCloud() {
 
   console.log(`[CLOUD] Syncing inventory (${config.devices.length} devices) to Supabase...`);
 
-  // 3. PUSH: Send status updates, carrying the metadata with us
+  // 3. PUSH: Send status updates, carrying the metadata and owner with us
   const payload = config.devices.map(d => ({
     puck_mac: myMacAddress,
     mac: d.mac,
-    ip_address: d.ip, // Corrected column name
+    customer_id: myCustomerId,
+    ip_address: d.ip,
     name: d.name || 'Unknown Device',
     manufacturer: d.manufacturer || '',
     status: (d.status || 'offline').toLowerCase(),
     last_seen: new Date().toISOString(),
-    location: d.location || null, // Persist location
+    location: d.location || null,
     is_monitored: d.is_monitored
   }));
 
