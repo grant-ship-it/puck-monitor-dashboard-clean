@@ -721,8 +721,8 @@
                     client.from('pucks').select('*')
                 ]);
 
-                console.log("📦 RAW PUCKS FROM DB (First):", puckRes.data?.[0]);
-                console.log("📦 RAW DEVICES FROM DB (First):", devRes.data?.[0]);
+                console.log("📦 RAW PUCKS FROM DB (First):", JSON.stringify(puckRes.data?.[0], null, 2));
+                console.log("📦 RAW DEVICES FROM DB (First):", JSON.stringify(devRes.data?.[0], null, 2));
 
                 // 3. Process Pucks
                 if (puckRes.data) {
