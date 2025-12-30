@@ -20,9 +20,17 @@ const ping = require('ping');
 const macaddress = require('node-macaddress');
 const { createClient } = require('@supabase/supabase-js');
 
+// Load environment variables
+require('dotenv').config();
+
 // --- CLOUD CONFIG ---
 const SUPABASE_URL = 'https://tbajywjbemnwhsdgjuqg.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiYWp5d2piZW1ud2hzZGdqdXFnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDYwOTMyNiwiZXhwIjoyMDgwMTg1MzI2fQ.AJoD5aBVNSzEvBkmOsmZQ3STLB23R_wo_uoPaaf_W8w'; // <--- REPLACE THIS WITH YOUR SERVICE_ROLE_KEY
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
+
+if (!SUPABASE_KEY) {
+  console.error('CRITICAL: SUPABASE_SERVICE_KEY is missing from .env file. Exiting.');
+  process.exit(1);
+}
 
 // Initialize Supabase Client
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
