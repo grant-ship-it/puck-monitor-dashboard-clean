@@ -22,7 +22,7 @@ const { createClient } = require('@supabase/supabase-js');
 
 // --- CLOUD CONFIG ---
 const SUPABASE_URL = 'https://tbajywjbemnwhsdgjuqg.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiYWp5d2piZW1ud2hzZGdqdXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDkzMjYsImV4cCI6MjA4MDE4NTMyNn0.5mhZQ4OTjV6f0p2v0LxADpQnaTyJIp5BIuw2kP0mdUU';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiYWp5d2piZW1ud2hzZGdqdXFnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDYwOTMyNiwiZXhwIjoyMDgwMTg1MzI2fQ.AJoD5aBVNSzEvBkmOsmZQ3STLB23R_wo_uoPaaf_W8w'; // <--- REPLACE THIS WITH YOUR SERVICE_ROLE_KEY
 
 // Initialize Supabase Client
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -575,7 +575,10 @@ async function monitorLoop() {
     }
   }
 
-  if (changes) saveConfig();
+  if (changes) {
+    saveConfig();
+    await syncInventoryToCloud();
+  }
   setTimeout(monitorLoop, config.settings.network.ping_interval_seconds * 1000);
 }
 
