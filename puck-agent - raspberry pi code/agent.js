@@ -940,15 +940,20 @@ async function setupDeviceAuth() {
     });
 
     if (error) {
-      console.error('[AUTH] Provisioning failed:', error.message);
-      // Try to extract the body if available
+      // Check if it's "User already exists" - if so, we can try to log in
       try {
         const body = await error.context.json();
-        console.error('[AUTH] Error Body:', JSON.stringify(body, null, 2));
+        if (body.error && body.error.includes('already exists')) {
+           console.log('[AUTH] Device already provisioned in cloud.');
+        } else {
+           console.error('[AUTH] Provisioning failed:', error.message);
+           console.error('[AUTH] Error Body:', JSON.stringify(body, null, 2));
+           process.exit(1);
+        }
       } catch (e) {
-        // Not a JSON error or no context
+        console.error('[AUTH] Provisioning failed:', error.message);
+        process.exit(1);
       }
-      process.exit(1);
     }
 
     console.log('[AUTH] Device provisioned successfully.');
