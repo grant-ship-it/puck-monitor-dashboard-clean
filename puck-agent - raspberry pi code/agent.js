@@ -963,6 +963,10 @@ async function setupDeviceAuth() {
   }
 
   // Log in with the credentials
+  console.log('[AUTH] Attempting sign-in for:', credentials.email);
+  console.log('[AUTH] Using URL:', SUPABASE_URL);
+  console.log('[AUTH] Key Prefix:', SUPABASE_ANON_KEY.substring(0, 10) + '...');
+
   const { data: authData, error: loginError } = await supabase.auth.signInWithPassword({
     email: credentials.email,
     password: credentials.password
@@ -970,8 +974,8 @@ async function setupDeviceAuth() {
 
   if (loginError) {
     console.error('[AUTH] Sign-in failed:', loginError.message);
-    // If login fails, maybe the credentials are stale or the user was deleted
-    // For now, we exit to allow investigation.
+    if (loginError.status) console.error('[AUTH] HTTP Status:', loginError.status);
+    console.error('[AUTH] Full Error:', JSON.stringify(loginError, null, 2));
     process.exit(1);
   }
 
