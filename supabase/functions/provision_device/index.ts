@@ -34,7 +34,8 @@ serve(async (req) => {
 
     console.log(`[PROVISION] Processing request for serial: ${serial_number}`);
 
-    const email = `device_${serial_number}@internal.sectorlink`
+    const sanitizedSerial = serial_number.replace(/:/g, '')
+    const email = `device_${sanitizedSerial}@internal.sectorlink`
 
     // 1. Create the User in Supabase Auth
     const { data: userData, error: createError } = await supabaseAdmin.auth.admin.createUser({

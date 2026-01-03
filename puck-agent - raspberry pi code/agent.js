@@ -932,7 +932,8 @@ async function setupDeviceAuth() {
   if (!credentials) {
     console.log('[AUTH] No credentials found. Initiating self-provisioning...');
     const password = generateRandomPassword();
-    const email = `device_${myMacAddress}@internal.sectorlink`;
+    const sanitizedMac = myMacAddress.replace(/:/g, '');
+    const email = `device_${sanitizedMac}@internal.sectorlink`;
 
     // Call the Edge Function to provision the device
     const { data, error } = await supabase.functions.invoke('provision_device', {
