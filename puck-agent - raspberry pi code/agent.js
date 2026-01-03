@@ -982,6 +982,19 @@ async function setupDeviceAuth() {
 
   if (loginError) {
     console.error('[AUTH] Sign-in failed:', loginError.message);
+    
+    if (loginError.message.includes('Invalid login credentials')) {
+      console.log('[AUTH] Local credentials mismatch with cloud. Deleting corrupted credentials file...');
+      try {
+        if (fs.existsSync(CREDENTIALS_FILE)) {
+          fs.unlinkSync(CREDENTIALS_FILE);
+          console.log('[AUTH] File deleted. Restarting the agent will trigger fresh self-provisioning.');
+        }
+      } catch (rmErr) {
+        console.error('[AUTH] Failed to delete credentials file:', rmErr.message);
+      }
+    }
+    
     process.exit(1);
   }
 
