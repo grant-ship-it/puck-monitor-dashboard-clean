@@ -922,8 +922,9 @@ async function setupDeviceAuth() {
   let credentials;
   if (fs.existsSync(CREDENTIALS_FILE)) {
     try {
+      console.log('[AUTH] Found existing credentials at:', CREDENTIALS_FILE);
       credentials = JSON.parse(fs.readFileSync(CREDENTIALS_FILE, 'utf8'));
-      console.log('[AUTH] Found existing credentials.');
+      console.log('[AUTH] Credentials loaded successfully.');
     } catch (e) {
       console.error('[AUTH] Failed to parse credentials.json. Starting re-provisioning.');
     }
