@@ -741,6 +741,7 @@
                     const session = (await client.auth.getSession()).data.session;
                     const userId = session?.user?.id;
 
+                    let unownedCount = 0;
                     state.devices = devRes.data.map(d => {
                         const mac = d.mac || d.mac_address;
 
@@ -748,6 +749,8 @@
                         // This helps if the agent hasn't caught up yet
                         const parentPuck = state.pucks.find(p => p.mac === d.puck_mac);
                         const effectiveCustomerId = d.customer_id || parentPuck?.customer_id || userId;
+
+                        if (!d.customer_id) unownedCount++;
 
                         return {
                             ...d,
@@ -759,6 +762,9 @@
                             name: localNames[mac] || d.name
                         };
                     });
+                    if (unownedCount > 0) {
+                        console.warn(`[OWNERSHIP] ${unownedCount} devices are currently UNOWNED in the database (customer_id is null).`);
+                    }
                 }
 
                 // 5. Render
@@ -1423,8 +1429,8 @@
                 const { error } = await client.from('devices')
                     .update({ last_ip: device.ip, customer_id: userId })
                     .eq('puck_mac', puckMac)
-                    .eq('mac', deviceMac)
-                    .eq('customer_id', userId);
+                    .eq('mac', deviceMac);
+                // Note: If this 403s, you MUST update your agent code.
                 if (error) {
                     console.error("Supabase IP ack failed:", error);
                     await customConfirm("Error", `Failed to acknowledge IP change (Code: ${error.code}): ${error.message}`);
@@ -1454,8 +1460,8 @@
                 const { error } = await client.from('devices')
                     .update({ name: newName, customer_id: userId })
                     .eq('puck_mac', puckMac)
-                    .eq('mac', deviceMac)
-                    .eq('customer_id', userId);
+                    .eq('mac', deviceMac);
+                // Note: If this 403s, you MUST update your agent code.
 
                 if (error) {
                     console.error("Supabase name update failed:", error);
@@ -1695,8 +1701,8 @@
                 const promises = pucksToUpdate.map(pMac => {
                     let query = client.from('devices')
                         .update({ location: cleanNew, customer_id: userId })
-                        .eq('puck_mac', pMac.toLowerCase())
-                        .eq('customer_id', userId);
+                        .eq('puck_mac', pMac.toLowerCase());
+                    // Note: If this 403s, you MUST update your agent code.
                     if (oldName === 'Devices') {
                         query = query.or('location.is.null,location.eq.""');
                     } else {
@@ -1748,8 +1754,8 @@
                     const { error } = await client.from('devices')
                         .update({ location: updatedLoc, customer_id: userId })
                         .eq('puck_mac', puckMac)
-                        .eq('mac', deviceMac)
-                        .eq('customer_id', userId);
+                        .eq('mac', deviceMac);
+                    // Note: If this 403s, you MUST update your agent code.
                     if (error) {
                         console.error('Failed to update location:', error);
                         await customConfirm("Error", `Failed to move device to group on server (Code: ${error.code}): ${error.message}`);
@@ -1788,8 +1794,8 @@
                 const { error } = await client.from('devices')
                     .update({ is_monitored: newStatus, customer_id: userId })
                     .eq('puck_mac', puckMac)
-                    .eq('mac', deviceMac)
-                    .eq('customer_id', userId);
+                    .eq('mac', deviceMac);
+                // Note: If this 403s, you MUST update your agent code.
                 if (error) {
                     console.error("Supabase monitor update failed:", error);
                     await customConfirm("Error", `Failed to update notification settings (Code: ${error.code}): ${error.message}`);

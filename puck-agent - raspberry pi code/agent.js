@@ -25,20 +25,17 @@ require('dotenv').config();
 
 // --- CLOUD CONFIG ---
 const SUPABASE_URL = 'https://tbajywjbemnwhsdgjuqg.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
+// Revert to ANON KEY for initial connection and provisioning call
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiYWp5d2piZW1ud2hzZGdqdXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDkzMjYsImV4cCI6MjA4MDE4NTMyNn0.5mhZQ4OTjV6f0p2v0LxADpQnaTyJIp5BIuw2kP0mdUU';
 
-if (!SUPABASE_KEY) {
-  console.error('CRITICAL: SUPABASE_SERVICE_KEY is missing from .env file. Exiting.');
-  process.exit(1);
-}
-
-// Initialize Supabase Client
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+// Initialize Supabase Client with Anon Key
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- CONFIGURATION ---
 const PORT = 8080;
 const DATA_DIR = path.join(__dirname, 'data');
 const CONFIG_FILE = path.join(DATA_DIR, 'config.json');
+const CREDENTIALS_FILE = path.join(DATA_DIR, 'credentials.json');
 const LEGACY_DEVICES_FILE = path.join(DATA_DIR, 'devices.json');
 
 // Global State
@@ -907,6 +904,71 @@ async function processCommand(cmd) {
     await supabase.from('commands').update({ status: 'failed', payload: { error: err.message } }).eq('id', cmd.id);
   }
 }
+
+// --- DEVICE AUTH & PROVISIONING ---
+
+function generateRandomPassword(length = 24) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+async function setupDeviceAuth() {
+  console.log('[AUTH] Checking for device credentials...');
+
+  let credentials;
+  if (fs.existsSync(CREDENTIALS_FILE)) {
+    try {
+      credentials = JSON.parse(fs.readFileSync(CREDENTIALS_FILE, 'utf8'));
+      console.log('[AUTH] Found existing credentials.');
+    } catch (e) {
+      console.error('[AUTH] Failed to parse credentials.json. Starting re-provisioning.');
+    }
+  }
+
+  if (!credentials) {
+    console.log('[AUTH] No credentials found. Initiating self-provisioning...');
+    const password = generateRandomPassword();
+    const email = `device_${myMacAddress}@internal.sectorlink`;
+
+    // Call the Edge Function to provision the device
+    const { data, error } = await supabase.functions.invoke('provision_device', {
+      body: { serial_number: myMacAddress, password: password }
+    });
+
+    if (error) {
+      console.error('[AUTH] Provisioning failed:', error.message);
+      // If the error is 'User already exists', we might want to prompt for reset or handle it.
+      // For now, we crash to avoid unauthenticated operation.
+      process.exit(1);
+    }
+
+    console.log('[AUTH] Device provisioned successfully.');
+    credentials = { email, password };
+    fs.writeFileSync(CREDENTIALS_FILE, JSON.stringify(credentials, null, 2));
+  }
+
+  // Log in with the credentials
+  const { data: authData, error: loginError } = await supabase.auth.signInWithPassword({
+    email: credentials.email,
+    password: credentials.password
+  });
+
+  if (loginError) {
+    console.error('[AUTH] Sign-in failed:', loginError.message);
+    // If login fails, maybe the credentials are stale or the user was deleted
+    // For now, we exit to allow investigation.
+    process.exit(1);
+  }
+
+  console.log('[AUTH] Device authenticated successfully as:', authData.user.id);
+  
+  // The 'supabase' client now carries the JWT and will pass it in headers for RLS
+  return authData.user;
+}
 // ==========================================
 // 🚀 GLOBAL IGNITION (MUST BE OUTSIDE FUNCTION)
 // ==========================================
@@ -921,7 +983,10 @@ macaddress.all(async (err, all) => {
 
   console.log(`Agent Started. ID: ${myMacAddress}`);
 
-  // 2. Start Logic
+  // 2. Setup Device Auth (Provision or Login)
+  await setupDeviceAuth();
+
+  // 3. Start Logic
   loadConfig();
 
   // 3. Start Server
