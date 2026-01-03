@@ -941,8 +941,13 @@ async function setupDeviceAuth() {
 
     if (error) {
       console.error('[AUTH] Provisioning failed:', error.message);
-      if (error.details) console.error('[AUTH] Error details:', error.details);
-      // Log more info if it's a FunctionsHttpError
+      // Try to extract the body if available
+      try {
+        const body = await error.context.json();
+        console.error('[AUTH] Error Body:', JSON.stringify(body, null, 2));
+      } catch (e) {
+        // Not a JSON error or no context
+      }
       process.exit(1);
     }
 
