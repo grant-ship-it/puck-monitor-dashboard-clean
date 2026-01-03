@@ -941,8 +941,8 @@ async function setupDeviceAuth() {
 
     if (error) {
       console.error('[AUTH] Provisioning failed:', error.message);
-      // If the error is 'User already exists', we might want to prompt for reset or handle it.
-      // For now, we crash to avoid unauthenticated operation.
+      if (error.details) console.error('[AUTH] Error details:', error.details);
+      // Log more info if it's a FunctionsHttpError
       process.exit(1);
     }
 

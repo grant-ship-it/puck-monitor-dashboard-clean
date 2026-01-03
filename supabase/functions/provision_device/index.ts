@@ -32,6 +32,8 @@ serve(async (req) => {
       }
     )
 
+    console.log(`[PROVISION] Processing request for serial: ${serial_number}`);
+
     const email = `device_${serial_number}@internal.sectorlink`
 
     // 1. Create the User in Supabase Auth
@@ -46,13 +48,17 @@ serve(async (req) => {
     })
 
     if (createError) {
-      // If user already exists, we might want to just succeed or return an error
-      // For this pattern, if they possess the serial but lost the password, 
-      // we don't want to just give it away. 
-      // But if the Pi is re-provisioning itself, we might need a way to reset.
-      // For now, let's treat "already exists" as an error to prevent accidental takeovers.
-      throw createError
+      console.error(`[PROVISION] Auth creation failed: ${createError.message}`);
+      return new Response(
+        JSON.stringify({ error: createError.message, details: createError }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
+        }
+      )
     }
+
+    console.log(`[PROVISION] Successfully created user: ${userData.user.id}`);
 
     return new Response(
       JSON.stringify({ 
