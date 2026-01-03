@@ -918,6 +918,18 @@ function generateRandomPassword(length = 24) {
 
 async function setupDeviceAuth() {
   console.log('[AUTH] Checking for device credentials...');
+  
+  // Diagnostic: Test basic connectivity with the key
+  console.log('[AUTH] Testing connection to Postgrest...');
+  const { error: testError } = await supabase.from('pucks').select('id').limit(1);
+  if (testError) {
+    console.error('[AUTH] Basic connection test FAILED:', testError.message);
+    if (testError.message.includes('API key')) {
+      console.error('[AUTH] CRITICAL: The Anon Key is being rejected by Supabase.');
+    }
+  } else {
+    console.log('[AUTH] Basic connection test successful.');
+  }
 
   let credentials;
   if (fs.existsSync(CREDENTIALS_FILE)) {
