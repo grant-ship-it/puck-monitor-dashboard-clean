@@ -212,7 +212,8 @@ async function sendHeartbeat() {
 }
 
 async function syncInventoryToCloud() {
-  if (!config.devices || config.devices.length === 0) return;
+  try {
+    if (!config.devices || config.devices.length === 0) return;
 
   // 1. FETCH TRUTH: Get current Cloud Metadata
   const { data: cloudDevices, error: fetchErr } = await supabase
@@ -300,6 +301,9 @@ async function syncInventoryToCloud() {
 
   if (upsertErr) {
     console.error('[SUPABASE] Inventory sync failed:', upsertErr.message);
+  }
+  } catch (err) {
+    console.error('[CLOUD] syncInventoryToCloud UNHANDLED ERROR:', err.message);
   }
 }
 
@@ -1007,8 +1011,10 @@ async function setupDeviceAuth() {
 // 🚀 GLOBAL IGNITION (MUST BE OUTSIDE FUNCTION)
 // ==========================================
 
+let isInitialized = false;
 macaddress.all(async (err, all) => {
-  if (err) process.exit(1);
+  if (err || isInitialized) return;
+  isInitialized = true;
 
   // 1. Get MAC Address
   if (all.eth0) myMacAddress = all.eth0.mac.toLowerCase();
@@ -1017,35 +1023,54 @@ macaddress.all(async (err, all) => {
 
   console.log(`Agent Started. ID: ${myMacAddress}`);
 
-  // 2. Setup Device Auth (Provision or Login)
-  await setupDeviceAuth();
+  try {
+    // 2. Setup Device Auth (Provision or Login)
+    await setupDeviceAuth();
 
-  // 3. Start Logic
-  loadConfig();
+    // 3. Start Logic
+    loadConfig();
 
-  // 3. Start Server
-  server.listen(PORT, () => {
-    console.log(`Dashboard Server running on port ${PORT}`);
-    const nets = getSystemNetworkStatus();
-    if (nets.eth && nets.eth.connected) console.log(`- LAN: http://${nets.eth.ip}`);
-    if (nets.wifi && nets.wifi.connected) console.log(`- WIFI: http://${nets.wifi.ip}`);
-  });
+    // Handle Server Errors (like EADDRINUSE) gracefully
+    server.on('error', (err) => {
+       if (err.code === 'EADDRINUSE') {
+         console.error(`[FATAL] Port ${PORT} already in use. Another instance is likely running.`);
+       } else {
+         console.error('[FATAL] Dashboard Server Error:', err.message);
+       }
+       process.exit(1);
+    });
 
-  // 4. Run Syncs
-  setTimeout(async () => {
-    await findAndClaimStaticIP(); // Run once on boot
-    await syncInventoryToCloud();
-    sendHeartbeat();
-    await listenForCommands();
-  }, 5000);
+    // 3. Start Server
+    server.listen(PORT, () => {
+      console.log(`Dashboard Server running on port ${PORT}`);
+      const nets = getSystemNetworkStatus();
+      if (nets.eth && nets.eth.connected) console.log(`- LAN: http://${nets.eth.ip}`);
+      if (nets.wifi && nets.wifi.connected) console.log(`- WIFI: http://${nets.wifi.ip}`);
+    });
 
-  // 5. Start Loops
-  startCommandPoller(); // Listen for commands (Fallback)
-  monitorLoop();        // Watch network
+    // 4. Run Syncs
+    setTimeout(async () => {
+      try {
+        await findAndClaimStaticIP(); // Run once on boot
+        await syncInventoryToCloud();
+        sendHeartbeat();
+        await listenForCommands();
+      } catch (e) {
+        console.error('[INIT] Error in startup syncs:', e.message);
+      }
+    }, 5000);
 
-  // Schedule Tasks
-  cron.schedule('*/5 * * * *', runDiscovery); // Scan network
-  cron.schedule('*/3 * * * *', sendHeartbeat); // Tell cloud we are alive
+    // 5. Start Loops
+    startCommandPoller(); // Listen for commands (Fallback)
+    monitorLoop();        // Watch network
 
-  console.log("[INIT] Loops started.");
+    // Schedule Tasks
+    cron.schedule('*/5 * * * *', runDiscovery); // Scan network
+    cron.schedule('*/3 * * * *', sendHeartbeat); // Tell cloud we are alive
+
+    console.log("[INIT] Loops started.");
+  } catch (fatalErr) {
+    console.error('[FATAL] Agent failed to start:', fatalErr.message);
+    process.exit(1);
+  }
 });
