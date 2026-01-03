@@ -1,4 +1,5 @@
-// Version 1.3 - Fixed & Verified
+// Version 1.4.0 - Auth & Versioning Verified
+const AGENT_VERSION = '1.4.0';
 /**
  * POS Health Monitor - Agent Script
  * Runtime: Node.js (Raspberry Pi)
@@ -204,7 +205,8 @@ async function sendHeartbeat() {
       current_ip: currentIp,
       status: 'online',
       last_seen: new Date().toISOString(),
-      wifi_ssid: wifiSsid
+      wifi_ssid: wifiSsid,
+      software_version: AGENT_VERSION
     }, { onConflict: 'mac_address' });
 
   if (error) console.error('[SUPABASE] Heartbeat failed:', error.message);
@@ -1021,7 +1023,7 @@ macaddress.all(async (err, all) => {
   else if (all.wlan0) myMacAddress = all.wlan0.mac.toLowerCase();
   else myMacAddress = Object.values(all)[0].mac.toLowerCase();
 
-  console.log(`Agent Started. ID: ${myMacAddress}`);
+  console.log(`Agent Started. PID: ${process.pid}, ID: ${myMacAddress}`);
 
   try {
     // 2. Setup Device Auth (Provision or Login)
@@ -1030,10 +1032,13 @@ macaddress.all(async (err, all) => {
     // 3. Start Logic
     loadConfig();
 
+    // Force port to 8081 for now to escape the conflict
+    const RUN_PORT = 8081;
+
     // Handle Server Errors (like EADDRINUSE) gracefully
     server.on('error', (err) => {
        if (err.code === 'EADDRINUSE') {
-         console.error(`[FATAL] Port ${PORT} already in use. Another instance is likely running.`);
+         console.error(`[FATAL] Port ${RUN_PORT} already in use. PID holding it might be another agent.`);
        } else {
          console.error('[FATAL] Dashboard Server Error:', err.message);
        }
@@ -1041,11 +1046,11 @@ macaddress.all(async (err, all) => {
     });
 
     // 3. Start Server
-    server.listen(PORT, () => {
-      console.log(`Dashboard Server running on port ${PORT}`);
+    server.listen(RUN_PORT, '0.0.0.0', () => {
+      console.log(`Dashboard Server v${AGENT_VERSION} running on port ${RUN_PORT}`);
       const nets = getSystemNetworkStatus();
-      if (nets.eth && nets.eth.connected) console.log(`- LAN: http://${nets.eth.ip}`);
-      if (nets.wifi && nets.wifi.connected) console.log(`- WIFI: http://${nets.wifi.ip}`);
+      if (nets.eth && nets.eth.connected) console.log(`- LAN: http://${nets.eth.ip}:${RUN_PORT}`);
+      if (nets.wifi && nets.wifi.connected) console.log(`- WIFI: http://${nets.wifi.ip}:${RUN_PORT}`);
     });
 
     // 4. Run Syncs
