@@ -26,7 +26,7 @@ require('dotenv').config();
 // --- CLOUD CONFIG ---
 const SUPABASE_URL = 'https://tbajywjbemnwhsdgjuqg.supabase.co';
 // Revert to ANON KEY for initial connection and provisioning call
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiYWp5d2piZW1ud2hzZGdqdXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MDkzMjYsImV4cCI6MjA4MDE4NTMyNn0.5mhZQ4OTjV6f0p2v0LxADpQnaTyJIp5BIuw2kP0mdUU';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiYWp5d2piZW1ud2hzZGdqdXFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwNTU3NjMsImV4cCI6MjA4MjQxNTc2M30.wkrUHo07ax3NdoY8CIULWOBo_dqaMfyAtFxh8lEr8jo';
 
 // Initialize Supabase Client with Anon Key
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -919,19 +919,6 @@ function generateRandomPassword(length = 24) {
 async function setupDeviceAuth() {
   console.log('[AUTH] Checking for device credentials...');
   
-  // Diagnostic: Test basic connectivity with the key
-  console.log('[AUTH] Testing connection to Postgrest...');
-  console.log('[AUTH] Key used: ' + SUPABASE_ANON_KEY.substring(0, 10) + '...' + SUPABASE_ANON_KEY.substring(SUPABASE_ANON_KEY.length - 10));
-  const { error: testError } = await supabase.from('pucks').select('id').limit(1);
-  if (testError) {
-    console.error('[AUTH] Basic connection test FAILED:', testError.message);
-    if (testError.message.includes('API key')) {
-      console.error('[AUTH] CRITICAL: The Anon Key is being rejected by Supabase.');
-    }
-  } else {
-    console.log('[AUTH] Basic connection test successful.');
-  }
-
   let credentials;
   if (fs.existsSync(CREDENTIALS_FILE)) {
     try {
@@ -986,8 +973,6 @@ async function setupDeviceAuth() {
 
   // Log in with the credentials
   console.log('[AUTH] Attempting sign-in for:', credentials.email);
-  console.log('[AUTH] Using URL:', SUPABASE_URL);
-  console.log('[AUTH] Key Prefix:', SUPABASE_ANON_KEY.substring(0, 10) + '...');
 
   const { data: authData, error: loginError } = await supabase.auth.signInWithPassword({
     email: credentials.email,
@@ -996,8 +981,6 @@ async function setupDeviceAuth() {
 
   if (loginError) {
     console.error('[AUTH] Sign-in failed:', loginError.message);
-    if (loginError.status) console.error('[AUTH] HTTP Status:', loginError.status);
-    console.error('[AUTH] Full Error:', JSON.stringify(loginError, null, 2));
     process.exit(1);
   }
 
