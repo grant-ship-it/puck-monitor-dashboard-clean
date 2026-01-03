@@ -921,6 +921,7 @@ async function setupDeviceAuth() {
   
   // Diagnostic: Test basic connectivity with the key
   console.log('[AUTH] Testing connection to Postgrest...');
+  console.log('[AUTH] Key used: ' + SUPABASE_ANON_KEY.substring(0, 10) + '...' + SUPABASE_ANON_KEY.substring(SUPABASE_ANON_KEY.length - 10));
   const { error: testError } = await supabase.from('pucks').select('id').limit(1);
   if (testError) {
     console.error('[AUTH] Basic connection test FAILED:', testError.message);
@@ -956,8 +957,17 @@ async function setupDeviceAuth() {
       // Check if it's "User already exists" - if so, we can try to log in
       try {
         const body = await error.context.json();
-        if (body.error && body.error.includes('already exists')) {
+        const errorMessage = body.error || '';
+        const errorCode = body.details?.code || '';
+        
+        if (errorMessage.includes('already registered') || errorMessage.includes('already exists') || errorCode === 'email_exists') {
            console.log('[AUTH] Device already provisioned in cloud.');
+           // Use the determined email, but we don't know the password if we lost it!
+           // This is a recovery scenario. For now, we assume if we have no credentials.json, 
+           // we are stuck unless we reset the user in Auth.
+           console.error('[AUTH] ERROR: Cloud account exists but local credentials.json is missing.');
+           console.error('[AUTH] Please delete the user "device_' + sanitizedMac + '@internal.sectorlink" in Supabase Auth to allow re-provisioning.');
+           process.exit(1);
         } else {
            console.error('[AUTH] Provisioning failed:', error.message);
            console.error('[AUTH] Error Body:', JSON.stringify(body, null, 2));
